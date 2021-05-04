@@ -1,3 +1,10 @@
+# Note from EU1KY
+
+DH1AKF passed away on March 19, 2021.
+EU1KY is taking over his repo maintenance, now at the EU1KY GIT account since the original repo is not accessible for commits.
+The code is cleaned in order to be built without warnings. Some bugs have been fixed, some improvements made.
+I have no much time to deal with this code, but will add some requested features and fixes soon.
+
 # antennaanalyzer
 EU1KY Antenna Analyzer Firmware modified by DH1AKF and KD8CEC
 Actual informations you can find at https://groups.io/g/Analyzer-EU1KY
@@ -40,5 +47,5 @@ More enhancements were programmed by KD8CEC:
 
 ## Contribution policy ##
 
-If you have something to add to the source code, some feature or an improvement, please contact DH1AKF (DH1AKF@DARC.DE) or KD8CEC via hamskey.com
+If you have something to add to the source code, some feature or an improvement, please contact EU1KY (kuchura@gmail.com)
 
