@@ -2,10 +2,7 @@
 *.d
 
 # Object files
-*.o
-*.ko
-*.obj
-*.elf
+obj/*
 
 # Linker output
 *.ilk
@@ -29,12 +26,7 @@
 *.dylib
 
 # Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+bin/*
 
 # Debug files
 *.dSYM/
@@ -52,3 +44,4 @@ Mkfile.old
 dkms.conf
 F7Discovery.depend
 F7Discovery.elay
+Src/Inc/build_timestamp.h
