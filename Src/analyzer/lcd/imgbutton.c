@@ -9,21 +9,20 @@
 extern void Sleep(uint32_t);
 
 static uint8_t TEXTBOX_repeats;
-static  void* TEXTBOX_previous;
+static void *TEXTBOX_previous;
 
-
-void TEXTBOX_InitContext(TEXTBOX_CTX_t* ctx)
+void TEXTBOX_InitContext(TEXTBOX_CTX_t *ctx)
 {
     ctx->start = 0;
-    TEXTBOX_repeats=0;// 5 times slow, then rapid
-    TEXTBOX_previous=0;
+    TEXTBOX_repeats = 0; // 5 times slow, then rapid
+    TEXTBOX_previous = 0;
 }
 
-TEXTBOX_t* TEXTBOX_Find(TEXTBOX_CTX_t *ctx, uint32_t idx)
+TEXTBOX_t *TEXTBOX_Find(TEXTBOX_CTX_t *ctx, uint32_t idx)
 {
     if (0 == ctx)
         return 0;
-    TEXTBOX_t* pbox = ctx->start;
+    TEXTBOX_t *pbox = ctx->start;
     uint32_t ctr = 0;
     if (0 == pbox)
         return 0;
@@ -38,13 +37,12 @@ TEXTBOX_t* TEXTBOX_Find(TEXTBOX_CTX_t *ctx, uint32_t idx)
         }
     }
     return 0;
-
 }
 
 //Returns textbox ID in context
-uint32_t TEXTBOX_Append(TEXTBOX_CTX_t* ctx, TEXTBOX_t* hbox)
+uint32_t TEXTBOX_Append(TEXTBOX_CTX_t *ctx, TEXTBOX_t *hbox)
 {
-    TEXTBOX_t* pbox = ctx->start;
+    TEXTBOX_t *pbox = ctx->start;
     uint32_t idx = 0;
     if (0 == pbox)
         ctx->start = hbox;
@@ -63,9 +61,9 @@ uint32_t TEXTBOX_Append(TEXTBOX_CTX_t* ctx, TEXTBOX_t* hbox)
     }
     if (TEXTBOX_TYPE_TEXT == hbox->type)
     {
-        if ( IS_IN_RAM(hbox) && 0 == hbox->width)
+        if (IS_IN_RAM(hbox) && 0 == hbox->width)
             hbox->width = FONT_GetStrPixelWidth(hbox->font, hbox->text);
-        if ( IS_IN_RAM(hbox) && 0 == hbox->height)
+        if (IS_IN_RAM(hbox) && 0 == hbox->height)
             hbox->height = FONT_GetHeight(hbox->font);
     }
     return idx;
@@ -83,7 +81,7 @@ void TEXTBOX_Clear(TEXTBOX_CTX_t *ctx, uint32_t idx)
                  tb->bgcolor);
 }
 
-void TEXTBOX_SetText(TEXTBOX_CTX_t *ctx, uint32_t idx, const char* txt)
+void TEXTBOX_SetText(TEXTBOX_CTX_t *ctx, uint32_t idx, const char *txt)
 {
     if (0 == ctx || 0 == txt)
         return;
@@ -107,7 +105,7 @@ void TEXTBOX_SetText(TEXTBOX_CTX_t *ctx, uint32_t idx, const char* txt)
 
 void TEXTBOX_DrawContext(TEXTBOX_CTX_t *ctx)
 {
-    TEXTBOX_t* pbox = ctx->start;
+    TEXTBOX_t *pbox = ctx->start;
     while (pbox)
     {
         if (TEXTBOX_TYPE_TEXT == pbox->type)
@@ -130,8 +128,8 @@ void TEXTBOX_DrawContext(TEXTBOX_CTX_t *ctx)
             {
                 int h = FONT_GetHeight(pbox->font);
                 int w = FONT_GetStrPixelWidth(pbox->font, pbox->text);
-                int x = (int)pbox->x0 + (int)pbox->width / 2  - w / 2;
-                int y = (int)pbox->y0 + (int)pbox->height / 2  - h / 2;
+                int x = (int)pbox->x0 + (int)pbox->width / 2 - w / 2;
+                int y = (int)pbox->y0 + (int)pbox->height / 2 - h / 2;
                 FONT_Write(pbox->font, pbox->fgcolor, pbox->bgcolor, x, y, pbox->text);
             }
             else
@@ -161,12 +159,13 @@ uint32_t TEXTBOX_HitTest(TEXTBOX_CTX_t *ctx)
 {
     LCDPoint coord;
 
-    if (!TOUCH_Poll(&coord)){// no touch
-        TEXTBOX_previous=0;
-        TEXTBOX_repeats=0;
+    if (!TOUCH_Poll(&coord))
+    { // no touch
+        TEXTBOX_previous = 0;
+        TEXTBOX_repeats = 0;
         return 0;
     }
-    TEXTBOX_t* pbox = ctx->start;
+    TEXTBOX_t *pbox = ctx->start;
     while (pbox)
     {
         if (TEXTBOX_TYPE_TEXT == pbox->type)
@@ -181,7 +180,8 @@ uint32_t TEXTBOX_HitTest(TEXTBOX_CTX_t *ctx)
             if (coord.y >= pbox->y0 && coord.y < pbox->y0 + pbox->height)
             {
                 //Execute hit callback
-                if(BeepOn1==1){
+                if (BeepOn1 == 1)
+                {
                     UB_TIMER2_Init_FRQ(880);
                     UB_TIMER2_Start();
                     Sleep(100);
@@ -191,34 +191,38 @@ uint32_t TEXTBOX_HitTest(TEXTBOX_CTX_t *ctx)
                 {
                     if (pbox->cbparam)
                     {
-                        ((void(*)(const TEXTBOX_t*))pbox->cb)(pbox);
+                        ((void (*)(const TEXTBOX_t *))pbox->cb)(pbox);
                     }
                     else
                         pbox->cb();
                 }
                 if (pbox->nowait)
                 {
-                    if(TEXTBOX_repeats<5){      //  WK
-                        TEXTBOX_previous=pbox;
+                    if (TEXTBOX_repeats < 5)
+                    { //  WK
+                        TEXTBOX_previous = pbox;
                         TEXTBOX_repeats++;
                         Sleep(400);
                         return 0;
                     }
-                    if(pbox==TEXTBOX_previous){
-                        if(TEXTBOX_repeats>=5){
+                    if (pbox == TEXTBOX_previous)
+                    {
+                        if (TEXTBOX_repeats >= 5)
+                        {
                             Sleep(pbox->nowait);
                             return 0;
                         }
                     }
                 }
 
-                else {
+                else
+                {
                     Sleep(400); // WK
                 }
                 //Invert text colors while touch is pressed
                 LCD_InvertRect(LCD_MakePoint(pbox->x0, pbox->y0), LCD_MakePoint(pbox->x0 + pbox->width, pbox->y0 + pbox->height));
                 //Wait for touch release
-               // while (TOUCH_IsPressed());// WK
+                // while (TOUCH_IsPressed());// WK
                 //Restore textbox colors
                 LCD_InvertRect(LCD_MakePoint(pbox->x0, pbox->y0), LCD_MakePoint(pbox->x0 + pbox->width, pbox->y0 + pbox->height));
                 return 1;

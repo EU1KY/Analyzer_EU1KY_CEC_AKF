@@ -4,9 +4,10 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-float CalcBin107(uint32_t frequency, int iterations, float* , float* , float*);
-void SPECTR_FindFreq(void);// ** WK **
-float value1, value2, value3;
+    float CalcBin107(uint32_t frequency, int iterations, float *, float *, float *);
+    void SPECTR_FindFreq(void); // ** WK **
+    float value1, value2, value3;
 #endif

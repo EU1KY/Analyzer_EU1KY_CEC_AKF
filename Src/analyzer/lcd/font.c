@@ -36,12 +36,12 @@ static void FONT_DrawByte(uint8_t byte, uint8_t nBits, LCDColor fg, uint16_t x, 
 
 struct _fontparams
 {
-    const uint8_t** pFont;
+    const uint8_t **pFont;
     uint8_t charHeight;
     uint8_t charSpacing;
 };
 
-static void FONT_GetParams(FONTS fnt, struct _fontparams* pRes)
+static void FONT_GetParams(FONTS fnt, struct _fontparams *pRes)
 {
     if (0 == pRes)
     {
@@ -51,32 +51,32 @@ static void FONT_GetParams(FONTS fnt, struct _fontparams* pRes)
     {
     default:
     case FONT_FRAN:
-        pRes->pFont = (const uint8_t**)fran;
+        pRes->pFont = (const uint8_t **)fran;
         pRes->charHeight = fran_height;
         pRes->charSpacing = fran_spacing;
         break;
     case FONT_FRANBIG:
-        pRes->pFont = (const uint8_t**)franbig;
+        pRes->pFont = (const uint8_t **)franbig;
         pRes->charHeight = franbig_height;
         pRes->charSpacing = franbig_spacing;
         break;
     case FONT_CONSBIG:
-        pRes->pFont = (const uint8_t**)consbig;
+        pRes->pFont = (const uint8_t **)consbig;
         pRes->charHeight = consbig_height;
         pRes->charSpacing = consbig_spacing;
         break;
     case FONT_SDIGITS:
-        pRes->pFont = (const uint8_t**)sdigits;
+        pRes->pFont = (const uint8_t **)sdigits;
         pRes->charHeight = sdigits_height;
         pRes->charSpacing = sdigits_spacing;
         break;
     case FONT_BDIGITS:
-        pRes->pFont = (const uint8_t**)bdigits;
+        pRes->pFont = (const uint8_t **)bdigits;
         pRes->charHeight = bdigits_height;
         pRes->charSpacing = bdigits_spacing;
         break;
     case FONT_MENUS:
-        pRes->pFont = (const uint8_t**)menufont;
+        pRes->pFont = (const uint8_t **)menufont;
         pRes->charHeight = menufont_height;
         pRes->charSpacing = menufont_spacing;
         break;
@@ -104,13 +104,13 @@ uint16_t FONT_GetHeight(FONTS fnt)
     return 0;
 }
 
-int FONT_Write(FONTS fnt, LCDColor fg, LCDColor bg, uint16_t x, uint16_t y, const char* pStr)
+int FONT_Write(FONTS fnt, LCDColor fg, LCDColor bg, uint16_t x, uint16_t y, const char *pStr)
 {
     return FONT_Write_N(fnt, fg, bg, x, y, pStr, strlen(pStr));
 }
 
 //Right Align, by KD8CEC
-int FONT_Write_RightAlign(FONTS fnt, LCDColor fg, LCDColor bg, uint16_t x, uint16_t y, uint16_t x2, const char* pStr)
+int FONT_Write_RightAlign(FONTS fnt, LCDColor fg, LCDColor bg, uint16_t x, uint16_t y, uint16_t x2, const char *pStr)
 {
     int drawX = x2 - FONT_GetStrPixelWidth(fnt, pStr);
     //DBG_Printf("x:%d, drawX:%d, targetWidth:%d, FontWidth:%d", x, drawX, targetWidth, FONT_GetStrPixelWidth(fnt, pStr));
@@ -126,17 +126,17 @@ void FONT_ClearLine(FONTS fnt, LCDColor bg, uint16_t y0)
     //Fill the rectangle with background color
     struct _fontparams fp = {0};
     FONT_GetParams(fnt, &fp);
-    LCD_FillRect(LCD_MakePoint(0, y0), LCD_MakePoint(LCD_GetWidth()-1, y0 + fp.charHeight), bg);
+    LCD_FillRect(LCD_MakePoint(0, y0), LCD_MakePoint(LCD_GetWidth() - 1, y0 + fp.charHeight), bg);
 }
-void FONT_ClearHalfLine(FONTS fnt, LCDColor bg, uint16_t y0)// WK
+void FONT_ClearHalfLine(FONTS fnt, LCDColor bg, uint16_t y0) // WK
 {
     //Fill the rectangle with background color
     struct _fontparams fp = {0};
     FONT_GetParams(fnt, &fp);
-    LCD_FillRect(LCD_MakePoint(0, y0), LCD_MakePoint(LCD_GetWidth()/2-1, y0 + fp.charHeight), bg);
+    LCD_FillRect(LCD_MakePoint(0, y0), LCD_MakePoint(LCD_GetWidth() / 2 - 1, y0 + fp.charHeight), bg);
 }
 
-int FONT_Write_N(FONTS fnt, LCDColor fg, LCDColor bg, uint16_t x, uint16_t y, const char* pStr, int nChars)
+int FONT_Write_N(FONTS fnt, LCDColor fg, LCDColor bg, uint16_t x, uint16_t y, const char *pStr, int nChars)
 {
     int nPrinted = 0;
     struct _fontparams fp = {0};
@@ -146,12 +146,12 @@ int FONT_Write_N(FONTS fnt, LCDColor fg, LCDColor bg, uint16_t x, uint16_t y, co
 
     //Fill the rectangle with background color
     if (0 != bg)
-        LCD_FillRect(LCD_MakePoint(x, y), LCD_MakePoint(x + FONT_GetStrPixelWidth(fnt, pStr), y + fp.charHeight-1), bg);
+        LCD_FillRect(LCD_MakePoint(x, y), LCD_MakePoint(x + FONT_GetStrPixelWidth(fnt, pStr), y + fp.charHeight - 1), bg);
 
     while (*pStr != '\0' && nChars--)
     {
         uint32_t charIndex = (uint32_t)*pStr;
-        const uint8_t* pCharData = fp.pFont[charIndex];
+        const uint8_t *pCharData = fp.pFont[charIndex];
         uint8_t charWidth = pCharData[0];
         uint8_t charWidthCurrent;
         uint16_t yCurr;
@@ -166,7 +166,7 @@ int FONT_Write_N(FONTS fnt, LCDColor fg, LCDColor bg, uint16_t x, uint16_t y, co
         yCurr = y;
         while (lines--)
         {
-            charWidthCurrent  = charWidth;
+            charWidthCurrent = charWidth;
             while (charWidthCurrent)
             {
                 //First byte is right part of the character bitmap
@@ -206,7 +206,7 @@ int FONT_Printf(uint16_t x, uint16_t y, const char *fmt, ...)
 
     int np = 0;
     va_list ap;
-    va_start (ap, fmt);
+    va_start(ap, fmt);
     np = vsnprintf(tmpBuf, 255, fmt, ap);
     tmpBuf[np] = '\0';
     va_end(ap);
@@ -217,14 +217,14 @@ int FONT_Print(FONTS fnt, LCDColor fg, LCDColor bg, uint16_t x, uint16_t y, cons
 {
     int np = 0;
     va_list ap;
-    va_start (ap, fmt);
+    va_start(ap, fmt);
     np = vsnprintf(tmpBuf, 255, fmt, ap);
     tmpBuf[np] = '\0';
     va_end(ap);
     return FONT_Write(fnt, fg, bg, x, y, tmpBuf);
 }
 
-int FONT_GetStrPixelWidth(FONTS fnt, const char* pStr)
+int FONT_GetStrPixelWidth(FONTS fnt, const char *pStr)
 {
     int w = 0;
     struct _fontparams fp = {0};
@@ -237,7 +237,7 @@ int FONT_GetStrPixelWidth(FONTS fnt, const char* pStr)
     while (*pStr != '\0')
     {
         uint32_t charIndex = (uint32_t)*pStr;
-        const uint8_t* pCharData = fp.pFont[charIndex];
+        const uint8_t *pCharData = fp.pFont[charIndex];
         w += pCharData[0];
         if (*++pStr == '\0')
             break;

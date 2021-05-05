@@ -47,18 +47,18 @@ static float phdif_buf[MAXNMEAS];
 float windowfunc[NSAMPLES];
 float rfft_input[NSAMPLES];
 float rfft_output[NSAMPLES];
-const float complex *prfft   = (float complex*)rfft_output;
+const float complex *prfft = (float complex *)rfft_output;
 int16_t audioBuf[(NSAMPLES + NDUMMY) * 2];
 
 //Measurement results
-static float complex magphase_v = 0.1f+0.fi; //Measured magnitude and phase for V channel
-static float complex magphase_i = 0.1f+0.fi; //Measured magnitude and phase for I channel
-static float magmv_v = 1.;                   //Measured magnitude in millivolts for V channel
-static float magmv_i = 1.;                   //Measured magnitude in millivolts for I channel
-static float magdif = 1.f;                   //Measured magnitude ratio
-static float magdifdb = 0.f;                 //Measured magnitude ratio in dB
-static float phdif = 0.f;                    //Measured phase difference in radians
-static float phdifdeg = 0.f;                 //Measured phase difference in degrees
+static float complex magphase_v = 0.1f + 0.fi; //Measured magnitude and phase for V channel
+static float complex magphase_i = 0.1f + 0.fi; //Measured magnitude and phase for I channel
+static float magmv_v = 1.;                     //Measured magnitude in millivolts for V channel
+static float magmv_i = 1.;                     //Measured magnitude in millivolts for I channel
+static float magdif = 1.f;                     //Measured magnitude ratio
+static float magdifdb = 0.f;                   //Measured magnitude ratio in dB
+static float phdif = 0.f;                      //Measured phase difference in radians
+static float phdifdeg = 0.f;                   //Measured phase difference in degrees
 static DSP_RX mZ = DSP_Z0 + 0.0fi;
 
 static float DSP_CalcR(void);
@@ -124,8 +124,8 @@ static float complex DSP_FFT(int channel)
     uint32_t i;
     arm_rfft_fast_instance_f32 S;
 
-    int16_t* pBuf = &audioBuf[NDUMMY + (channel != 0)];
-    for(i = 0; i < NSAMPLES; i++)
+    int16_t *pBuf = &audioBuf[NDUMMY + (channel != 0)];
+    for (i = 0; i < NSAMPLES; i++)
     {
         rfft_input[i] = (float)*pBuf * windowfunc[i];
         pBuf += 2;
@@ -139,9 +139,9 @@ static float complex DSP_FFT(int channel)
     for (i = FFTBIN - 2; i <= FFTBIN + 2; i++)
     {
         float complex binf = prfft[i];
-        float bin_magnitude = cabsf(binf) / (NSAMPLES/2);
+        float bin_magnitude = cabsf(binf) / (NSAMPLES / 2);
         //power += powf(bin_magnitude, 2);
-        power += bin_magnitude * bin_magnitude;// avoid powf()
+        power += bin_magnitude * bin_magnitude; // avoid powf()
     }
     magnitude = sqrtf(power);
 
@@ -149,9 +149,8 @@ static float complex DSP_FFT(int channel)
     float re = crealf(prfft[FFTBIN]);
     float im = cimagf(prfft[FFTBIN]);
     phase = atan2f(im, re);
-    return magnitude - phase * I;// was magnitude + phase * I;
+    return magnitude - phase * I; // was magnitude + phase * I;
 }
-
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
@@ -164,11 +163,11 @@ void DSP_Init(void)
     uint32_t tmp;
 
     tmp = CFG_GetParam(CFG_PARAM_BRIDGE_RM);
-    Rmeas = *(float*)&tmp;
+    Rmeas = *(float *)&tmp;
     tmp = CFG_GetParam(CFG_PARAM_BRIDGE_RADD);
-    RmeasAdd = *(float*)&tmp;
+    RmeasAdd = *(float *)&tmp;
     tmp = CFG_GetParam(CFG_PARAM_BRIDGE_RLOAD);
-    Rload = *(float*)&tmp;
+    Rload = *(float *)&tmp;
 
     OSL_Select(CFG_GetParam(CFG_PARAM_OSL_SELECTED));
     OSL_LoadErrCorr();
@@ -180,9 +179,9 @@ void DSP_Init(void)
     }
 
     //Prepare Blackman window, >66 dB OOB rejection
-    for(i = 0; i < NSAMPLES; i++)
+    for (i = 0; i < NSAMPLES; i++)
     {
-        windowfunc[i] = 0.426591f - .496561f * cosf( (2 * M_PI * i) / ns) + .076848f * cosf((4 * M_PI * i) / ns);
+        windowfunc[i] = 0.426591f - .496561f * cosf((2 * M_PI * i) / ns) + .076848f * cosf((4 * M_PI * i) / ns);
     }
 }
 #pragma GCC diagnostic pop
@@ -191,7 +190,7 @@ void DSP_Init(void)
 //of the remaining entries that fall into 1 sigma interval.
 //In normal distribution, which is our case, 68% of entries fall into single
 //standard deviation range.
-static float DSP_FilterArray(float* arr, int nm, int doRetries)
+static float DSP_FilterArray(float *arr, int nm, int doRetries)
 {
     int i;
     int counter;
@@ -213,7 +212,7 @@ static float DSP_FilterArray(float* arr, int nm, int doRetries)
     mean /= nm;
 
     if (nm < 5)
-    {//Simple case. Just return mean.
+    { //Simple case. Just return mean.
         return mean;
     }
     //============================
@@ -225,7 +224,7 @@ static float DSP_FilterArray(float* arr, int nm, int doRetries)
     for (i = 0; i < nm; i++)
     {
         float t = arr[i] - mean;
-        t  = t * t;
+        t = t * t;
         deviation += t;
     }
     deviation = sqrtf(deviation / nm);
@@ -244,12 +243,12 @@ static float DSP_FilterArray(float* arr, int nm, int doRetries)
             counter++;
         }
     }
-    if (doRetries && counter < nm/2)
+    if (doRetries && counter < nm / 2)
     {
         return 0.0;
     }
     if (counter == 0)
-    {//Oops! Nothing falls into the range, so let's simply return mean
+    { //Oops! Nothing falls into the range, so let's simply return mean
         return mean;
     }
     result /= counter;
@@ -259,7 +258,7 @@ static float DSP_FilterArray(float* arr, int nm, int doRetries)
 void DSP_Sample(void)
 {
     extern SAI_HandleTypeDef haudio_in_sai;
-    HAL_StatusTypeDef res = HAL_SAI_Receive(&haudio_in_sai, (uint8_t*)audioBuf, (NSAMPLES + NDUMMY) * 2, HAL_MAX_DELAY);
+    HAL_StatusTypeDef res = HAL_SAI_Receive(&haudio_in_sai, (uint8_t *)audioBuf, (NSAMPLES + NDUMMY) * 2, HAL_MAX_DELAY);
     if (HAL_OK != res)
     {
         CRASHF("HAL_SAI_Receive failed, err %d", res);
@@ -269,21 +268,22 @@ void DSP_Sample(void)
 void DSP_Sample64(void)
 {
     extern SAI_HandleTypeDef haudio_in_sai;
-    HAL_StatusTypeDef res = HAL_SAI_Receive(&haudio_in_sai, (uint8_t*)audioBuf, (2 + 62) * 2, HAL_MAX_DELAY);
+    HAL_StatusTypeDef res = HAL_SAI_Receive(&haudio_in_sai, (uint8_t *)audioBuf, (2 + 62) * 2, HAL_MAX_DELAY);
     if (HAL_OK != res)
     {
         CRASHF("HAL_SAI_Receive failed, err %d", res);
     }
 }
 
-void DSP_Measure2(void){
-float mag_v = 0.0f;
-float mag_i = 0.0f;
-float pdif = 0.0f;
-float complex res_v, res_i;
-int i;
-int retries = 3;
-int nMeasurements=CFG_GetParam(CFG_PARAM_MEAS_NSCANS);
+void DSP_Measure2(void)
+{
+    float mag_v = 0.0f;
+    float mag_i = 0.0f;
+    float pdif = 0.0f;
+    float complex res_v, res_i;
+    int i;
+    int retries = 3;
+    int nMeasurements = CFG_GetParam(CFG_PARAM_MEAS_NSCANS);
 REMEASURE:
     for (i = 0; i < nMeasurements; i++)
     {
@@ -316,7 +316,7 @@ REMEASURE:
     mag_i = DSP_FilterArray(mag_i_buf, nMeasurements, retries);
     phdif = DSP_FilterArray(phdif_buf, nMeasurements, retries);
     if (mag_v == 0.0f || mag_i == 0.0f || phdif == 0.0f)
-    {//need to measure again : too much noise detected
+    { //need to measure again : too much noise detected
         retries--;
         goto REMEASURE;
     }
@@ -325,9 +325,7 @@ REMEASURE:
     //Calculate derived results
     magmv_v = mag_v * MCF;
     magmv_i = mag_i * MCF;
-
 }
-
 
 //Set frequency, run measurement sampling and calculate phase, magnitude ratio
 //and Z from sampled data, applying hardware error correction and OSL correction
@@ -395,7 +393,7 @@ REMEASURE:
     mag_i = DSP_FilterArray(mag_i_buf, nMeasurements, retries);
     phdif = DSP_FilterArray(phdif_buf, nMeasurements, retries);
     if (mag_v == 0.0f || mag_i == 0.0f || phdif == 0.0f)
-    {//need to measure again : too much noise detected
+    { //need to measure again : too much noise detected
         retries--;
         goto REMEASURE;
     }
@@ -418,7 +416,6 @@ REMEASURE:
         mZ = OSL_CorrectZ(freqHz, mZ);
     }
 }
-
 
 //Set frequency, run measurement sampling and calculate phase, magnitude ratio
 //and Z from sampled data, applying hardware error correction and OSL correction
@@ -487,7 +484,7 @@ REMEASURE:
     mag_i = DSP_FilterArray(mag_i_buf, nMeasurements, retries);
     phdif = DSP_FilterArray(phdif_buf, nMeasurements, retries);
     if (mag_v == 0.0f || mag_i == 0.0f || phdif == 0.0f)
-    {//need to measure again : too much noise detected
+    { //need to measure again : too much noise detected
         retries--;
         goto REMEASURE;
     }
@@ -525,8 +522,7 @@ float DSP_MeasureTrack(uint32_t freqHz, int applyErrCorr, int applyOSL, int nMea
     int i;
     int retries = 3;
 
-
-  /*  if (freqHz < BAND_FMIN || freqHz > CFG_GetParam(CFG_PARAM_BAND_FMAX))
+    /*  if (freqHz < BAND_FMIN || freqHz > CFG_GetParam(CFG_PARAM_BAND_FMAX))
     { // Set defaults for out of band measurements
         magmv_v = 500.f;
         magmv_i = 500.f;
@@ -536,19 +532,18 @@ float DSP_MeasureTrack(uint32_t freqHz, int applyErrCorr, int applyOSL, int nMea
         return ;
     }*/
     GEN_SetTXFreq(freqHz);
-    HS_SetPower(2, CLK2_drive, 1);// CLK2: 2 mA .. 8 mA
+    HS_SetPower(2, CLK2_drive, 1); // CLK2: 2 mA .. 8 mA
     //Init
     memset(audioBuf, 0, sizeof(audioBuf));
 
     for (i = 0; i <= nMeasurements; i++)
     {
 
-        DSP_Sample(); //TILE:4.7Sec
+        DSP_Sample();       //TILE:4.7Sec
         res_i = DSP_FFT(0); //Input //TILE:0.3Sec
 
-       // mag_v_buf[i] = crealf(res_v);
+        // mag_v_buf[i] = crealf(res_v);
         mag_i_buf[i] = crealf(res_i);
-
     }
 
     //Now perform filtering to remove outliers with sigma > 1.0
@@ -633,7 +628,6 @@ void DSP_MeasureLC(uint32_t freqHz, int applyErrCorr, int applyOSL, int nMeasure
 // END OF KD8CEC's LOGIC
 //------------------------------------------------------------------
 
-
 //Return last measured Z
 DSP_RX DSP_MeasuredZ(void)
 {
@@ -712,12 +706,12 @@ float DSP_CalcVSWR(DSP_RX Z)
 {
     float X2 = powf(cimagf(Z), 2);
     float R = crealf(Z);
-    if(R < 0.0)
+    if (R < 0.0)
     {
         R = 0.0;
     }
     float ro = sqrtf((powf((R - CFG_GetParam(CFG_PARAM_R0)), 2) + X2) / _nonz(powf((R + CFG_GetParam(CFG_PARAM_R0)), 2) + X2));
-    if(ro > .999f)
+    if (ro > .999f)
     {
         ro = 0.999f;
     }
@@ -728,5 +722,5 @@ float DSP_CalcVSWR(DSP_RX Z)
 uint32_t DSP_GetIF(void)
 {
     static const float binwidth = ((float)(FSAMPLE)) / (NSAMPLES);
-    return (uint32_t)(binwidth * FFTBIN);//10031,25 Hz -> 10031 Hz
+    return (uint32_t)(binwidth * FFTBIN); //10031,25 Hz -> 10031 Hz
 }

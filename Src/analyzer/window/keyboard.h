@@ -18,6 +18,6 @@
     @param header_text Keyboard window header text
     @return 1 if the string in buffer has changed, 0 if not changed
 */
-uint32_t KeyboardWindow(char* buffer, uint32_t max_len, const char* header_text);
+uint32_t KeyboardWindow(char *buffer, uint32_t max_len, const char *header_text);
 
 #endif

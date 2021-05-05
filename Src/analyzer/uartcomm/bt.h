@@ -10,12 +10,12 @@
 
 #include <stdint.h>
 
-
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-extern void MenuBT(void);
+    extern void MenuBT(void);
 
 #ifdef __cplusplus
 }

@@ -48,12 +48,12 @@
 #define SELECT_FREQ_COLOR LCD_RGB(255, 127, 39)
 #define SELECT_PROTOCOL_COLOR LCD_RGB(255, 30, 30)
 
-#define GRAPH_TOP               0
-#define GRAPH_BOTTOM            70
-#define METER_HEIGHT            15
-#define GRAPH_WATERFALL_TOP     GRAPH_BOTTOM + METER_HEIGHT
-#define GRAPH_WATERFALL_HEIGHT  100
-#define GRAPH_WATERFALL_BOTTOM  GRAPH_WATERFALL_TOP + GRAPH_WATERFALL_HEIGHT
+#define GRAPH_TOP 0
+#define GRAPH_BOTTOM 70
+#define METER_HEIGHT 15
+#define GRAPH_WATERFALL_TOP GRAPH_BOTTOM + METER_HEIGHT
+#define GRAPH_WATERFALL_HEIGHT 100
+#define GRAPH_WATERFALL_BOTTOM GRAPH_WATERFALL_TOP + GRAPH_WATERFALL_HEIGHT
 
 //Default Filters
 #include "flt_lpf.h"
@@ -72,50 +72,46 @@ extern void TRACK_Beep(int duration);
 //VARIABLE DEFINE FOR FFT, FIR, IIR
 //By KD8CEC
 //-----------------------------------------------------------------------------
-#define AUDIO_BUFF_SIZE ((uint32_t)512)                 //HALF 256, COMPLETE 256
-#define FFT_BIN_FREQ (float)7.8125                      //FFT SPECTRUM (FFT BIN)
+#define AUDIO_BUFF_SIZE ((uint32_t)512) //HALF 256, COMPLETE 256
+#define FFT_BIN_FREQ (float)7.8125      //FFT SPECTRUM (FFT BIN)
 //#define AUDIO_BUFFER_RAM AUDIO_BUFFER_OUT
 
 //Share SD-RAM for Audio IN / OUT
 //Received Buffer (MEMS MIC on board or MIC JACK)
-static int16_t __attribute__((section (".user_sdram"))) AUDIO_BUFFER_IN_FLT[AUDIO_BUFF_SIZE] = { 0 };
+static int16_t __attribute__((section(".user_sdram"))) AUDIO_BUFFER_IN_FLT[AUDIO_BUFF_SIZE] = {0};
 //int16_t *AUDIO_BUFFER_IN_FLT = &AUDIO_BUFFER_RAM[0];
 
 //Output Buffer (Phone Jack)
-static int16_t __attribute__((section (".user_sdram"))) AUDIO_BUFFER_OUT_FLT[AUDIO_BUFF_SIZE] = { 0 };
+static int16_t __attribute__((section(".user_sdram"))) AUDIO_BUFFER_OUT_FLT[AUDIO_BUFF_SIZE] = {0};
 //int16_t *AUDIO_BUFFER_OUT_FLT = &AUDIO_BUFFER_RAM[AUDIO_BUFF_SIZE];
 
 //for iir
-static float __attribute__((section (".user_sdram"))) float_buffer_in[AUDIO_BUFF_SIZE * 2] = { 0 };
-static float __attribute__((section (".user_sdram"))) float_buffer_out[AUDIO_BUFF_SIZE * 2] = { 0 };
+static float __attribute__((section(".user_sdram"))) float_buffer_in[AUDIO_BUFF_SIZE * 2] = {0};
+static float __attribute__((section(".user_sdram"))) float_buffer_out[AUDIO_BUFF_SIZE * 2] = {0};
 //float *float_buffer_in  = (float *)&AUDIO_BUFFER_RAM[AUDIO_BUFF_SIZE * 2];
 //float *float_buffer_out = (float *)&AUDIO_BUFFER_RAM[AUDIO_BUFF_SIZE * 6];
 
-
 #define iirStageCount 6
-#define iirTapsCount  5 * iirStageCount	//2 order : 5, B0, b1, B2, A1, B2
+#define iirTapsCount 5 * iirStageCount //2 order : 5, B0, b1, B2, A1, B2
 //float iirStateBuff[2 * iirStageCount];
 //float iirStateBuff_HPF[2 * iirStageCount];
-static float __attribute__((section (".user_sdram"))) iirStateBuff[2 * iirStageCount];
-static float __attribute__((section (".user_sdram"))) iirStateBuff_HPF[2 * iirStageCount];
+static float __attribute__((section(".user_sdram"))) iirStateBuff[2 * iirStageCount];
+static float __attribute__((section(".user_sdram"))) iirStateBuff_HPF[2 * iirStageCount];
 
-
-#define iirLength		AUDIO_BUFF_SIZE / 2     //
-
+#define iirLength AUDIO_BUFF_SIZE / 2 //
 
 //BASIC FILTER
 //float iirCoeffBuff[30] = {
-static float __attribute__((section (".user_sdram"))) iirCoeffBuff[30];
+static float __attribute__((section(".user_sdram"))) iirCoeffBuff[30];
 //float iirCoeffBuff_HPF[30] = {
-static float __attribute__((section (".user_sdram"))) iirCoeffBuff_HPF[30];
-
+static float __attribute__((section(".user_sdram"))) iirCoeffBuff_HPF[30];
 
 //Spectrum Buffer
 #define FFT_SPECTRUM_STEP 16
-#define FFT_AUDIO_SIZE    128   //512 => 256 => 128 (LEFT CHANNEL )
-#define FFT_SPECTRUM_SIZE FFT_AUDIO_SIZE * FFT_SPECTRUM_STEP
-static float __attribute__((section (".user_sdram"))) SpectrumBuff[FFT_SPECTRUM_SIZE * 2] = { 0 };
-static float __attribute__((section (".user_sdram"))) testOutput[FFT_SPECTRUM_SIZE] = { 0 };
+#define FFT_AUDIO_SIZE 128 //512 => 256 => 128 (LEFT CHANNEL )
+#define FFT_SPECTRUM_SIZE FFT_AUDIO_SIZE *FFT_SPECTRUM_STEP
+static float __attribute__((section(".user_sdram"))) SpectrumBuff[FFT_SPECTRUM_SIZE * 2] = {0};
+static float __attribute__((section(".user_sdram"))) testOutput[FFT_SPECTRUM_SIZE] = {0};
 //static float __attribute__((section (".user_sdram"))) windowData[FFT_AUDIO_SIZE] = { 0 };
 
 //EXIT, SAVECONFIG, BPF, LPF, HPF, SSB
@@ -124,70 +120,68 @@ void SetCenterFrequency(arm_biquad_cascade_df2T_instance_f32 instMain, arm_biqua
 #define FILTER_MINIMUM_FREQ 300
 #define FILTER_MAXIMUM_FREQ 3000
 
-
 //Draw ImageButton
 //BOTTOM
-#define MENU_EXIT         0
-#define MENU_SAVECONFIG   1
-#define MENU_BPF          2
-#define MENU_USERFILTER   3      //Probe Select Down
-#define MENU_BYPASS       4      //Probe Select Up
+#define MENU_EXIT 0
+#define MENU_SAVECONFIG 1
+#define MENU_BPF 2
+#define MENU_USERFILTER 3 //Probe Select Down
+#define MENU_BYPASS 4     //Probe Select Up
 
 //RIGHT
-#define MENU_AFFREQDOWN   5     //-Hz Center Freq
-#define MENU_AFFREQUP     6     //+Hz Center Freq
+#define MENU_AFFREQDOWN 5 //-Hz Center Freq
+#define MENU_AFFREQUP 6   //+Hz Center Freq
 
 //FREQ SELECT MENU
-#define MENU_TOP1         9
-#define MENU_TOP2        10
-#define MENU_TOP3        11
-#define MENU_TOP4        12
+#define MENU_TOP1 9
+#define MENU_TOP2 10
+#define MENU_TOP3 11
+#define MENU_TOP4 12
 
-#define dspMenus_Length   7
+#define dspMenus_Length 7
 
 const int dspMenus[dspMenus_Length][4] = {
-#define FREQ_MENU_TOP  95
-#define TOP_MENU_TOP    0
-#define FREQ_INFO_TOP  80
+#define FREQ_MENU_TOP 95
+#define TOP_MENU_TOP 0
+#define FREQ_INFO_TOP 80
 
-//BOTTOM MENU (5)
-{0,   237,     0 + 80,    280},    //Exit
-{80,  237,    80 + 100,   280},    //Menu1
-{180, 237,   180 + 100,   280},    //Menu2
-{280, 237,   280 + 100,   280},    //Menu3
-{380, 237,   380 + 100,   280},    //Menu4
+    //BOTTOM MENU (5)
+    {0, 237, 0 + 80, 280},      //Exit
+    {80, 237, 80 + 100, 280},   //Menu1
+    {180, 237, 180 + 100, 280}, //Menu2
+    {280, 237, 280 + 100, 280}, //Menu3
+    {380, 237, 380 + 100, 280}, //Menu4
 
-//AF MENU
-{280, 195,   280 + 100,   236},    //AFMENU0
-{380, 195,   380 + 100,   236},    //AFMENU1
+    //AF MENU
+    {280, 195, 280 + 100, 236}, //AFMENU0
+    {380, 195, 380 + 100, 236}, //AFMENU1
 
-//FREQ MENU (4)
-//{ 80, FREQ_MENU_TOP, 180, FREQ_MENU_TOP + 37},    //FREQ2 //Before Band
-//{180, FREQ_MENU_TOP, 280, FREQ_MENU_TOP + 37},    //FREQ3 //Next Band
+    //FREQ MENU (4)
+    //{ 80, FREQ_MENU_TOP, 180, FREQ_MENU_TOP + 37},    //FREQ2 //Before Band
+    //{180, FREQ_MENU_TOP, 280, FREQ_MENU_TOP + 37},    //FREQ3 //Next Band
 
-//TOP MENU PROTOCOL (5)
-//{ 80, TOP_MENU_TOP, 180, TOP_MENU_TOP + 37},    //FREQ2 //WSPR
-//{180, TOP_MENU_TOP, 280, TOP_MENU_TOP + 37},    //FREQ3 //FT8
-//{280, TOP_MENU_TOP, 380, TOP_MENU_TOP + 37},    //FREQ4 //JT65
-//{380, TOP_MENU_TOP, 480, TOP_MENU_TOP + 37},    //FREQ5 //JT9
+    //TOP MENU PROTOCOL (5)
+    //{ 80, TOP_MENU_TOP, 180, TOP_MENU_TOP + 37},    //FREQ2 //WSPR
+    //{180, TOP_MENU_TOP, 280, TOP_MENU_TOP + 37},    //FREQ3 //FT8
+    //{280, TOP_MENU_TOP, 380, TOP_MENU_TOP + 37},    //FREQ4 //JT65
+    //{380, TOP_MENU_TOP, 480, TOP_MENU_TOP + 37},    //FREQ5 //JT9
 
 };
 
 //uint8_t isOnAir = 1;
 
-
-#define DSP_FILTER_NONE     0
-#define DSP_FILTER_BPF      1
-#define DSP_FILTER_USER     2
+#define DSP_FILTER_NONE 0
+#define DSP_FILTER_BPF 1
+#define DSP_FILTER_USER 2
 
 //for FILTER
-#define DSP_FILTER_BYPASS   0
-#define DSP_FILTER_BPF_50   1
-#define DSP_FILTER_BPF_100  2
-#define DSP_FILTER_BPF_150  3
-#define DSP_FILTER_LPF      4
-#define DSP_FILTER_HPF      5
-#define DSP_FILTER_SSB      10   //DUAL LPF, HPF
+#define DSP_FILTER_BYPASS 0
+#define DSP_FILTER_BPF_50 1
+#define DSP_FILTER_BPF_100 2
+#define DSP_FILTER_BPF_150 3
+#define DSP_FILTER_LPF 4
+#define DSP_FILTER_HPF 5
+#define DSP_FILTER_SSB 10 //DUAL LPF, HPF
 
 //Filter Type
 /*
@@ -201,15 +195,15 @@ int filterApplyFreq2    = 200;  //HPF           //9~12
 int userFilterHalfWidth = 100;                  //13~16
 */
 
-static char g_dsp_data[20]  = {0};
-uint8_t *DSP_OUT_VOL        = &g_dsp_data[0];                //0
-uint8_t *isTmpMute          = &g_dsp_data[1];                  //1
-uint8_t *nowSelectedFilter  = &g_dsp_data[2];    //2
-uint8_t *nowBPFFilterIndex  = &g_dsp_data[3];  //              //3
-uint8_t *filterType         = &g_dsp_data[4];  //4
-int *filterApplyFreq1 	    = (int *)&g_dsp_data[5];                 //5~8
-int *filterApplyFreq2       = (int *)&g_dsp_data[9];  //HPF           //9~12
-int *userFilterHalfWidth    = (int *)&g_dsp_data[13];                  //13~16
+static char g_dsp_data[20] = {0};
+uint8_t *DSP_OUT_VOL = &g_dsp_data[0];             //0
+uint8_t *isTmpMute = &g_dsp_data[1];               //1
+uint8_t *nowSelectedFilter = &g_dsp_data[2];       //2
+uint8_t *nowBPFFilterIndex = &g_dsp_data[3];       //              //3
+uint8_t *filterType = &g_dsp_data[4];              //4
+int *filterApplyFreq1 = (int *)&g_dsp_data[5];     //5~8
+int *filterApplyFreq2 = (int *)&g_dsp_data[9];     //HPF           //9~12
+int *userFilterHalfWidth = (int *)&g_dsp_data[13]; //13~16
 
 #include "ff.h"
 #include "crash.h"
@@ -218,7 +212,7 @@ static const char *g_dsp_fpath = "/aa/audiodsp.bin";
 void DSP_StoredInformatoin(void)
 {
     FRESULT res;
-    FIL fo = { 0 };
+    FIL fo = {0};
     res = f_open(&fo, g_dsp_fpath, FA_OPEN_ALWAYS | FA_WRITE);
     if (FR_OK == res)
     {
@@ -228,11 +222,10 @@ void DSP_StoredInformatoin(void)
     }
 }
 
-
 void DSP_LoadInformation(void)
 {
     FRESULT res;
-    FIL fo = { 0 };
+    FIL fo = {0};
 
     FILINFO finfo;
     res = f_stat(g_dsp_fpath, &finfo);
@@ -249,26 +242,24 @@ void DSP_LoadInformation(void)
     }
 
     //Default Setting
-    if ((*DSP_OUT_VOL < 10) || (*DSP_OUT_VOL > 256) || (*filterApplyFreq1) < 200 || (*filterApplyFreq2 < 200))  //Not Load Configuration
+    if ((*DSP_OUT_VOL < 10) || (*DSP_OUT_VOL > 256) || (*filterApplyFreq1) < 200 || (*filterApplyFreq2 < 200)) //Not Load Configuration
     {
-        *DSP_OUT_VOL         = 100;                //0
-        *nowSelectedFilter   = DSP_FILTER_NONE;    //2
-        *nowBPFFilterIndex   = 0;  //              //3
-        *filterType          = DSP_FILTER_BYPASS;  //4
-        *filterApplyFreq1 	= 1000;                 //5~8
-        *filterApplyFreq2    = 500;  //HPF           //9~12
-        *userFilterHalfWidth = 500;                  //13~16
+        *DSP_OUT_VOL = 100;                   //0
+        *nowSelectedFilter = DSP_FILTER_NONE; //2
+        *nowBPFFilterIndex = 0;               //              //3
+        *filterType = DSP_FILTER_BYPASS;      //4
+        *filterApplyFreq1 = 1000;             //5~8
+        *filterApplyFreq2 = 500;              //HPF           //9~12
+        *userFilterHalfWidth = 500;           //13~16
     }
 
-    *isTmpMute         = 0;                  //1
-
-
+    *isTmpMute = 0; //1
 }
 
 //==============================================================================
 //DISPLAY Protocol Information
 //------------------------------------------------------------------------------
-#define INFO_TOP   130
+#define INFO_TOP 130
 #define INFO_LINE2 183
 
 //#define TITLE_COLOR LCD_RGB(0, 63, 119)
@@ -279,11 +270,11 @@ void dspMenuDraw(void)
     uint32_t LCSaveColor = TextColor;
 
     //Bottom Menu
-    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_EXIT  ][BUTTON_LEFT], dspMenus[MENU_EXIT  ][BUTTON_TOP]), imgbtn_home2, imgbtn_home2_size);
-    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_SAVECONFIG  ][BUTTON_LEFT], dspMenus[MENU_SAVECONFIG  ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_BPF  ][BUTTON_LEFT], dspMenus[MENU_BPF  ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_USERFILTER  ][BUTTON_LEFT], dspMenus[MENU_USERFILTER  ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_BYPASS    ][BUTTON_LEFT], dspMenus[MENU_BYPASS    ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_EXIT][BUTTON_LEFT], dspMenus[MENU_EXIT][BUTTON_TOP]), imgbtn_home2, imgbtn_home2_size);
+    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_SAVECONFIG][BUTTON_LEFT], dspMenus[MENU_SAVECONFIG][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_BPF][BUTTON_LEFT], dspMenus[MENU_BPF][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_USERFILTER][BUTTON_LEFT], dspMenus[MENU_USERFILTER][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_BYPASS][BUTTON_LEFT], dspMenus[MENU_BYPASS][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
 
     //Draw Text on Empty Button
     FONT_Write(FONT_FRAN, TextColor, 0, dspMenus[MENU_SAVECONFIG][BUTTON_LEFT] + 10, dspMenus[MENU_SAVECONFIG][BUTTON_TOP] + 10, "Save Config");
@@ -304,7 +295,6 @@ void dspMenuDraw(void)
         sprintf(bpfBuff, "BPF(150Hz)");
     }
 
-
     FONT_Write(FONT_FRAN, *nowSelectedFilter == DSP_FILTER_BPF ? SELECT_FREQ_COLOR : TextColor, 0, dspMenus[MENU_BPF][BUTTON_LEFT] + 20, dspMenus[MENU_BPF][BUTTON_TOP] + 10, bpfBuff);
     LCD_FillRect(LCD_MakePoint(dspMenus[MENU_BPF][BUTTON_LEFT] + 5, dspMenus[MENU_BPF][BUTTON_TOP] + 8),
                  LCD_MakePoint(dspMenus[MENU_BPF][BUTTON_LEFT] + 15, dspMenus[MENU_BPF][BUTTON_TOP] + 27), *nowSelectedFilter == DSP_FILTER_BPF ? LCD_BLUE : LCD_RGB(50, 50, 50));
@@ -318,14 +308,12 @@ void dspMenuDraw(void)
     LCD_FillRect(LCD_MakePoint(dspMenus[MENU_BYPASS][BUTTON_LEFT] + 5, dspMenus[MENU_BYPASS][BUTTON_TOP] + 8),
                  LCD_MakePoint(dspMenus[MENU_BYPASS][BUTTON_LEFT] + 15, dspMenus[MENU_BYPASS][BUTTON_TOP] + 27), *nowSelectedFilter == DSP_FILTER_NONE ? LCD_BLUE : LCD_RGB(50, 50, 50));
 
-
     //Freq Menu
     LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_AFFREQDOWN][BUTTON_LEFT], dspMenus[MENU_AFFREQDOWN][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
     LCD_DrawBitmap(LCD_MakePoint(dspMenus[MENU_AFFREQUP][BUTTON_LEFT], dspMenus[MENU_AFFREQUP][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
     FONT_Write(FONT_FRAN, TextColor, 0, dspMenus[MENU_AFFREQDOWN][BUTTON_LEFT] + 10, dspMenus[MENU_AFFREQDOWN][BUTTON_TOP] + 10, "Fine Tune -1Hz");
     FONT_Write(FONT_FRAN, TextColor, 0, dspMenus[MENU_AFFREQUP][BUTTON_LEFT] + 10, dspMenus[MENU_AFFREQUP][BUTTON_TOP] + 10, "Fine Tune +1Hz");
 }
-
 
 void ApplyBiquad(int fltType, arm_biquad_cascade_df2T_instance_f32 instMain, arm_biquad_cascade_df2T_instance_f32 instSecond, q15_t *srcBuff, q15_t *destBuff)
 {
@@ -340,132 +328,131 @@ void ApplyBiquad(int fltType, arm_biquad_cascade_df2T_instance_f32 instMain, arm
         srcBuff[i * 2 + 1] = 0;
     }
 
-	if (fltType == DSP_FILTER_BYPASS)
-	{
-		//bypass
-		memcpy(destBuff, srcBuff, AUDIO_BUFF_SIZE);	//512
-	}
-	else if (fltType == DSP_FILTER_SSB)
-	{
-		arm_q15_to_float (srcBuff, (float32_t *)float_buffer_in, iirLength);
-		//Apply Main Filter
-		arm_biquad_cascade_df2T_f32(&instMain, (float32_t *)float_buffer_in, (float32_t *)float_buffer_out, iirLength);
+    if (fltType == DSP_FILTER_BYPASS)
+    {
+        //bypass
+        memcpy(destBuff, srcBuff, AUDIO_BUFF_SIZE); //512
+    }
+    else if (fltType == DSP_FILTER_SSB)
+    {
+        arm_q15_to_float(srcBuff, (float32_t *)float_buffer_in, iirLength);
+        //Apply Main Filter
+        arm_biquad_cascade_df2T_f32(&instMain, (float32_t *)float_buffer_in, (float32_t *)float_buffer_out, iirLength);
 
-		//Apply Second Filter
-		arm_biquad_cascade_df2T_f32(&instSecond, (float32_t *)float_buffer_out, (float32_t *)float_buffer_in, iirLength);
-		arm_float_to_q15 ((float32_t *)float_buffer_in, destBuff, iirLength);
-	}
-	else
-	{
-		//Just Main Filterring
-		//Apply Main Filter
-		arm_q15_to_float (srcBuff, (float32_t *)float_buffer_in, iirLength);
-		arm_biquad_cascade_df2T_f32(&instMain, (float32_t *)float_buffer_in, (float32_t *)float_buffer_out, iirLength);
-		arm_float_to_q15 ((float32_t *)float_buffer_out, destBuff, iirLength);
-	}
+        //Apply Second Filter
+        arm_biquad_cascade_df2T_f32(&instSecond, (float32_t *)float_buffer_out, (float32_t *)float_buffer_in, iirLength);
+        arm_float_to_q15((float32_t *)float_buffer_in, destBuff, iirLength);
+    }
+    else
+    {
+        //Just Main Filterring
+        //Apply Main Filter
+        arm_q15_to_float(srcBuff, (float32_t *)float_buffer_in, iirLength);
+        arm_biquad_cascade_df2T_f32(&instMain, (float32_t *)float_buffer_in, (float32_t *)float_buffer_out, iirLength);
+        arm_float_to_q15((float32_t *)float_buffer_out, destBuff, iirLength);
+    }
 }
 
 //FILTER INFORMATION
-int FLT_COUNT				        = FLT_LPF_COUNT;
-const int *FLT_INDEXS 	            = FLT_LPF_INDEX;
+int FLT_COUNT = FLT_LPF_COUNT;
+const int *FLT_INDEXS = FLT_LPF_INDEX;
 //const float (*APPLY_FILTER)[30]     = FLT_LPF;
 //uint32_t FLT_MINFREQ 		        = FLT_LPF_MINFREQ;
 //uint32_t FLT_MAXFREQ 		        = FLT_LPF_MAXFREQ;
 //const float (*APPLY_FILTER_HPF)[30]	= FLT_HPF;
 
-int filterStartIndex 	= (1000 - 50) / FFT_BIN_FREQ;
-int filterEndIndex 	    = (1000 + 50) / FFT_BIN_FREQ;
+int filterStartIndex = (1000 - 50) / FFT_BIN_FREQ;
+int filterEndIndex = (1000 + 50) / FFT_BIN_FREQ;
 int filterStartIndexMin = (1000 - 50) / FFT_BIN_FREQ;
-int filterEndIndexMax 	= (1000 + 50) / FFT_BIN_FREQ;
+int filterEndIndexMax = (1000 + 50) / FFT_BIN_FREQ;
 
 int findCenterFreq(int targetFreq)
 {
-	if (targetFreq <= FLT_INDEXS[0])
-	{
-		return 0;
-	}
-	else if (targetFreq >= FLT_INDEXS[FLT_COUNT -1])
-	{
-		return FLT_COUNT -1;
-	}
+    if (targetFreq <= FLT_INDEXS[0])
+    {
+        return 0;
+    }
+    else if (targetFreq >= FLT_INDEXS[FLT_COUNT - 1])
+    {
+        return FLT_COUNT - 1;
+    }
 
-	for (int i = FLT_COUNT - 1; i >= 0; i--)
-	{
-		if (FLT_INDEXS[i] <= targetFreq)
-		{
-			return i;
-		}
-	}
-	return 0;
+    for (int i = FLT_COUNT - 1; i >= 0; i--)
+    {
+        if (FLT_INDEXS[i] <= targetFreq)
+        {
+            return i;
+        }
+    }
+    return 0;
 }
 
-
-float FloatInterpolation(float y1, float y2, float y3, 				//values for frequencies x1, x2, x3
-                         float x1, float x2, float x3,      //frequencies of respective y values
-                         float x) //Frequency between x2 and x3 where we want to interpolate result
+float FloatInterpolation(float y1, float y2, float y3, //values for frequencies x1, x2, x3
+                         float x1, float x2, float x3, //frequencies of respective y values
+                         float x)                      //Frequency between x2 and x3 where we want to interpolate result
 {
-	float a = ((y3 - y2) / (x3 - x2) - (y2 - y1) / (x2 - x1)) / (x3 - x1);
-	float b = ((y3 - y2) / (x3 - x2) * (x2 - x1) + (y2 - y1) / (x2 - x1) * (x3 - x2)) / (x3 - x1);
-	float res = a * powf(x - x2, 2.0) + b * (x - x2) + y2;
+    float a = ((y3 - y2) / (x3 - x2) - (y2 - y1) / (x2 - x1)) / (x3 - x1);
+    float b = ((y3 - y2) / (x3 - x2) * (x2 - x1) + (y2 - y1) / (x2 - x1) * (x3 - x2)) / (x3 - x1);
+    float res = a * powf(x - x2, 2.0) + b * (x - x2) + y2;
 
-	return res;
+    return res;
 }
 
 void ApplyCoeffs(uint32_t targetFreq)
 {
-	int x1, x2 , x3;
-	float y1, y2, y3;
+    int x1, x2, x3;
+    float y1, y2, y3;
 
-  int baseIndex = findCenterFreq(targetFreq);
+    int baseIndex = findCenterFreq(targetFreq);
 
-	if (baseIndex == 0)
-	{
-		baseIndex = 1;
-	}
-	else if (baseIndex >= FLT_COUNT -1)
-	{
-		baseIndex = FLT_COUNT -2;
-	}
+    if (baseIndex == 0)
+    {
+        baseIndex = 1;
+    }
+    else if (baseIndex >= FLT_COUNT - 1)
+    {
+        baseIndex = FLT_COUNT - 2;
+    }
 
-	x1 = FLT_INDEXS[baseIndex -1];
-	x2 = FLT_INDEXS[baseIndex];
-	x3 = FLT_INDEXS[baseIndex +1];
+    x1 = FLT_INDEXS[baseIndex - 1];
+    x2 = FLT_INDEXS[baseIndex];
+    x3 = FLT_INDEXS[baseIndex + 1];
 
-	for (int i = 0; i < 30; i++)
-	{
+    for (int i = 0; i < 30; i++)
+    {
         if (*filterType == DSP_FILTER_BPF_50)
         {
-            y1 = FLT_BPF_50[baseIndex -1][i];
+            y1 = FLT_BPF_50[baseIndex - 1][i];
             y2 = FLT_BPF_50[baseIndex][i];
-            y3 = FLT_BPF_50[baseIndex +1][i];
+            y3 = FLT_BPF_50[baseIndex + 1][i];
         }
         else if (*filterType == DSP_FILTER_BPF_100)
         {
-            y1 = FLT_BPF_100[baseIndex -1][i];
+            y1 = FLT_BPF_100[baseIndex - 1][i];
             y2 = FLT_BPF_100[baseIndex][i];
-            y3 = FLT_BPF_100[baseIndex +1][i];
+            y3 = FLT_BPF_100[baseIndex + 1][i];
         }
         else if (*filterType == DSP_FILTER_BPF_150)
         {
-            y1 = FLT_BPF_150[baseIndex -1][i];
+            y1 = FLT_BPF_150[baseIndex - 1][i];
             y2 = FLT_BPF_150[baseIndex][i];
-            y3 = FLT_BPF_150[baseIndex +1][i];
+            y3 = FLT_BPF_150[baseIndex + 1][i];
         }
         else if (*filterType == DSP_FILTER_LPF || *filterType == DSP_FILTER_SSB)
         {
-            y1 = FLT_LPF[baseIndex -1][i];
+            y1 = FLT_LPF[baseIndex - 1][i];
             y2 = FLT_LPF[baseIndex][i];
-            y3 = FLT_LPF[baseIndex +1][i];
+            y3 = FLT_LPF[baseIndex + 1][i];
         }
         else if (*filterType == DSP_FILTER_HPF)
         {
-            y1 = FLT_HPF[baseIndex -1][i];
+            y1 = FLT_HPF[baseIndex - 1][i];
             y2 = FLT_HPF[baseIndex][i];
-            y3 = FLT_HPF[baseIndex +1][i];
+            y3 = FLT_HPF[baseIndex + 1][i];
         }
 
-		iirCoeffBuff[i] = FloatInterpolation(y1, y2, y3, x1, x2, x3,targetFreq);
-	}
+        iirCoeffBuff[i] = FloatInterpolation(y1, y2, y3, x1, x2, x3, targetFreq);
+    }
 
     char buff[64];
     char buffInfo[64];
@@ -491,9 +478,9 @@ void ApplyCoeffs(uint32_t targetFreq)
     LCD_FillRect(LCD_MakePoint(0, 190), LCD_MakePoint(275, 234), LCD_RGB(8, 34, 47));
 
     LCD_HLine(LCD_MakePoint(0, 190), 479, LCD_BLACK);
-    LCD_VLine(LCD_MakePoint(0, 190),  235, LCD_BLACK);
+    LCD_VLine(LCD_MakePoint(0, 190), 235, LCD_BLACK);
     LCD_HLine(LCD_MakePoint(0, 234), 479, LCD_WHITE);
-    LCD_VLine(LCD_MakePoint(479, 234),  234, LCD_WHITE);
+    LCD_VLine(LCD_MakePoint(479, 234), 234, LCD_WHITE);
 
     FONT_Write(FONT_FRAN, TextColor, 0, 10, 191, buffInfo);
     FONT_Write(FONT_FRANBIG, TextColor, 0, 10, 202, buff);
@@ -501,71 +488,70 @@ void ApplyCoeffs(uint32_t targetFreq)
 
 void ApplyCoeffs_HPF(uint32_t targetFreq)
 {
-	int x1, x2 , x3;
+    int x1, x2, x3;
 
-  int baseIndex = findCenterFreq(targetFreq);
+    int baseIndex = findCenterFreq(targetFreq);
 
-	if (baseIndex == 0)
-	{
-		baseIndex = 1;
-	}
-	else if (baseIndex >= FLT_COUNT -1)
-	{
-		baseIndex = FLT_COUNT -2;
-	}
+    if (baseIndex == 0)
+    {
+        baseIndex = 1;
+    }
+    else if (baseIndex >= FLT_COUNT - 1)
+    {
+        baseIndex = FLT_COUNT - 2;
+    }
 
-	x1 = FLT_INDEXS[baseIndex -1];
-	x2 = FLT_INDEXS[baseIndex];
-	x3 = FLT_INDEXS[baseIndex +1];
-	for (int i = 0; i < 30; i++)
-	{
-		iirCoeffBuff_HPF[i] = FloatInterpolation(FLT_HPF[baseIndex -1][i], FLT_HPF[baseIndex][i], FLT_HPF[baseIndex +1][i],
-			x1, x2, x3,targetFreq);
-	}
+    x1 = FLT_INDEXS[baseIndex - 1];
+    x2 = FLT_INDEXS[baseIndex];
+    x3 = FLT_INDEXS[baseIndex + 1];
+    for (int i = 0; i < 30; i++)
+    {
+        iirCoeffBuff_HPF[i] = FloatInterpolation(FLT_HPF[baseIndex - 1][i], FLT_HPF[baseIndex][i], FLT_HPF[baseIndex + 1][i],
+                                                 x1, x2, x3, targetFreq);
+    }
 }
 
 void SetFFTFilter(uint8_t newFilter, arm_biquad_cascade_df2T_instance_f32 instMain, arm_biquad_cascade_df2T_instance_f32 instSecond)
 {
     if (newFilter == DSP_FILTER_BPF_50)
     {
-        FLT_COUNT				= FLT_BPF_50_COUNT;
-        FLT_INDEXS 			    = FLT_BPF_50_INDEX;
+        FLT_COUNT = FLT_BPF_50_COUNT;
+        FLT_INDEXS = FLT_BPF_50_INDEX;
         //FLT_MINFREQ 		    = FLT_BPF_50_MINFREQ;
         //FLT_MAXFREQ 		    = FLT_BPF_50_MAXFREQ;
-
     }
     else if (newFilter == DSP_FILTER_BPF_100)
     {
-        FLT_COUNT				= FLT_BPF_100_COUNT;
-        FLT_INDEXS 			    = FLT_BPF_100_INDEX;
+        FLT_COUNT = FLT_BPF_100_COUNT;
+        FLT_INDEXS = FLT_BPF_100_INDEX;
         //FLT_MINFREQ 		    = FLT_BPF_100_MINFREQ;
         //FLT_MAXFREQ 		    = FLT_BPF_100_MAXFREQ;
     }
     else if (newFilter == DSP_FILTER_BPF_150)
     {
-        FLT_COUNT				= FLT_BPF_150_COUNT;
-        FLT_INDEXS 			    = FLT_BPF_150_INDEX;
+        FLT_COUNT = FLT_BPF_150_COUNT;
+        FLT_INDEXS = FLT_BPF_150_INDEX;
         //FLT_MINFREQ 		    = FLT_BPF_150_MINFREQ;
         //FLT_MAXFREQ 		    = FLT_BPF_150_MAXFREQ;
     }
     else if (newFilter == DSP_FILTER_LPF)
     {
-        FLT_COUNT				= FLT_LPF_COUNT;
-        FLT_INDEXS 			    = FLT_LPF_INDEX;
+        FLT_COUNT = FLT_LPF_COUNT;
+        FLT_INDEXS = FLT_LPF_INDEX;
         //FLT_MINFREQ 		    = FLT_LPF_MINFREQ;
         //FLT_MAXFREQ 		    = FLT_LPF_MAXFREQ;
     }
     else if (newFilter == DSP_FILTER_HPF)
     {
-        FLT_COUNT				= FLT_HPF_COUNT;
-        FLT_INDEXS 			    = FLT_HPF_INDEX;
+        FLT_COUNT = FLT_HPF_COUNT;
+        FLT_INDEXS = FLT_HPF_INDEX;
         //FLT_MINFREQ 		    = FLT_HPF_MINFREQ;
         //FLT_MAXFREQ 		    = FLT_HPF_MAXFREQ;
     }
     else if (newFilter == DSP_FILTER_SSB)
     {
-        FLT_COUNT				= FLT_LPF_COUNT;
-        FLT_INDEXS 			    = FLT_LPF_INDEX;
+        FLT_COUNT = FLT_LPF_COUNT;
+        FLT_INDEXS = FLT_LPF_INDEX;
         //FLT_MINFREQ 		    = FLT_LPF_MINFREQ;
         //FLT_MAXFREQ 		    = FLT_LPF_MAXFREQ;
 
@@ -584,9 +570,8 @@ void SetFFTFilter(uint8_t newFilter, arm_biquad_cascade_df2T_instance_f32 instMa
     dspMenuDraw();
 }
 
-
-extern void BSP_LCD_HLineShift(uint16_t startYY, uint16_t endYY, uint16_t startXX,  uint16_t endXX);
-extern void BSP_LCD_DrawColorLine(uint16_t posYY, uint16_t startXX,  uint16_t endXX, uint32_t *lineColorInfoBuff);
+extern void BSP_LCD_HLineShift(uint16_t startYY, uint16_t endYY, uint16_t startXX, uint16_t endXX);
+extern void BSP_LCD_DrawColorLine(uint16_t posYY, uint16_t startXX, uint16_t endXX, uint32_t *lineColorInfoBuff);
 
 uint32_t GetWaterfallColor(uint32_t fftLevel)
 {
@@ -612,15 +597,13 @@ uint32_t GetWaterfallColor(uint32_t fftLevel)
     }
 }
 
-
-
 #include "arm_const_structs.h"
 
 int spectrumStep = 0;
 //uint32_t lineColorInfoBuff[480];
 uint32_t lineColorInfoBuff[480];
 
-extern void BSP_LCD_Draw2ColorVLine(uint16_t Xpos, uint16_t posYY0, uint32_t RGB_Code0, uint16_t posYY1, uint32_t RGB_Code1, uint16_t posYY2 );
+extern void BSP_LCD_Draw2ColorVLine(uint16_t Xpos, uint16_t posYY0, uint32_t RGB_Code0, uint16_t posYY1, uint32_t RGB_Code1, uint16_t posYY2);
 
 void DrawSpectrum(int16_t *inBuff)
 {
@@ -628,9 +611,9 @@ void DrawSpectrum(int16_t *inBuff)
     if (spectrumStep < FFT_SPECTRUM_STEP)
     {
         int buffIndex = spectrumStep * FFT_AUDIO_SIZE * 2;
-        for (int i = 0; i < FFT_AUDIO_SIZE; i++)    //HALF -> COMPLETE
+        for (int i = 0; i < FFT_AUDIO_SIZE; i++) //HALF -> COMPLETE
         {
-            SpectrumBuff[buffIndex + i * 2] = inBuff[i * 2];// * windowData[i];   //1 Channel of streo => Good!!!
+            SpectrumBuff[buffIndex + i * 2] = inBuff[i * 2]; // * windowData[i];   //1 Channel of streo => Good!!!
             SpectrumBuff[buffIndex + i * 2 + 1] = 0;
         }
     }
@@ -639,11 +622,10 @@ void DrawSpectrum(int16_t *inBuff)
 
     if (spectrumStep == FFT_SPECTRUM_STEP + 1)
     {
-#define LCD_WATER_RGB(r, g, b) ((LCDColor) ( 0xFF000000ul | \
-                             (( ((uint32_t)(r)) & 0xFF) << 16) |  \
-                             (( ((uint32_t)(g)) & 0xFF) << 8) |   \
-                             (  ((uint32_t)(b)) & 0xFF)           \
-                         ))
+#define LCD_WATER_RGB(r, g, b) ((LCDColor)(0xFF000000ul |                     \
+                                           ((((uint32_t)(r)) & 0xFF) << 16) | \
+                                           ((((uint32_t)(g)) & 0xFF) << 8) |  \
+                                           (((uint32_t)(b)) & 0xFF)))
 
         arm_cfft_f32(&arm_cfft_sR_f32_len2048, SpectrumBuff, 0, 1);
         arm_cmplx_mag_f32(SpectrumBuff, testOutput, FFT_SPECTRUM_SIZE);
@@ -665,8 +647,8 @@ void DrawSpectrum(int16_t *inBuff)
     {
         //Display Graph
         int dispIndex = spectrumStep - (FFT_SPECTRUM_STEP + 2);
-        #define DISP_LINE_BY_STEP   48 //120
-        #define MAX_DISP_INDEX      10  //4
+#define DISP_LINE_BY_STEP 48 //120
+#define MAX_DISP_INDEX 10    //4
 
         if (dispIndex < MAX_DISP_INDEX)
         {
@@ -674,8 +656,8 @@ void DrawSpectrum(int16_t *inBuff)
             {
                 int pixelIndex = dispIndex * DISP_LINE_BY_STEP + i;
 
-                uint32_t FFT_BACK_COLOR     = LCD_BLACK;
-                uint32_t FFT_GRAPH_COLOR    = LCD_WHITE;
+                uint32_t FFT_BACK_COLOR = LCD_BLACK;
+                uint32_t FFT_GRAPH_COLOR = LCD_WHITE;
 
                 if (*filterType != DSP_FILTER_BYPASS)
                 {
@@ -684,21 +666,21 @@ void DrawSpectrum(int16_t *inBuff)
                     {
                         //FFT_BACK_COLOR     = LCD_RGB(59, 59, 59);
                         //FFT_BACK_COLOR     = LCD_RGB(80, 90, 233);
-                        FFT_BACK_COLOR     = LCD_RGB(59, 59, 143);
+                        FFT_BACK_COLOR = LCD_RGB(59, 59, 143);
                         //FFT_GRAPH_COLOR    = LCD_RGB(255, 127, 39);
-                        FFT_GRAPH_COLOR    = LCD_RGB(230, 70, 70);
+                        FFT_GRAPH_COLOR = LCD_RGB(230, 70, 70);
                     }
                     else if (filterStartIndexMin <= pixelIndex && filterEndIndexMax >= pixelIndex)
                     {
-                        FFT_BACK_COLOR     = LCD_RGB(30, 30, 30);
-                        FFT_GRAPH_COLOR    = LCD_RGB(255, 127, 39);
+                        FFT_BACK_COLOR = LCD_RGB(30, 30, 30);
+                        FFT_GRAPH_COLOR = LCD_RGB(255, 127, 39);
                     }
-                }   //end of if
+                } //end of if
 
                 BSP_LCD_Draw2ColorVLine(pixelIndex, 0, FFT_BACK_COLOR, GRAPH_BOTTOM - testOutput[pixelIndex], FFT_GRAPH_COLOR, GRAPH_BOTTOM);
             }
 
-            BSP_LCD_HLineShift(GRAPH_WATERFALL_TOP, GRAPH_WATERFALL_BOTTOM, dispIndex * DISP_LINE_BY_STEP, dispIndex * DISP_LINE_BY_STEP + DISP_LINE_BY_STEP -1);
+            BSP_LCD_HLineShift(GRAPH_WATERFALL_TOP, GRAPH_WATERFALL_BOTTOM, dispIndex * DISP_LINE_BY_STEP, dispIndex * DISP_LINE_BY_STEP + DISP_LINE_BY_STEP - 1);
         }
         else
         {
@@ -706,20 +688,18 @@ void DrawSpectrum(int16_t *inBuff)
             //LCD_RGB(100, 100, 200);
 
             //BSP_LCD_HLineShift(GRAPH_BOTTOM + 1, 150, 0, 479);
-            BSP_LCD_DrawColorLine(GRAPH_WATERFALL_TOP, 0,  479, lineColorInfoBuff);
+            BSP_LCD_DrawColorLine(GRAPH_WATERFALL_TOP, 0, 479, lineColorInfoBuff);
 
             spectrumStep = 0;
         }
-
     }
 }
 
-
 void DrawFFTSpectrumLayout()
 {
-    #define METER_H_LINE_COLOR LCD_RGB(255, 127, 39)
+#define METER_H_LINE_COLOR LCD_RGB(255, 127, 39)
     char aBuff[32];
-    LCD_FillRect(LCD_MakePoint(0, GRAPH_BOTTOM + 1), LCD_MakePoint(479, GRAPH_BOTTOM + METER_HEIGHT -1), LCD_BLACK);
+    LCD_FillRect(LCD_MakePoint(0, GRAPH_BOTTOM + 1), LCD_MakePoint(479, GRAPH_BOTTOM + METER_HEIGHT - 1), LCD_BLACK);
     LCD_Line(LCD_MakePoint(0, GRAPH_BOTTOM + 1), LCD_MakePoint(479, GRAPH_BOTTOM + 1), METER_H_LINE_COLOR);
     //LCD_Line(LCD_MakePoint(0, GRAPH_BOTTOM + METER_HEIGHT -1), LCD_MakePoint(479, GRAPH_BOTTOM + METER_HEIGHT -1), METER_H_LINE_COLOR);
     //LCD_FillRect(LCD_MakePoint(0, GRAPH_BOTTOM + 1), LCD_MakePoint(479, GRAPH_BOTTOM + 10), LCD_BLACK);
@@ -794,7 +774,7 @@ void SetCenterFrequency(arm_biquad_cascade_df2T_instance_f32 instMain, arm_biqua
         }
 
         filterStartIndex = (float)newCenterFreqStart / FFT_BIN_FREQ;
-        filterEndIndex = (float)newCenterFreqEnd     / FFT_BIN_FREQ;
+        filterEndIndex = (float)newCenterFreqEnd / FFT_BIN_FREQ;
 
         filterStartIndexMin = filterStartIndex - secondInterval;
         filterEndIndexMax = filterEndIndex + secondInterval;
@@ -864,7 +844,6 @@ void SetNewFreqByTouch(int newFreq, int isCenter, arm_biquad_cascade_df2T_instan
                 }
                 SetCenterFrequency(instMain, instSecond, newFreq, 0);
             }
-
         }
 
         *userFilterHalfWidth = (*filterApplyFreq1 - *filterApplyFreq2) / 2;
@@ -877,7 +856,7 @@ void SetNewFreqByTouch(int newFreq, int isCenter, arm_biquad_cascade_df2T_instan
 
 void AudioDSP_Proc(void)
 {
-    int checkCount = 0;     //Check Measure Interval
+    int checkCount = 0; //Check Measure Interval
     LCDPoint pt;
 
     SetColours();
@@ -890,60 +869,60 @@ void AudioDSP_Proc(void)
     //Load Configuration
     DSP_LoadInformation();
 
-
     DrawFFTSpectrumLayout();
     dspMenuDraw();
 
-    while(TOUCH_IsPressed());
+    while (TOUCH_IsPressed())
+        ;
 
     if (BSP_AUDIO_IN_OUT_Init(INPUT_DEVICE_DIGITAL_MICROPHONE_2, OUTPUT_DEVICE_HEADPHONE, 100, I2S_AUDIOFREQ_16K) == AUDIO_OK)
 
     {
-        #ifdef _DEBUG_UART
+#ifdef _DEBUG_UART
         DBG_Printf("Complete Audio Init...");
-        #endif
+#endif
     }
     else
     {
-        #ifdef _DEBUG_UART
+#ifdef _DEBUG_UART
         DBG_Printf("Failed Init...");
-        #endif
+#endif
     }
 
-    memset((uint16_t*)AUDIO_BUFFER_IN_FLT, 0, AUDIO_BUFF_SIZE * 2);		//Half  (512) -> Complete (512)
-    memset((uint16_t*)AUDIO_BUFFER_OUT_FLT, 0, AUDIO_BUFF_SIZE * 2);		//Half  (512) -> Complete (512)
+    memset((uint16_t *)AUDIO_BUFFER_IN_FLT, 0, AUDIO_BUFF_SIZE * 2);  //Half  (512) -> Complete (512)
+    memset((uint16_t *)AUDIO_BUFFER_OUT_FLT, 0, AUDIO_BUFF_SIZE * 2); //Half  (512) -> Complete (512)
     Audio_Status = AUDIO_TRANSFER_NONE;
 
-    BSP_AUDIO_IN_Record((uint16_t*)AUDIO_BUFFER_IN_FLT, AUDIO_BUFF_SIZE);
+    BSP_AUDIO_IN_Record((uint16_t *)AUDIO_BUFFER_IN_FLT, AUDIO_BUFF_SIZE);
 
     BSP_AUDIO_OUT_SetAudioFrameSlot(CODEC_AUDIOFRAME_SLOT_02);
-    BSP_AUDIO_OUT_Play((uint16_t*)AUDIO_BUFFER_OUT_FLT, AUDIO_BUFF_SIZE * 2);
+    BSP_AUDIO_OUT_Play((uint16_t *)AUDIO_BUFFER_OUT_FLT, AUDIO_BUFF_SIZE * 2);
 
     BSP_AUDIO_IN_SetVolume(100);
     BSP_AUDIO_OUT_SetVolume(*DSP_OUT_VOL);
     BSP_AUDIO_OUT_SetMute(AUDIO_MUTE_OFF);
 
-	arm_biquad_cascade_df2T_instance_f32 instMain;
-	arm_biquad_cascade_df2T_instance_f32 instSecond;
+    arm_biquad_cascade_df2T_instance_f32 instMain;
+    arm_biquad_cascade_df2T_instance_f32 instSecond;
 
-	//uint8_t *filterType = DSP_FILTER_BYPASS;
+    //uint8_t *filterType = DSP_FILTER_BYPASS;
     SetFFTFilter(*filterType, instMain, instSecond);
-	arm_biquad_cascade_df2T_init_f32(&instMain, iirStageCount, iirCoeffBuff, iirStateBuff);
+    arm_biquad_cascade_df2T_init_f32(&instMain, iirStageCount, iirCoeffBuff, iirStateBuff);
 
     ApplyCoeffs_HPF(*filterApplyFreq2);
     arm_biquad_cascade_df2T_init_f32(&instSecond, iirStageCount, iirCoeffBuff_HPF, iirStateBuff_HPF);
 
-    int skipCount = 0;  //for while button process, processing DSP
+    int skipCount = 0; //for while button process, processing DSP
 
-    for(;;)
+    for (;;)
     {
-		while(Audio_Status != AUDIO_TRANSFER_HALF)
-		{
+        while (Audio_Status != AUDIO_TRANSFER_HALF)
+        {
             HAL_Delay(1);
-			__NOP();
-		}
-		Audio_Status = AUDIO_TRANSFER_NONE;	//Receive Start
-		ApplyBiquad(*filterType, instMain, instSecond, AUDIO_BUFFER_IN_FLT, AUDIO_BUFFER_OUT_FLT);
+            __NOP();
+        }
+        Audio_Status = AUDIO_TRANSFER_NONE; //Receive Start
+        ApplyBiquad(*filterType, instMain, instSecond, AUDIO_BUFFER_IN_FLT, AUDIO_BUFFER_OUT_FLT);
         DrawSpectrum(AUDIO_BUFFER_IN_FLT);
 
         if (*isTmpMute > 0)
@@ -956,16 +935,16 @@ void AudioDSP_Proc(void)
             }
         }
 
-		while(Audio_Status != AUDIO_TRANSFER_COMPLETE)
-		{
-			HAL_Delay(1);
-			__NOP();
-		}
+        while (Audio_Status != AUDIO_TRANSFER_COMPLETE)
+        {
+            HAL_Delay(1);
+            __NOP();
+        }
 
-		Audio_Status = AUDIO_TRANSFER_NONE;
+        Audio_Status = AUDIO_TRANSFER_NONE;
 
         DrawSpectrum(&AUDIO_BUFFER_IN_FLT[256]);
-		ApplyBiquad(*filterType, instMain, instSecond, &AUDIO_BUFFER_IN_FLT[256], &AUDIO_BUFFER_OUT_FLT[256]);
+        ApplyBiquad(*filterType, instMain, instSecond, &AUDIO_BUFFER_IN_FLT[256], &AUDIO_BUFFER_OUT_FLT[256]);
 
         //==========================================================================================
         //CHECK INPUT USER BUTTONS
@@ -979,7 +958,7 @@ void AudioDSP_Proc(void)
             {
                 //TRACK_Beep(1);
                 //Chbeck AF Frequency Up And Down / for Continues change
-                if ((touchIndex == MENU_AFFREQDOWN || touchIndex == MENU_AFFREQUP) && (*nowSelectedFilter != DSP_FILTER_NONE))  //+- 10Hz
+                if ((touchIndex == MENU_AFFREQDOWN || touchIndex == MENU_AFFREQUP) && (*nowSelectedFilter != DSP_FILTER_NONE)) //+- 10Hz
                 {
                     if (skipCount < 1)
                     {
@@ -1020,12 +999,13 @@ void AudioDSP_Proc(void)
                     BSP_AUDIO_OUT_SetMute(AUDIO_MUTE_ON);
 
                     TRACK_Beep(1);
-                    while(TOUCH_IsPressed());
+                    while (TOUCH_IsPressed())
+                        ;
                 }
 
                 //while(TOUCH_IsPressed());
 
-                if (touchIndex == MENU_EXIT)    //EXIT
+                if (touchIndex == MENU_EXIT) //EXIT
                 {
                     break;
                 }
@@ -1050,7 +1030,6 @@ void AudioDSP_Proc(void)
                         *filterApplyFreq1 = *filterApplyFreq1 - *userFilterHalfWidth;
                     }
 
-
                     if (*nowBPFFilterIndex == 0)
                         *filterType = DSP_FILTER_BPF_50;
                     else if (*nowBPFFilterIndex == 1)
@@ -1068,18 +1047,18 @@ void AudioDSP_Proc(void)
                         //Adjust
                         if (*nowSelectedFilter == DSP_FILTER_BPF)
                         {
-                            *filterApplyFreq2      =    *filterApplyFreq1 - *userFilterHalfWidth; //HPF
-                            *filterApplyFreq1       =    *filterApplyFreq1 + *userFilterHalfWidth; //LPF
+                            *filterApplyFreq2 = *filterApplyFreq1 - *userFilterHalfWidth; //HPF
+                            *filterApplyFreq1 = *filterApplyFreq1 + *userFilterHalfWidth; //LPF
                         }
 
                         if (*filterApplyFreq2 < FILTER_MINIMUM_FREQ)
                         {
-                            *filterApplyFreq2 = FILTER_MINIMUM_FREQ;  //HPF
+                            *filterApplyFreq2 = FILTER_MINIMUM_FREQ; //HPF
                         }
 
                         if (*filterApplyFreq1 > FILTER_MAXIMUM_FREQ)
                         {
-                            *filterApplyFreq1  =  FILTER_MAXIMUM_FREQ;  //HPF
+                            *filterApplyFreq1 = FILTER_MAXIMUM_FREQ; //HPF
                         }
 
                         *nowSelectedFilter = DSP_FILTER_USER;
@@ -1118,15 +1097,13 @@ void AudioDSP_Proc(void)
                     if (newFreq != *filterApplyFreq1)
                         SetNewFreqByTouch(newFreq, pt.y > GRAPH_BOTTOM, instMain, instSecond);
                 }
-
             }
-        }   //end of if (check for touch screen)
+        } //end of if (check for touch screen)
 
-    }   //end of for
+    } //end of for
 
     //SET_PTT(0);
     //GEN_SetMeasurementFreq(0);
     DSP_Init();
     return;
-
 }

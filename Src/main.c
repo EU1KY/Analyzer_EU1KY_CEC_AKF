@@ -44,7 +44,7 @@ void Sleep(uint32_t nms)
     if (ts != 0)
     {
         if (autosleep_timer == 0 &&
-                !LCD_IsOff() )
+            !LCD_IsOff())
         {
             BSP_LCD_DisplayOff();
         }
@@ -76,18 +76,19 @@ void Sleep(uint32_t nms)
 }
 
 //SDFatFs must be aligned to 32 bytes in order the buffer to be valid for DCache operataions
-__attribute__((aligned(32))) FATFS SDFatFs;  // File system object for SD card logical drive
-char SDPath[4];        // SD card logical drive path
+__attribute__((aligned(32))) FATFS SDFatFs; // File system object for SD card logical drive
+char SDPath[4];                             // SD card logical drive path
 
 //extern ADC_HandleTypeDef Adc3Handle;
 
-void ADC3_Init(void){
+void ADC3_Init(void)
+{
     UB_ADC3_SINGLE_Init();
 }
 
 static uint32_t date1, time1;
 static uint8_t second, second1;
-static short AMPM,AMPM1;
+static short AMPM, AMPM1;
 extern int BeepIsActive, SWRTone;
 extern uint8_t AUDIO1;
 
@@ -101,9 +102,9 @@ int main(void)
     LCD_Init();
 
     InitTimer2_4_5(); // WK
-    ADC3_Init();   // WK
+    ADC3_Init();      // WK
     SPI2_Init();
-    BeepIsActive=SWRTone=0;
+    BeepIsActive = SWRTone = 0;
     Sleep(300);
     TOUCH_Init();
     setup_GPIO();
@@ -111,15 +112,15 @@ int main(void)
     //Set GPIO PTT
     GPIO_PTT_Setup();
 
-    AUDIO1=0;
+    AUDIO1 = 0;
     //Mount SD card
     if (FATFS_LinkDriver(&SD_Driver, SDPath) != 0)
         CRASH("FATFS_LinkDriver failed");
-    if (f_mount(&SDFatFs, (TCHAR const*)SDPath, 0) != FR_OK)
+    if (f_mount(&SDFatFs, (TCHAR const *)SDPath, 0) != FR_OK)
         CRASH("f_mount failed");
     CFG_Init(); //Load configuration
     if (CFG_GetParam(CFG_PARAM_ORIENTATION) != 0)
-        LCD_Set_Orientation(1);//   *** DH1AKF 07.10.2020
+        LCD_Set_Orientation(1); //   *** DH1AKF 07.10.2020
     CFG_Flush();
     GEN_Init(); //Initialize frequency synthesizer (only after CFG_Init())
 
@@ -127,19 +128,21 @@ int main(void)
 
     AAUART_Init(); //Initialize remote control protocol handler
 
-    CAMERA_IO_Init();// I2C connection
+    CAMERA_IO_Init(); // I2C connection
     Sleep(50);
-    getTime(&time,&second,&AMPM,0);
+    getTime(&time, &second, &AMPM, 0);
     getDate(&date);
 
 #ifndef _DEBUG_UART
-    if (ShowLogo()==-1)// no logo.bmp or logo.png file found:
-        LCD_DrawBitmap(LCD_MakePoint(90, 24), logo_bmp, logo_bmp_size);// show original logo
+    if (ShowLogo() == -1)                                               // no logo.bmp or logo.png file found:
+        LCD_DrawBitmap(LCD_MakePoint(90, 24), logo_bmp, logo_bmp_size); // show original logo
 #endif
- int WaitTime= 10 * CFG_GetParam(CFG_PARAM_ShowLogoTime);// to show logo n seconds or until touch
-    while (--WaitTime >=0) {// 0 causes immediate break
+    int WaitTime = 10 * CFG_GetParam(CFG_PARAM_ShowLogoTime); // to show logo n seconds or until touch
+    while (--WaitTime >= 0)
+    { // 0 causes immediate break
         Sleep(100);
-        if (TOUCH_IsPressed()) break;
+        if (TOUCH_IsPressed())
+            break;
     }
 
     //TODO : Remove comment before Release / by KD8CEC
@@ -152,25 +155,28 @@ int main(void)
         autosleep_timer = 0;
     }
 
- #ifndef _DEBUG_UART
+#ifndef _DEBUG_UART
     Sleep(1000);
 #endif
-    ColourSelection=CFG_GetParam(CFG_PARAM_Daylight);
-    FatLines=true;
-    if(0==CFG_GetParam(CFG_PARAM_Fatlines))
-       FatLines=false;
-    BeepOn1=CFG_GetParam(CFG_PARAM_BeepOn);
-    getTime(&time1,&second1,&AMPM1,0);
+    ColourSelection = CFG_GetParam(CFG_PARAM_Daylight);
+    FatLines = true;
+    if (0 == CFG_GetParam(CFG_PARAM_Fatlines))
+        FatLines = false;
+    BeepOn1 = CFG_GetParam(CFG_PARAM_BeepOn);
+    getTime(&time1, &second1, &AMPM1, 0);
     // second=second1;//      ************************** TEST without RTC
     getDate(&date1);
-    if(second==second1){// realtime clock is not present
-        RTCpresent=0;
-        date=CFG_GetParam(CFG_PARAM_Date);
-        if(date==0) NoDate=1;
-        time=CFG_GetParam(CFG_PARAM_Time);
+    if (second == second1)
+    { // realtime clock is not present
+        RTCpresent = 0;
+        date = CFG_GetParam(CFG_PARAM_Date);
+        if (date == 0)
+            NoDate = 1;
+        time = CFG_GetParam(CFG_PARAM_Time);
     }
-    else  RTCpresent=1;
-//  RTCpresent=false;//   ************************** TEST
+    else
+        RTCpresent = 1;
+    //  RTCpresent=false;//   ************************** TEST
     //Run main window function
 
     MainWnd(); //Never returns
@@ -189,7 +195,7 @@ int main(void)
 
 void HAL_Delay(__IO uint32_t Delay)
 {
-    while(Delay)
+    while (Delay)
     {
         if (SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk)
         {
@@ -235,9 +241,9 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLQ = 9;
 
     ret = HAL_RCC_OscConfig(&RCC_OscInitStruct);
-    if(ret != HAL_OK)
+    if (ret != HAL_OK)
     {
-        while(1)
+        while (1)
         {
             ;
         }
@@ -245,9 +251,9 @@ void SystemClock_Config(void)
 
     /* Activate the OverDrive to reach the 216 MHz Frequency */
     ret = HAL_PWREx_EnableOverDrive();
-    if(ret != HAL_OK)
+    if (ret != HAL_OK)
     {
-        while(1)
+        while (1)
         {
             ;
         }
@@ -261,9 +267,9 @@ void SystemClock_Config(void)
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
     ret = HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7);
-    if(ret != HAL_OK)
+    if (ret != HAL_OK)
     {
-        while(1)
+        while (1)
         {
             ;
         }
@@ -318,7 +324,6 @@ static void MPU_Config(void)
     HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
 }
 
-
 //CPU L1-Cache enable.
 static void CPU_CACHE_Enable(void)
 {
@@ -341,14 +346,16 @@ void CRASH(const char *text)
         BSP_LCD_DisplayOn();
     FONT_Write(FONT_FRAN, LCD_RED, LCD_BLACK, 0, 0, text);
     FONT_Write(FONT_FRAN, LCD_RED, LCD_BLACK, 0, 14, "SYSTEM HALTED ");
-    for(;;);
+    for (;;)
+        ;
 }
 
-#ifdef  USE_FULL_ASSERT
-void assert_failed(uint8_t* file, uint32_t line)
+#ifdef USE_FULL_ASSERT
+void assert_failed(uint8_t *file, uint32_t line)
 {
     static uint32_t in_assert = 0;
-    if (in_assert) return;
+    if (in_assert)
+        return;
     in_assert = 1;
     CRASHF("ASSERT @ %s:%d", file, line);
 }

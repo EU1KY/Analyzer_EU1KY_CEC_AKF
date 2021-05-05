@@ -104,40 +104,40 @@ char DecodeMiniVNA(void)
 
     switch (ch)
     {
-        case '0':
-            VnaComMode = 0;
-            break;
-        case '1':
-            VnaComMode = 1;
-            break;
-        default:
-            return 0;
+    case '0':
+        VnaComMode = 0;
+        break;
+    case '1':
+        VnaComMode = 1;
+        break;
+    default:
+        return 0;
     }
 
     //Read One more char
     ch = AAUART_Getchar();
 
-    if  (ch !=0x0D)
+    if (ch != 0x0D)
         return 0;
 
     //COMMAND PROTOCOL MUST xx, 0x0d, xx 0x0d
-    for (i = 0; i <= 10; i++)   //Read Start Frequency
+    for (i = 0; i <= 10; i++) //Read Start Frequency
     {
         ch = AAUART_Getchar();
 
         if (ch == 0x0D)
             break;
-        if (isdigit(ch) == 1)    //Is Numeric Char
+        if (isdigit(ch) == 1) //Is Numeric Char
             Param[i] = ch;
-        else        //Not Numeric
+        else //Not Numeric
             return 0;
     }
 
     //Not Valid Length
-    if  ((i==0) | (i>10))
+    if ((i == 0) | (i > 10))
         return 0;
 
-    Param[i] = 0;   //Add String null For Convert
+    Param[i] = 0; //Add String null For Convert
 
     StartFreq = atol(Param);
 
@@ -146,16 +146,16 @@ char DecodeMiniVNA(void)
     {
         ch = AAUART_Getchar();
 
-        if (ch == 0x0D)   //End of command line
+        if (ch == 0x0D) //End of command line
             break;
 
-        if (isdigit(ch) ==1)
+        if (isdigit(ch) == 1)
             Param[i] = ch;
         else
             return 0;
     }
 
-    if  ((i==0) | (i>5))        //Not valid Length
+    if ((i == 0) | (i > 5)) //Not valid Length
         return 0;
 
     Param[i] = 0;
@@ -165,18 +165,19 @@ char DecodeMiniVNA(void)
     for (i = 0; i <= 10; i++)
     {
         ch = AAUART_Getchar();
-        if (ch == 0x0D) break;
+        if (ch == 0x0D)
+            break;
 
-        if (isdigit(ch) ==1)
+        if (isdigit(ch) == 1)
             Param[i] = ch;
         else
             return 0;
     }
 
-    if  ((i==0) || (i>10))      //Not valid Length
+    if ((i == 0) || (i > 10)) //Not valid Length
         return 0;
 
-    Param[i] = 0;                                // коне?строки
+    Param[i] = 0; // пїЅпїЅпїЅпїЅ?пїЅпїЅпїЅпїЅпїЅпїЅ
 
     StepF = atol(Param);
 
@@ -193,7 +194,7 @@ void PROTOCOL_Handler_VNA(void)
     }
 
 #ifdef _DEBUG_UART
-        DBG_Printf("REQUEST:%d, STARTF:%u, STEP:%u, NUMF:%u  ", VnaComMode, StartFreq, StepF, NumberF);
+    DBG_Printf("REQUEST:%d, STARTF:%u, STEP:%u, NUMF:%u  ", VnaComMode, StartFreq, StepF, NumberF);
 #endif
 
     //Process Mini VNA Protocol
@@ -217,7 +218,7 @@ void PROTOCOL_Handler_VNA(void)
     float phase1 = 0;
     uint32_t chkFreq = 0;
 
-    fint =StartFreq;
+    fint = StartFreq;
 
     for (int i = 0; i < NumberF; i++)
     {
@@ -235,7 +236,8 @@ void PROTOCOL_Handler_VNA(void)
             {
                 DSP_Measure(chkFreq, 1, 0, CFG_GetParam(CFG_PARAM_MEAS_NSCANS));
             }
-            else{
+            else
+            {
                 DSP_Measure_DET(chkFreq, 1, 0, CFG_GetParam(CFG_PARAM_MEAS_NSCANS));
             }
             mag1 = DSP_MeasuredDiff();
@@ -258,7 +260,7 @@ void PROTOCOL_Handler_VNA(void)
             adcphs = 4095;
 
         //DSP_RX rx = DSP_MeasuredZ();
-        while(AAUART_IsBusy())
+        while (AAUART_IsBusy())
             Sleep(0); //prevent overwriting the data being transmitted
 
 #ifdef _DEBUG_UART
@@ -275,13 +277,13 @@ void PROTOCOL_Handler_VNA(void)
 
         Temp = (unsigned char)adcphs;
         returnVals[0] = Temp;
-        adcphs = adcphs>>8;
+        adcphs = adcphs >> 8;
         Temp = (unsigned char)adcphs;
         returnVals[1] = Temp;
 
         Temp = (unsigned char)adcamp;
         returnVals[2] = Temp;
-        adcamp = adcamp>>8;
+        adcamp = adcamp >> 8;
         Temp = (unsigned char)adcamp;
         returnVals[3] = Temp;
 
@@ -430,5 +432,3 @@ void PROTOCOL_Handler_VNA(void)
     AAUART_PutString(ERR);
     */
 }
-
-

@@ -14,8 +14,8 @@
 #include <string.h>
 #include "sdram_heap.h"
 
-#define SDRH_BLKSIZE  128
-#define SDRH_HEAPSIZE 0x200000  // Must be agreed with linker scrpt's _SDRAM_HEAP_SIZE, and must be multiple of SDRH_BLKSIZE !!!
+#define SDRH_BLKSIZE 128
+#define SDRH_HEAPSIZE 0x200000 // Must be agreed with linker scrpt's _SDRAM_HEAP_SIZE, and must be multiple of SDRH_BLKSIZE !!!
 #define SDRH_NBLOCKS (SDRH_HEAPSIZE / SDRH_BLKSIZE)
 #define SDRH_ADDR(block) (SDRH_START + block * SDRH_BLKSIZE)
 
@@ -30,10 +30,10 @@
 extern uint8_t __sdram_heap_start__;
 extern uint8_t __sdram_heap_end__;
 
-static void* const SDRH_START = &__sdram_heap_start__;
-static void* const SDRH_END = &__sdram_heap_end__;
+static void *const SDRH_START = &__sdram_heap_start__;
+static void *const SDRH_END = &__sdram_heap_end__;
 
-static uint16_t __attribute__((section (".user_sdram"))) SDRH_descr[SDRH_NBLOCKS]; //Heap descriptor
+static uint16_t __attribute__((section(".user_sdram"))) SDRH_descr[SDRH_NBLOCKS]; //Heap descriptor
 
 static void SDRH_Init(void)
 {
@@ -45,7 +45,7 @@ static void SDRH_Init(void)
     }
 }
 //It is expected that ptr belongs to SDRAM HEAP designated area, and is aligned at the block start
-static bool _isValidPtr(void* ptr)
+static bool _isValidPtr(void *ptr)
 {
     if ((ptr < SDRH_START) || (ptr >= SDRH_END))
         return false;
@@ -81,7 +81,7 @@ static uint32_t _find_area(uint32_t nblocks)
             }
             //not found
             if (j >= SDRH_NBLOCKS)
-                break; //Return not found
+                break;             //Return not found
             i = j + SDRH_descr[j]; //Skip over too small area and next occupied area
         }
         else
@@ -92,7 +92,7 @@ static uint32_t _find_area(uint32_t nblocks)
     return 0xFFFFFFFFul; //Not found
 }
 
-void* SDRH_malloc(size_t nbytes)
+void *SDRH_malloc(size_t nbytes)
 {
     if (0 == nbytes)
         return 0;
@@ -106,7 +106,7 @@ void* SDRH_malloc(size_t nbytes)
 
     if (start_block >= SDRH_NBLOCKS)
         return 0;
-    void* addr = SDRH_ADDR(start_block);
+    void *addr = SDRH_ADDR(start_block);
     while (nblocks)
     {
         SDRH_descr[start_block++] = nblocks--;
@@ -114,7 +114,7 @@ void* SDRH_malloc(size_t nbytes)
     return addr;
 }
 
-void SDRH_free(void* ptr)
+void SDRH_free(void *ptr)
 {
     if (!_isValidPtr(ptr))
         return;
@@ -129,11 +129,11 @@ void SDRH_free(void* ptr)
     }
 }
 
-void* SDRH_realloc(void* ptr, size_t nbytes)
+void *SDRH_realloc(void *ptr, size_t nbytes)
 {
     if (0 == nbytes)
-    {// If size is zero, the memory previously allocated at ptr is deallocated as
-     // if a call to free was made, and a null pointer is returned.
+    {   // If size is zero, the memory previously allocated at ptr is deallocated as
+        // if a call to free was made, and a null pointer is returned.
         SDRH_free(ptr);
         return 0;
     }
@@ -151,15 +151,15 @@ void* SDRH_realloc(void* ptr, size_t nbytes)
 
     void *pnew = SDRH_malloc(nbytes); //Allocate new block
     if (0 == pnew)
-        return pnew; //Failed to reallocate
+        return pnew;                                     //Failed to reallocate
     memcpy(pnew, ptr, SDRH_descr[block] * SDRH_BLKSIZE); //Copy old data to new block
-    SDRH_free(ptr); //Free old block
+    SDRH_free(ptr);                                      //Free old block
     return pnew;
 }
 
-void* SDRH_calloc(size_t nbytes)
+void *SDRH_calloc(size_t nbytes)
 {
-    void* ptr = SDRH_malloc(nbytes);
+    void *ptr = SDRH_malloc(nbytes);
     if (0 != ptr)
     {
         memset(ptr, 0, nbytes);

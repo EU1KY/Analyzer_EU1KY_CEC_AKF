@@ -51,9 +51,9 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-
 
 /**
  * The definition of the used algorithm.
@@ -63,36 +63,33 @@ extern "C" {
  */
 #define CRC_ALGO_BIT_BY_BIT 1
 
-
-/**
+    /**
  * The type of the CRC values.
  *
  * This type must be big enough to contain at least 14 bits.
  */
-typedef uint_fast16_t crc_t;
+    typedef uint_fast16_t crc_t;
 
-
-/**
+    /**
  * The configuration type of the CRC algorithm.
  */
-typedef struct {
-    bool reflect_in;            /*!< Whether the input shall be reflected or not */
-    crc_t xor_in;               /*!< The initial value of the register */
-    bool reflect_out;           /*!< Whether the output shall be reflected or not */
-    crc_t xor_out;              /*!< The value which shall be XOR-ed to the final CRC value */
-} crc_cfg_t;
+    typedef struct
+    {
+        bool reflect_in;  /*!< Whether the input shall be reflected or not */
+        crc_t xor_in;     /*!< The initial value of the register */
+        bool reflect_out; /*!< Whether the output shall be reflected or not */
+        crc_t xor_out;    /*!< The value which shall be XOR-ed to the final CRC value */
+    } crc_cfg_t;
 
-
-/**
+    /**
  * Calculate the initial crc value.
  *
  * \param[in] cfg  A pointer to an initialised crc_cfg_t structure.
  * \return     The initial crc value.
  */
-crc_t crc_init(const crc_cfg_t *cfg);
+    crc_t crc_init(const crc_cfg_t *cfg);
 
-
-/**
+    /**
  * Update the crc value with new data.
  *
  * \param[in] crc      The current crc value.
@@ -101,21 +98,19 @@ crc_t crc_init(const crc_cfg_t *cfg);
  * \param[in] data_len Number of bytes in the \a data buffer.
  * \return             The updated crc value.
  */
-crc_t crc_update(const crc_cfg_t *cfg, crc_t crc, const void *data, size_t data_len);
+    crc_t crc_update(const crc_cfg_t *cfg, crc_t crc, const void *data, size_t data_len);
 
-
-/**
+    /**
  * Calculate the final crc value.
  *
  * \param[in] cfg  A pointer to an initialised crc_cfg_t structure.
  * \param[in] crc  The current crc value.
  * \return     The final crc value.
  */
-crc_t crc_finalize(const crc_cfg_t *cfg, crc_t crc);
-
+    crc_t crc_finalize(const crc_cfg_t *cfg, crc_t crc);
 
 #ifdef __cplusplus
-}           /* closing brace for extern "C" */
+} /* closing brace for extern "C" */
 #endif
 
-#endif      /* CRC14_H */
+#endif /* CRC14_H */

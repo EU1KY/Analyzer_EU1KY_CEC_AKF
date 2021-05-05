@@ -14,5 +14,4 @@ int testGen(void);
 extern void FDecr(uint32_t step);
 extern void FIncr(uint32_t step);
 
-
 #endif

@@ -18,10 +18,10 @@ extern const unsigned char mainimg_bmp[];
 extern const unsigned int mainimg_bmp_size;
 
 //Buttons
-extern const unsigned char imgbtn_home1[];  //using width imgbtn_emtp2y (same height)
+extern const unsigned char imgbtn_home1[]; //using width imgbtn_emtp2y (same height)
 extern const unsigned int imgbtn_home1_size;
 
-extern const unsigned char imgbtn_home2[];  //using width imgbtn_emtp2y (same height)
+extern const unsigned char imgbtn_home2[]; //using width imgbtn_emtp2y (same height)
 extern const unsigned int imgbtn_home2_size;
 
 extern const unsigned char imgbtn_scan[];

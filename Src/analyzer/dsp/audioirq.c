@@ -41,18 +41,16 @@ void BSP_AUDIO_IN_Error_CallBack(void)
   //DBG_Printf("DMA  ERROR     ");
 }
 
-
 void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
 {
-    Audio_Play_Status  = AUDIO_TRANSFER_COMPLETE;
+  Audio_Play_Status = AUDIO_TRANSFER_COMPLETE;
 }
 
 void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
 {
-    Audio_Play_Status  = AUDIO_TRANSFER_HALF;
+  Audio_Play_Status = AUDIO_TRANSFER_HALF;
 }
 
 void BSP_AUDIO_OUT_Error_CallBack(void)
 {
 }
-

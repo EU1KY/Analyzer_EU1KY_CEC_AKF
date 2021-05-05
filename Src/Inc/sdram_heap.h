@@ -9,13 +9,14 @@
 #define _SDRAM_HEAP_H_
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void* SDRH_malloc(size_t nbytes);
-void SDRH_free(void* ptr);
-void* SDRH_realloc(void* ptr, size_t nbytes);
-void* SDRH_calloc(size_t nbytes);
+    void *SDRH_malloc(size_t nbytes);
+    void SDRH_free(void *ptr);
+    void *SDRH_realloc(void *ptr, size_t nbytes);
+    void *SDRH_calloc(size_t nbytes);
 
 #ifdef __cplusplus
 }

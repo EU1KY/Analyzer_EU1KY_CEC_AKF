@@ -27,23 +27,23 @@
 
 extern void Sleep(uint32_t);
 
-static char rxstr[RXB_SIZE+1];
+static char rxstr[RXB_SIZE + 1];
 static uint32_t rx_ctr = 0;
-static char* rxstr_p;
+static char *rxstr_p;
 static uint32_t _fCenter = 10000000ul;
 static uint32_t _fSweep = 100000ul;
 static const char *ERR = "ERROR\r";
 static const char *OK = "OK\r";
 
-static char* _trim(char *str)
+static char *_trim(char *str)
 {
     char *end;
-    while(isspace((int)*str))
+    while (isspace((int)*str))
         str++;
     if (*str == '\0')
         return str;
     end = str + strlen(str) - 1;
-    while(end > str && isspace((int)*end))
+    while (end > str && isspace((int)*end))
         end--;
     *(end + 1) = '\0';
     return str;
@@ -79,36 +79,36 @@ void PROTOCOL_Reset(void)
     rxstr[0] = '\0';
     rx_ctr = 0;
     //Purge contents of RX buffer
-    while (EOF != AAUART_Getchar());
+    while (EOF != AAUART_Getchar())
+        ;
 }
-
 
 // added by VE7IT to support linsmith serial protocol used in some N2PK analyzers
 // very simple.... when sent a frequency, return freq, realRx and imagRx as a string
 void PROTOCOL_Handler_LINSMITH(void)
 {
-    char txstr[64];                 // uart tx string buffer
-    DSP_RX rx;                      // impedance reading buffer
-    unsigned int fint = 10000000u;  // 10MHz default freq
+    char txstr[64];                // uart tx string buffer
+    DSP_RX rx;                     // impedance reading buffer
+    unsigned int fint = 10000000u; // 10MHz default freq
 
-    if (!PROTOCOL_RxCmd())          // check for available cmds
+    if (!PROTOCOL_RxCmd()) // check for available cmds
         return;
 
     // Command received
     rxstr_p = _trim(rxstr);
-    strlwr(rxstr_p);                // string to lower case
+    strlwr(rxstr_p); // string to lower case
 
     // empty commands send back a default reading at 10MHz
     // linsmith expects a response as a test for analyzer present
-    if(isdigit((int)rxstr_p[0]))    // if a number it could be a freq.
-        fint = (uint32_t)atoi(&rxstr_p[0]);  //will be 0 if conversion error
+    if (isdigit((int)rxstr_p[0]))           // if a number it could be a freq.
+        fint = (uint32_t)atoi(&rxstr_p[0]); //will be 0 if conversion error
 
     DSP_Measure(fint, 1, 1, CFG_GetParam(CFG_PARAM_MEAS_NSCANS));
     rx = DSP_MeasuredZ();
 
-    while(AAUART_IsBusy())
+    while (AAUART_IsBusy())
         Sleep(0); //prevent overwriting the data being transmitted
-    sprintf(txstr, "%u %f %f\r\n",fint, crealf(rx), cimagf(rx));
+    sprintf(txstr, "%u %f %f\r\n", fint, crealf(rx), cimagf(rx));
     AAUART_PutString(txstr);
     return;
 }
@@ -148,19 +148,19 @@ void PROTOCOL_Handler_AA600(void)
     }
 
     if (rxstr_p == strstr(rxstr_p, "am"))
-    {//Amplitude setting
+    { //Amplitude setting
         AAUART_PutString(OK);
         return;
     }
 
     if (rxstr_p == strstr(rxstr_p, "ph"))
-    {//Phase setting
+    { //Phase setting
         AAUART_PutString(OK);
         return;
     }
 
     if (rxstr_p == strstr(rxstr_p, "de"))
-    {//Set delay
+    { //Set delay
         AAUART_PutString(OK);
         return;
     }
@@ -168,7 +168,7 @@ void PROTOCOL_Handler_AA600(void)
     if (rxstr_p == strstr(rxstr_p, "fq"))
     {
         uint32_t FHz = 0;
-        if(isdigit((int)rxstr_p[2]))
+        if (isdigit((int)rxstr_p[2]))
         {
             FHz = (uint32_t)atoi(&rxstr_p[2]);
         }
@@ -193,7 +193,7 @@ void PROTOCOL_Handler_AA600(void)
     if (rxstr_p == strstr(rxstr_p, "sw"))
     {
         uint32_t sw = 0;
-        if(isdigit((int)rxstr_p[2]))
+        if (isdigit((int)rxstr_p[2]))
         {
             sw = (uint32_t)atoi(&rxstr_p[2]);
         }
@@ -213,7 +213,7 @@ void PROTOCOL_Handler_AA600(void)
         uint32_t fint;
         uint32_t fstep;
 
-        if(isdigit((int)rxstr_p[3]))
+        if (isdigit((int)rxstr_p[3]))
         {
             steps = (uint32_t)atoi(&rxstr_p[3]);
         }
@@ -240,7 +240,7 @@ void PROTOCOL_Handler_AA600(void)
 
             DSP_Measure(fint, 1, 1, CFG_GetParam(CFG_PARAM_MEAS_NSCANS));
             rx = DSP_MeasuredZ();
-            while(AAUART_IsBusy())
+            while (AAUART_IsBusy())
                 Sleep(0); //prevent overwriting the data being transmitted
             sprintf(txstr, "%.6f,%.2f,%.2f\r", ((float)fint) / 1000000., crealf(rx), cimagf(rx));
             AAUART_PutString(txstr);
@@ -264,6 +264,6 @@ void PROTOCOL_Handler(void)
         PROTOCOL_Handler_LINSMITH();
         break;
     default:
-        CFG_SetParam(CFG_PARAM_SEREMUL,0);  // next call will default to something valid
+        CFG_SetParam(CFG_PARAM_SEREMUL, 0); // next call will default to something valid
     }
- }
+}

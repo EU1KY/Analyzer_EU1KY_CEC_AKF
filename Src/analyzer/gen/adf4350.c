@@ -1,5 +1,5 @@
-#if defined (DEBUG)
-#    include <math.h>
+#if defined(DEBUG)
+#include <math.h>
 #endif
 #include "adf4350.h"
 #include "si5351.h"
@@ -24,7 +24,7 @@
 
 extern void Sleep(uint32_t);
 
-static void adf4350_calc_div(uint32_t fhz, uint32_t* rfdiv_out, uint32_t* div_int, uint32_t* div_frac, uint32_t* div_mod)
+static void adf4350_calc_div(uint32_t fhz, uint32_t *rfdiv_out, uint32_t *div_int, uint32_t *div_frac, uint32_t *div_mod)
 {
     //Check fhz valid value (140 MHz ... 4200 MHz)
     assert_param(fhz >= ADF4350_MIN_OUT_FREQ && fhz <= ADF4350_MAX_OUT_FREQ);
@@ -53,12 +53,12 @@ static void adf4350_calc_div(uint32_t fhz, uint32_t* rfdiv_out, uint32_t* div_in
     *div_frac = numerator % denominator;
     *div_mod = denominator;
 
-    #if defined (DEBUG)
+#if defined(DEBUG)
     //Verify result:
     uint32_t actual_f = (uint32_t)(round(((double)ADF4350_FPFD * ((double)*div_int + (double)*div_frac / (double)*div_mod)) / (double)rfd));
     uint32_t diff = (actual_f > fhz) ? (actual_f - fhz) : (fhz - actual_f);
     assert_param(diff < 30);
-    #endif
+#endif
 }
 
 //Send 32-bit data to ADF4350
@@ -77,7 +77,6 @@ static void adf4350_SendDW(uint32_t dw, SPI2_Slave_t slave)
     Sleep(0);
 }
 
-
 /**
     @brief Set ADF4350 R4 value
     @param RF_Out_en     0 to disable RF output, 1 to enable
@@ -87,18 +86,17 @@ static void adf4350_SendDW(uint32_t dw, SPI2_Slave_t slave)
 static void adf4350_SendR4(uint32_t RF_Out_en, int32_t DBB, SPI2_Slave_t slave)
 {
     uint32_t dw = 0;
-    dw |=  (0x03 << 3); //DB4:3 - output power
-    dw |=  ((RF_Out_en & 0x01) << 5);    //DB5 - RF output enable
-    dw |=  (0x03 << 6); //DB6:7 - AUX output power
-    dw |=  (0 << 8);    //DB8 - AUX output enable
-    dw |=  (0 << 9);    //DB9 - AUX output select
-    dw |=  (1 << 10);   //DB10 - Mute till lock detect
-    dw |=  (0 << 11);   //DB11 - VCO powered down (0 to power up)
-    dw |=  (1 << 12);   //DB19:12 - 8-bit band select clock divider (R) value - using hardcoded 1 for Fpfd <= 125 kHz
-    dw |=  ((DBB & 0x07) << 20);   //DB22:20 - 3-bit RF divider select
+    dw |= (0x03 << 3);                //DB4:3 - output power
+    dw |= ((RF_Out_en & 0x01) << 5);  //DB5 - RF output enable
+    dw |= (0x03 << 6);                //DB6:7 - AUX output power
+    dw |= (0 << 8);                   //DB8 - AUX output enable
+    dw |= (0 << 9);                   //DB9 - AUX output select
+    dw |= (1 << 10);                  //DB10 - Mute till lock detect
+    dw |= (0 << 11);                  //DB11 - VCO powered down (0 to power up)
+    dw |= (1 << 12);                  //DB19:12 - 8-bit band select clock divider (R) value - using hardcoded 1 for Fpfd <= 125 kHz
+    dw |= ((DBB & 0x07) << 20);       //DB22:20 - 3-bit RF divider select
     adf4350_SendDW(dw | 0x04, slave); //Write register 4
 }
-
 
 /**
     @brief Set ADF4350 R3 valueband select clock divider
@@ -110,9 +108,9 @@ static void adf4350_SendR4(uint32_t RF_Out_en, int32_t DBB, SPI2_Slave_t slave)
 static void adf4350_SendR3(uint32_t clkdiv, uint32_t clkdivmode, uint32_t csr, SPI2_Slave_t slave)
 {
     uint32_t dw = 0;
-    dw |=  ((clkdiv & 0xFFF) << 3);
-    dw |=  ((clkdivmode & 0x3) << 15);
-    dw |=  ((csr & 0x1) << 18);
+    dw |= ((clkdiv & 0xFFF) << 3);
+    dw |= ((clkdivmode & 0x3) << 15);
+    dw |= ((csr & 0x1) << 18);
     adf4350_SendDW(dw | 0x03, slave);
 }
 
@@ -125,13 +123,12 @@ static void adf4350_SendR3(uint32_t clkdiv, uint32_t clkdivmode, uint32_t csr, S
 static void adf4350_SendR2(uint32_t pwrdown, uint32_t rcounter, SPI2_Slave_t slave)
 {
     uint32_t dw = 0;
-    dw |=  ((pwrdown & 0x1) << 5);
-    dw |=  (1 << 6);                // Phase detector polarity bit
-    dw |=  (0x08 << 9);             // Charge pump current setting
-    dw |=  ((rcounter & 0x3FF) << 14);
+    dw |= ((pwrdown & 0x1) << 5);
+    dw |= (1 << 6);    // Phase detector polarity bit
+    dw |= (0x08 << 9); // Charge pump current setting
+    dw |= ((rcounter & 0x3FF) << 14);
     adf4350_SendDW(dw | 0x02, slave);
 }
-
 
 /**
     @brief Set ADF4350 R1 value
@@ -148,7 +145,6 @@ static void adf4350_SendR1(uint32_t mod, SPI2_Slave_t slave)
     adf4350_SendDW(dw | 0x01, slave);
 }
 
-
 /**
     @brief Set ADF4350 R0 value.
     @param integ         16-bit integer value (INT). Must be in the allowed range of
@@ -164,7 +160,6 @@ static void adf4350_SendR0(uint32_t integ, uint32_t frac, SPI2_Slave_t slave)
     dw |= ((integ & 0xFFFF) << 15);
     adf4350_SendDW(dw, slave);
 }
-
 
 //-----------------------------------------------------------------------------------------
 // Public API
@@ -222,7 +217,6 @@ void adf4350_SetF0(uint32_t fhz)
     adf4350_SendR0(div_int, div_frac, SPI2_SLAVE_0);
     Sleep(2);
 }
-
 
 /**
     @brief Set given frequency at the output of ADF4350 generating LO

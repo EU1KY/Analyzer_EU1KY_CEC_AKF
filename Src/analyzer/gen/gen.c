@@ -21,20 +21,20 @@ extern void Sleep(uint32_t);
 //Generator driver descriptor
 typedef struct
 {
-    void (*Init)(void);         //Initialize generator
-    void (*Off)(void);          //Shutdown generator
-    void (*SetF0)(uint32_t);    //Set F0 frequency (i.e. measurement frequency)
-    void (*SetLO)(uint32_t);    //Set LO frequency (i.e. F0 + IF)
-    void (*SetTX)(uint32_t);    //Set TX frequency (i.e. measurement frequency)
+    void (*Init)(void);      //Initialize generator
+    void (*Off)(void);       //Shutdown generator
+    void (*SetF0)(uint32_t); //Set F0 frequency (i.e. measurement frequency)
+    void (*SetLO)(uint32_t); //Set LO frequency (i.e. F0 + IF)
+    void (*SetTX)(uint32_t); //Set TX frequency (i.e. measurement frequency)
 } GenDrv_t;
 
-static GenDrv_t gen = { 0 }; //Generator driver descriptor
+static GenDrv_t gen = {0}; //Generator driver descriptor
 
 void GEN_Init(void)
 {
     //available just Si5351
-    gen.Init  = si5351_Init;
-    gen.Off   = si5351_Off;
+    gen.Init = si5351_Init;
+    gen.Off = si5351_Off;
     gen.SetF0 = si5351_SetF0;
     gen.SetLO = si5351_SetLO;
     gen.SetTX = si5351_SetF2;
@@ -93,15 +93,18 @@ void GEN_SetMeasurementFreq(uint32_t fhz)
 
     if (CFG_SYNTH_SI5351 == CFG_GetParam(CFG_PARAM_SYNTH_TYPE))
     {
-        if (fhz > 3* CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ)){//test!!
-            gen.SetF0(fhz / 5); //Set F0 on 5th harmonic
-            gen.SetLO((fhz - IF) / 5);// ** WK **
+        if (fhz > 3 * CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+        {                              //test!!
+            gen.SetF0(fhz / 5);        //Set F0 on 5th harmonic
+            gen.SetLO((fhz - IF) / 5); // ** WK **
         }
-        else if (fhz > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ)){
-            gen.SetF0(fhz / 3); //Set F0 on 3rd harmonic
-            gen.SetLO((fhz - IF) / 3);// ** WK **
-        }                           // made problems, if fhz == CFG_PARAM_SI5351_MAX_FREQ
-        else{
+        else if (fhz > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+        {
+            gen.SetF0(fhz / 3);        //Set F0 on 3rd harmonic
+            gen.SetLO((fhz - IF) / 3); // ** WK **
+        }                              // made problems, if fhz == CFG_PARAM_SI5351_MAX_FREQ
+        else
+        {
             gen.SetF0(fhz);
             gen.SetLO(fhz - IF);
         }
@@ -113,7 +116,7 @@ void GEN_SetMeasurementFreq(uint32_t fhz)
     }
 
     lastSetFreq = fhz;
-    Sleep(0);// was 2 WK
+    Sleep(0); // was 2 WK
 }
 
 //KD8CEC
@@ -128,15 +131,18 @@ void GEN_SetTXFreq(uint32_t fhz)
 
     if (CFG_SYNTH_SI5351 == CFG_GetParam(CFG_PARAM_SYNTH_TYPE))
     {
-        if (fhz > 3* CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ)){//test!!
-            gen.SetTX(fhz / 5); //Set F0 on 5th harmonic
-            gen.SetLO((fhz - IF) / 5);// ** WK **
+        if (fhz > 3 * CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+        {                              //test!!
+            gen.SetTX(fhz / 5);        //Set F0 on 5th harmonic
+            gen.SetLO((fhz - IF) / 5); // ** WK **
         }
-        else if (fhz > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ)){
-            gen.SetTX(fhz / 3); //Set F0 on 3rd harmonic
-            gen.SetLO((fhz - IF) / 3);// ** WK **
-        }                           // made problems, if fhz == CFG_PARAM_SI5351_MAX_FREQ
-        else{
+        else if (fhz > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+        {
+            gen.SetTX(fhz / 3);        //Set F0 on 3rd harmonic
+            gen.SetLO((fhz - IF) / 3); // ** WK **
+        }                              // made problems, if fhz == CFG_PARAM_SI5351_MAX_FREQ
+        else
+        {
             gen.SetTX(fhz);
             gen.SetLO(fhz - IF);
         }
@@ -151,47 +157,50 @@ void GEN_SetTXFreq(uint32_t fhz)
     //Sleep(0);// was 2 WK
 }
 
-void GEN_SetLOFreq(uint32_t frqu1){// ** WK ** 02.04.2018
+void GEN_SetLOFreq(uint32_t frqu1)
+{ // ** WK ** 02.04.2018
 
-if (frqu1 > 3*CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+    if (frqu1 > 3 * CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
         gen.SetLO(frqu1 / 5);
-else if (frqu1 > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+    else if (frqu1 > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
         gen.SetLO(frqu1 / 3);
     else
         gen.SetLO(frqu1);
 }
 
-void GEN_SetF0Freq(uint32_t frqu1){// ** WK ** 02.04.2018
-if(frqu1==0) {
-    gen.Off();
-    return;
-}
+void GEN_SetF0Freq(uint32_t frqu1)
+{ // ** WK ** 02.04.2018
+    if (frqu1 == 0)
+    {
+        gen.Off();
+        return;
+    }
 
-if (frqu1 > 3*CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+    if (frqu1 > 3 * CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
         gen.SetF0(frqu1 / 5);
 
-else if (frqu1 > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+    else if (frqu1 > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
         gen.SetF0(frqu1 / 3);
     else
         gen.SetF0(frqu1);
 }
 
+void GEN_SetClk2Freq(uint32_t frqu1)
+{ // ** WK ** 22.10.2020
+    if (frqu1 == 0)
+    {
+        gen.Off();
+        return;
+    }
 
-void GEN_SetClk2Freq(uint32_t frqu1){// ** WK ** 22.10.2020
-if(frqu1==0) {
-    gen.Off();
-    return;
-}
-
-if (frqu1 > 3*CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+    if (frqu1 > 3 * CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
         gen.SetTX(frqu1 / 5);
 
-else if (frqu1 > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
+    else if (frqu1 > CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ))
         gen.SetTX(frqu1 / 3);
     else
         gen.SetTX(frqu1);
 }
-
 
 uint32_t GEN_GetLastFreq()
 {

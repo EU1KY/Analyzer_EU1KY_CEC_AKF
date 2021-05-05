@@ -22,7 +22,7 @@ static volatile int32_t AAUART_busy = 0;
 static volatile uint32_t rx_overflow_ctr = 0;
 static UART_HandleTypeDef UartHandle = {0};
 
-static const uint8_t* volatile txptr = 0;
+static const uint8_t *volatile txptr = 0;
 static volatile uint32_t txctr = 0;
 
 //==================================================================
@@ -49,14 +49,15 @@ void DBGUART_Init(void)
 void DBGUART_Char(int ch)
 {
     //Check Init UART
-    if (! DBG_ACTIVE)
+    if (!DBG_ACTIVE)
         return;
 
     DBGUartHandle.Instance->TDR = ch;
-    while(!(DBGUartHandle.Instance->ISR & USART_ISR_TXE));
+    while (!(DBGUartHandle.Instance->ISR & USART_ISR_TXE))
+        ;
 }
 
-void DBG_Str(const char* str)
+void DBG_Str(const char *str)
 {
     for (int i = 0; i < strlen(str); i++)
         DBGUART_Char(str[i]);
@@ -83,7 +84,6 @@ int DBG_Printf(const char *fmt, ...)
 //END OF KD8CEC ROUTINE for Debug
 //=======================================================================
 
-
 void AAUART_Init(void)
 {
     uint32_t comport = CFG_GetParam(CFG_PARAM_COM_PORT);
@@ -96,7 +96,7 @@ void AAUART_Init(void)
         IRQn = DISCOVERY_COM1_IRQn;
     else if (COM2 == comport)
         IRQn = DISCOVERY_COM2_IRQn;
-	else
+    else
         return;
 
     UartHandle.Init.BaudRate = comspeed;
@@ -116,15 +116,15 @@ void AAUART_Init(void)
 //======================================================
 void AAUART_IRQHandler(void)
 {
-    uint32_t isrflags   = READ_REG(UartHandle.Instance->ISR);
+    uint32_t isrflags = READ_REG(UartHandle.Instance->ISR);
     volatile uint8_t byte;
-    UartHandle.Instance->ICR  = 0x3ffff; //Clear all flags
+    UartHandle.Instance->ICR = 0x3ffff; //Clear all flags
     if ((isrflags & USART_ISR_TC) != RESET)
     {
-        UartHandle.Instance->ICR  = USART_ISR_TC;
+        UartHandle.Instance->ICR = USART_ISR_TC;
         if (txctr)
         {
-            UartHandle.Instance->TDR = *txptr++;  //Writing TDR clears interrupt flag
+            UartHandle.Instance->TDR = *txptr++; //Writing TDR clears interrupt flag
             txctr--;
         }
         else
@@ -165,17 +165,18 @@ int AAUART_Getchar(void)
 }
 
 //======================================================
-void AAUART_PutString(const char* str)
+void AAUART_PutString(const char *str)
 {
-    AAUART_PutBytes((const uint8_t*)str, strlen(str));
+    AAUART_PutBytes((const uint8_t *)str, strlen(str));
 }
 
 //======================================================
-void AAUART_PutBytes(const uint8_t* bytes, uint32_t len)
+void AAUART_PutBytes(const uint8_t *bytes, uint32_t len)
 {
     if (0 == len || 0 == bytes)
         return;
-    while (AAUART_busy); //Block until previous transmission is over
+    while (AAUART_busy)
+        ; //Block until previous transmission is over
     txctr = len - 1;
     txptr = &bytes[1];
     AAUART_busy = 1;

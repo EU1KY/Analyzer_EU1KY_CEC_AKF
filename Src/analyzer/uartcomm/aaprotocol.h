@@ -10,12 +10,13 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void PROTOCOL_Reset(void);
-void PROTOCOL_Handler(void);
-void PROTOCOL_Handler_VNA(void);
+    void PROTOCOL_Reset(void);
+    void PROTOCOL_Handler(void);
+    void PROTOCOL_Handler_VNA(void);
 #ifdef __cplusplus
 }
 #endif

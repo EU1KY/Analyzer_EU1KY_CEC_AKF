@@ -52,26 +52,24 @@
 #define SELECT_FREQ_COLOR LCD_RGB(255, 127, 39)
 #define SELECT_PROTOCOL_COLOR LCD_RGB(255, 30, 30)
 
-
 #include "audioirq.h"
 
 //#define AUDIO_OUT_SIZE   ((uint32_t)(8000 * (0.68267) * 4))
 //#define AUDIO_OUT_SIZE   21845
 //#define AUDIO_OUT_SIZE   ((uint32_t)(8000 * (0.68267) * 2))   //just use full transfer irq
 //#define AUDIO_OUT_SIZE   21845
-#define AUDIO_OUT_SIZE   10923
+#define AUDIO_OUT_SIZE 10923
 //static int16_t __attribute__((section (".user_sdram"))) AUDIO_BUFFER_OUT[AUDIO_OUT_SIZE];
 //int16_t *AUDIO_BUFFER_OUT = AUDIO_BUFFER_RAM;
-static int16_t __attribute__((section (".user_sdram"))) AUDIO_BUFFER_OUT[AUDIO_OUT_SIZE];
+static int16_t __attribute__((section(".user_sdram"))) AUDIO_BUFFER_OUT[AUDIO_OUT_SIZE];
 
-#define WSPR_TONE_SPACING       1.4648          // ~1.46 Hz
-
+#define WSPR_TONE_SPACING 1.4648 // ~1.46 Hz
 
 extern void Sleep(uint32_t ms);
 extern void TRACK_Beep(int duration);
 
-extern void JTEncode(void); //for JTEncode converted C++ -> C
-extern uint32_t GetInternTime(uint8_t *secondsx);   //at mainwind.c
+extern void JTEncode(void);                       //for JTEncode converted C++ -> C
+extern uint32_t GetInternTime(uint8_t *secondsx); //at mainwind.c
 //=============================================================================
 //FREQUENCYS for Digital Mode
 //By KD8CEC
@@ -79,89 +77,88 @@ extern uint32_t GetInternTime(uint8_t *secondsx);   //at mainwind.c
 //-----------------------------------------------------------------------------
 #define BAND_LENGTH 15
 #define BAND_MAX_INDEX (BAND_LENGTH - 1)
-const char* BAND_NAME[] =      {"2190", "630m", "160m",   "80m",   "40m",  "30m",  "20m",      "17m",   "15m",    "12m",    "10m",    "6m",     "4m",     "2m",       "XCVR"};
-const uint32_t FREQS_WSPR[] =  {136000, 474200, 1836600, 3568600, 7038600, 10138700, 14095600, 18104600, 21094600, 24924600, 28124600, 50293000, 70091000, 144489000};
-const uint32_t FREQS_FT8[] =   {136130, 474200, 1840000,  3573000, 7074000, 10136000, 14074000, 18100000, 21074000, 24915000, 28074000, 50313000, 70100000, 144174000};
-const uint32_t FREQS_JT65[] =  {136130, 474200, 1838000,  3570000, 7076000, 10138000, 14076000, 18102000, 21076000, 24917000, 28076000, 50276000, 70102000, 144120000};
-const uint32_t FREQS_JT9[] =   {136130, 474200, 1839000,  3572000, 7078000, 10140000, 14078000, 18104000, 21078000, 24919000, 28078000, 50312000, 70104000, 144120000};
-const uint32_t FREQS_FT4[] =   {136130, 474200, 1839000,  3568000, 7047000, 10140000, 14080000, 18104000, 21140000, 24919000, 28180000, 50318000, 70104000, 144170000};
+const char *BAND_NAME[] = {"2190", "630m", "160m", "80m", "40m", "30m", "20m", "17m", "15m", "12m", "10m", "6m", "4m", "2m", "XCVR"};
+const uint32_t FREQS_WSPR[] = {136000, 474200, 1836600, 3568600, 7038600, 10138700, 14095600, 18104600, 21094600, 24924600, 28124600, 50293000, 70091000, 144489000};
+const uint32_t FREQS_FT8[] = {136130, 474200, 1840000, 3573000, 7074000, 10136000, 14074000, 18100000, 21074000, 24915000, 28074000, 50313000, 70100000, 144174000};
+const uint32_t FREQS_JT65[] = {136130, 474200, 1838000, 3570000, 7076000, 10138000, 14076000, 18102000, 21076000, 24917000, 28076000, 50276000, 70102000, 144120000};
+const uint32_t FREQS_JT9[] = {136130, 474200, 1839000, 3572000, 7078000, 10140000, 14078000, 18104000, 21078000, 24919000, 28078000, 50312000, 70104000, 144120000};
+const uint32_t FREQS_FT4[] = {136130, 474200, 1839000, 3568000, 7047000, 10140000, 14080000, 18104000, 21140000, 24919000, 28180000, 50318000, 70104000, 144170000};
 
 uint32_t WSFreq = 814074000;
 
 //Draw ImageButton
 //BOTTOM
-#define MENU_EXIT         0
-#define MENU_SAVECONFIG   1
-#define MENU_SETCONTINUE  2
-#define MENU_MSEND        3      //Probe Select Down
-#define MENU_RTCSEND      4      //Probe Select Up
+#define MENU_EXIT 0
+#define MENU_SAVECONFIG 1
+#define MENU_SETCONTINUE 2
+#define MENU_MSEND 3   //Probe Select Down
+#define MENU_RTCSEND 4 //Probe Select Up
 
 //RIGHT
-#define MENU_BANDDOWN     5    //Prior Band
-#define MENU_BANDUP       6      //Next Band
-#define MENU_AFFREQDOWN   7  //-10Hz
-#define MENU_AFFREQUP     8    //+10Hz
+#define MENU_BANDDOWN 5   //Prior Band
+#define MENU_BANDUP 6     //Next Band
+#define MENU_AFFREQDOWN 7 //-10Hz
+#define MENU_AFFREQUP 8   //+10Hz
 
 //FREQ SELECT MENU
-#define MENU_TOP1         9
-#define MENU_TOP2        10
-#define MENU_TOP3        11
-#define MENU_TOP4        12
+#define MENU_TOP1 9
+#define MENU_TOP2 10
+#define MENU_TOP3 11
+#define MENU_TOP4 12
 
-#define wsMenus_Length   13
+#define wsMenus_Length 13
 
 #define WSPR_AUDIO_VOLUME 70
 
-
 const int wsMenus[wsMenus_Length][4] = {
-#define FREQ_MENU_TOP  95
-#define TOP_MENU_TOP    0
-#define FREQ_INFO_TOP  80
+#define FREQ_MENU_TOP 95
+#define TOP_MENU_TOP 0
+#define FREQ_INFO_TOP 80
 
-//BOTTOM MENU (5)
-{0,   237,     0 + 80,    280},    //Exit
-{80,  237,    80 + 100,   280},    //Menu1
-{180, 237,   180 + 100,   280},    //Menu2
-{280, 237,   280 + 100,   280},    //Menu3
-{380, 237,   380 + 100,   280},    //Menu4
+    //BOTTOM MENU (5)
+    {0, 237, 0 + 80, 280},      //Exit
+    {80, 237, 80 + 100, 280},   //Menu1
+    {180, 237, 180 + 100, 280}, //Menu2
+    {280, 237, 280 + 100, 280}, //Menu3
+    {380, 237, 380 + 100, 280}, //Menu4
 
-//FREQ MENU (4)
-{ 80, FREQ_MENU_TOP, 180, FREQ_MENU_TOP + 37},    //FREQ2 //Before Band
-{180, FREQ_MENU_TOP, 280, FREQ_MENU_TOP + 37},    //FREQ3 //Next Band
-{280, FREQ_MENU_TOP, 380, FREQ_MENU_TOP + 37},    //FREQ4 //-10Hz
-{380, FREQ_MENU_TOP, 479, FREQ_MENU_TOP + 37},    //FREQ5 //+10Hz
+    //FREQ MENU (4)
+    {80, FREQ_MENU_TOP, 180, FREQ_MENU_TOP + 37},  //FREQ2 //Before Band
+    {180, FREQ_MENU_TOP, 280, FREQ_MENU_TOP + 37}, //FREQ3 //Next Band
+    {280, FREQ_MENU_TOP, 380, FREQ_MENU_TOP + 37}, //FREQ4 //-10Hz
+    {380, FREQ_MENU_TOP, 479, FREQ_MENU_TOP + 37}, //FREQ5 //+10Hz
 
-//TOP MENU PROTOCOL (5)
-{ 80, TOP_MENU_TOP, 180, TOP_MENU_TOP + 37},    //FREQ2 //WSPR
-{180, TOP_MENU_TOP, 280, TOP_MENU_TOP + 37},    //FREQ3 //FT8
-{280, TOP_MENU_TOP, 380, TOP_MENU_TOP + 37},    //FREQ4 //JT65
-{380, TOP_MENU_TOP, 479, TOP_MENU_TOP + 37},    //FREQ5 //JT9
+    //TOP MENU PROTOCOL (5)
+    {80, TOP_MENU_TOP, 180, TOP_MENU_TOP + 37},  //FREQ2 //WSPR
+    {180, TOP_MENU_TOP, 280, TOP_MENU_TOP + 37}, //FREQ3 //FT8
+    {280, TOP_MENU_TOP, 380, TOP_MENU_TOP + 37}, //FREQ4 //JT65
+    {380, TOP_MENU_TOP, 479, TOP_MENU_TOP + 37}, //FREQ5 //JT9
 
 };
 
 //uint8_t isOnAir = 1;
 
 #define PR_WSPR 0
-#define PR_FT8  1
-#define PR_FT4  2
+#define PR_FT8 1
+#define PR_FT4 2
 #define PR_JT65 3
-#define PR_JT9  4
+#define PR_JT9 4
 
 //uint8_t nowPR = PR_WSPR;  //
 //uint8_t nowBandIndex = 4;
 
 static char g_ws_data[59] = {0};
-char *wsCallSign      = &g_ws_data[0];   //11
-char *wsLocation      = &g_ws_data[12];   //9
+char *wsCallSign = &g_ws_data[0];  //11
+char *wsLocation = &g_ws_data[12]; //9
 
-uint8_t wsDBM   = 0;
-char *wsDBMStr        = &g_ws_data[23];   //7
-char *wsMessage       = &g_ws_data[31];   //21 = 52
-char *nowPR        = &g_ws_data[53];
+uint8_t wsDBM = 0;
+char *wsDBMStr = &g_ws_data[23];  //7
+char *wsMessage = &g_ws_data[31]; //21 = 52
+char *nowPR = &g_ws_data[53];
 uint8_t *nowBandIndex = (uint8_t *)&g_ws_data[54];
 
-char *wsTXPower    = &g_ws_data[55];
-int16_t *wsAUDIOFreq  = (int16_t *)&g_ws_data[57];
+char *wsTXPower = &g_ws_data[55];
+int16_t *wsAUDIOFreq = (int16_t *)&g_ws_data[57];
 
 char wsKeyboardTmp[21];
 
@@ -170,15 +167,14 @@ char wsKeyboardTmp[21];
 
 //}
 
-#define WS_ST_NONE        0    //Not Status
-#define WS_ST_READY       1    //RTC Send Ready
-#define WS_ST_SENDMANUAL1 2    //Send By Manual
-#define WS_ST_SENDMANUAL2 3    //Send By Manual and Continue (not support)
-#define WS_ST_SENDRTC1    4    //Send by RTC
-#define WS_ST_SENDRTC2    5    //Send By Manual and Continue
+#define WS_ST_NONE 0        //Not Status
+#define WS_ST_READY 1       //RTC Send Ready
+#define WS_ST_SENDMANUAL1 2 //Send By Manual
+#define WS_ST_SENDMANUAL2 3 //Send By Manual and Continue (not support)
+#define WS_ST_SENDRTC1 4    //Send by RTC
+#define WS_ST_SENDRTC2 5    //Send By Manual and Continue
 
 uint8_t NowStatus = WS_ST_NONE;
-
 
 #include "ff.h"
 static const char *g_ws_fpath = "/aa/wsignal.bin";
@@ -186,7 +182,7 @@ static const char *g_ws_fpath = "/aa/wsignal.bin";
 void WS_StoredInformatoin(void)
 {
     FRESULT res;
-    FIL fo = { 0 };
+    FIL fo = {0};
     res = f_open(&fo, g_ws_fpath, FA_OPEN_ALWAYS | FA_WRITE);
     if (FR_OK == res)
     {
@@ -222,7 +218,7 @@ void SetDefaultFrequency()
 void WS_LoadInformation(void)
 {
     FRESULT res;
-    FIL fo = { 0 };
+    FIL fo = {0};
 
     FILINFO finfo;
     res = f_stat(g_ws_fpath, &finfo);
@@ -251,9 +247,9 @@ void WS_LoadInformation(void)
 
         //*wsDBMStr        = &g_ws_data[23];   //7
         //*wsMessage       = &g_ws_data[31];   //21 = 52
-        wsDBM         = 10;
-        *nowPR        = PR_WSPR;  //WSPR
-        *nowBandIndex = 4;  //40m band
+        wsDBM = 10;
+        *nowPR = PR_WSPR;  //WSPR
+        *nowBandIndex = 4; //40m band
     }
 
     SetDefaultFrequency();
@@ -262,7 +258,7 @@ void WS_LoadInformation(void)
 //==============================================================================
 //DISPLAY Protocol Information
 //------------------------------------------------------------------------------
-#define INFO_TOP   130
+#define INFO_TOP 130
 #define INFO_LINE2 183
 
 //#define TITLE_COLOR LCD_RGB(0, 63, 119)
@@ -280,7 +276,7 @@ static void CheckTime(void)
     uint8_t tmpSecond1;
     uint8_t tmpMinute1;
 
-    if(RTCpresent)
+    if (RTCpresent)
     {
         getTime(&nowTime, &tmpSecond1, &AMPM1, 0);
     }
@@ -293,7 +289,7 @@ static void CheckTime(void)
     sprintf(text1, "%02ld:%02ld:%02d ", nowTime / 100, nowTime % 100, tmpSecond1);
 
     //CLEAR Area
-    LCD_FillRect(LCD_MakePoint(260, INFO_LINE2 + 12),LCD_MakePoint(477, INFO_LINE2 + 42), BACK_COLOR); //LCD_BLACK);
+    LCD_FillRect(LCD_MakePoint(260, INFO_LINE2 + 12), LCD_MakePoint(477, INFO_LINE2 + 42), BACK_COLOR); //LCD_BLACK);
 
     //AUDIO Frequency
     LCD_FillRect(LCD_MakePoint(258, INFO_LINE2 + 1), LCD_MakePoint(479, INFO_LINE2 + 15), TITLE_COLOR); //LCD_BLACK);
@@ -306,31 +302,31 @@ static void CheckTime(void)
     //Calculate LeftTime for Selected Protocol
     switch (*nowPR)
     {
-        case PR_WSPR :  //even minute, 0 second
-            tmpSecond1 = 60 - tmpSecond1;
-            if (tmpMinute1 % 2)
-                tmpMinute1 = 0;
-            else
-                tmpMinute1 = 1;
-        break;
-        case PR_FT8 :   //every minute, mod 15 = 0 second
+    case PR_WSPR: //even minute, 0 second
+        tmpSecond1 = 60 - tmpSecond1;
+        if (tmpMinute1 % 2)
             tmpMinute1 = 0;
-            tmpSecond1 = 15 - tmpSecond1 % 15;
-            if (tmpSecond1 >= 15)
-                tmpSecond1 = 0;
+        else
+            tmpMinute1 = 1;
         break;
-        case PR_FT4 :   //every minute, mod 6 = 0 second
-            tmpMinute1 = 0;
-            tmpSecond1 = 6 - tmpSecond1 % 6;
-            if (tmpSecond1 >= 6)
-                tmpSecond1 = 0;
+    case PR_FT8: //every minute, mod 15 = 0 second
+        tmpMinute1 = 0;
+        tmpSecond1 = 15 - tmpSecond1 % 15;
+        if (tmpSecond1 >= 15)
+            tmpSecond1 = 0;
         break;
-        case PR_JT65 :      //every minute, 0 second
-        case PR_JT9 :      //every minute, 0 second
-            tmpMinute1 = 0;
-            tmpSecond1 = 60 - tmpSecond1;
-            if (tmpSecond1 >= 60)
-                tmpSecond1 = 0;
+    case PR_FT4: //every minute, mod 6 = 0 second
+        tmpMinute1 = 0;
+        tmpSecond1 = 6 - tmpSecond1 % 6;
+        if (tmpSecond1 >= 6)
+            tmpSecond1 = 0;
+        break;
+    case PR_JT65: //every minute, 0 second
+    case PR_JT9:  //every minute, 0 second
+        tmpMinute1 = 0;
+        tmpSecond1 = 60 - tmpSecond1;
+        if (tmpSecond1 >= 60)
+            tmpSecond1 = 0;
         break;
     }
 
@@ -374,7 +370,7 @@ void SetWSStatus()
         sprintf(str, "On air");
     }
 
-    LCD_FillRect(LCD_MakePoint(0, TOP_MENU_TOP),LCD_MakePoint(77, TOP_MENU_TOP + 32), OnAirBackColor); //LCD_BLACK);
+    LCD_FillRect(LCD_MakePoint(0, TOP_MENU_TOP), LCD_MakePoint(77, TOP_MENU_TOP + 32), OnAirBackColor); //LCD_BLACK);
     FONT_Write(FONT_FRANBIG, OnAirForeColor, 0, 4, TOP_MENU_TOP, str);
 }
 
@@ -404,7 +400,7 @@ static void DrawWSInformation(void)
     uint32_t freqHz = tempFreq % 1000;
 
     //Clear Frequency Window
-    LCD_FillRect(LCD_MakePoint(4, 42),LCD_MakePoint(479, 90),BACK_COLOR);
+    LCD_FillRect(LCD_MakePoint(4, 42), LCD_MakePoint(479, 90), BACK_COLOR);
 
     if (*nowBandIndex == BAND_MAX_INDEX)
     {
@@ -430,18 +426,17 @@ static void DrawWSInformation(void)
     }
 
     LCD_HLine(LCD_MakePoint(1, 36), 479, LCD_BLACK);
-    LCD_VLine(LCD_MakePoint(1, 36),  57, LCD_BLACK);
+    LCD_VLine(LCD_MakePoint(1, 36), 57, LCD_BLACK);
     LCD_HLine(LCD_MakePoint(1, 92), 479, LCD_WHITE);
-    LCD_VLine(LCD_MakePoint(479, 36),  57, LCD_WHITE);
+    LCD_VLine(LCD_MakePoint(479, 36), 57, LCD_WHITE);
 
-    LCD_FillRect(LCD_MakePoint(0, FREQ_MENU_TOP),LCD_MakePoint(77, FREQ_MENU_TOP + 32), LCD_BLUE); //LCD_BLACK);
+    LCD_FillRect(LCD_MakePoint(0, FREQ_MENU_TOP), LCD_MakePoint(77, FREQ_MENU_TOP + 32), LCD_BLUE); //LCD_BLACK);
     FONT_Write(FONT_FRANBIG, LCD_WHITE, 0, 4, FREQ_MENU_TOP, BAND_NAME[*nowBandIndex]);
-
 
     SetWSStatus();
 
     //Clear
-    LCD_FillRect(LCD_MakePoint(1, INFO_TOP),LCD_MakePoint(479, 237), BACK_COLOR); //LCD_BLACK);
+    LCD_FillRect(LCD_MakePoint(1, INFO_TOP), LCD_MakePoint(479, 237), BACK_COLOR); //LCD_BLACK);
 
     if (*nowPR == PR_WSPR)
     {
@@ -452,12 +447,12 @@ static void DrawWSInformation(void)
         FONT_Write(FONT_FRAN, TextColor, 0, 14, INFO_TOP, "CALL SIGN ('_' Converted to '/')");
         FONT_Write(FONT_FRANBIG, TextColor, 0, 7, INFO_TOP + 12, wsCallSign);
 
-        LCD_FillRect(LCD_MakePoint(258, INFO_TOP + 1),LCD_MakePoint(397, INFO_TOP + 15), TITLE_COLOR); //LCD_BLACK);
+        LCD_FillRect(LCD_MakePoint(258, INFO_TOP + 1), LCD_MakePoint(397, INFO_TOP + 15), TITLE_COLOR); //LCD_BLACK);
         LCD_Rectangle(LCD_MakePoint(258, INFO_TOP + 1), LCD_MakePoint(396, INFO_TOP + 44), TITLE_COLOR);
         FONT_Write(FONT_FRAN, TextColor, 0, 268, INFO_TOP, "LOCATION");
         FONT_Write(FONT_FRANBIG, TextColor, 0, 261, INFO_TOP + 12, wsLocation);
 
-        LCD_FillRect(LCD_MakePoint(400, INFO_TOP + 1),LCD_MakePoint(479, INFO_TOP + 15), TITLE_COLOR); //LCD_BLACK);
+        LCD_FillRect(LCD_MakePoint(400, INFO_TOP + 1), LCD_MakePoint(479, INFO_TOP + 15), TITLE_COLOR); //LCD_BLACK);
         LCD_Rectangle(LCD_MakePoint(400, INFO_TOP + 1), LCD_MakePoint(478, INFO_TOP + 44), TITLE_COLOR);
         FONT_Write(FONT_FRAN, TextColor, 0, 410, INFO_TOP, "dBm");
         sprintf(str, "%d", wsDBM);
@@ -471,12 +466,11 @@ static void DrawWSInformation(void)
         FONT_Write(FONT_FRANBIG, TextColor, 0, 7, INFO_TOP + 12, wsMessage);
     }
 
-
     //TX POWER
     LCD_FillRect(LCD_MakePoint(1, INFO_LINE2 + 1), LCD_MakePoint(125, INFO_LINE2 + 15), TITLE_COLOR); //LCD_BLACK);
     LCD_Rectangle(LCD_MakePoint(1, INFO_LINE2 + 1), LCD_MakePoint(124, INFO_LINE2 + 44), TITLE_COLOR);
     FONT_Write(FONT_FRAN, TextColor, 0, 14, INFO_LINE2, "TX Power(Port)");
-    sprintf(str, "[S%d] %dmA", ((*wsTXPower & 0x10) == 0x10  ? 1 : 2), (*wsTXPower & 0x0F));
+    sprintf(str, "[S%d] %dmA", ((*wsTXPower & 0x10) == 0x10 ? 1 : 2), (*wsTXPower & 0x0F));
     FONT_Write(FONT_FRANBIG, TextColor, 0, 7, INFO_LINE2 + 12, str);
 
     UpdateAFFreq();
@@ -486,15 +480,16 @@ static void DrawWSInformation(void)
 
 uint8_t isContinuousTX = 0;
 
-void wsMenuDraw(void){
+void wsMenuDraw(void)
+{
     //uint32_t LCSaveColor = TextColor;
 
     //Bottom Menu
-    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_EXIT  ][BUTTON_LEFT], wsMenus[MENU_EXIT  ][BUTTON_TOP]), imgbtn_home2, imgbtn_home2_size);
-    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_SAVECONFIG  ][BUTTON_LEFT], wsMenus[MENU_SAVECONFIG  ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_SETCONTINUE  ][BUTTON_LEFT], wsMenus[MENU_SETCONTINUE  ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_MSEND  ][BUTTON_LEFT], wsMenus[MENU_MSEND  ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_RTCSEND    ][BUTTON_LEFT], wsMenus[MENU_RTCSEND    ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_EXIT][BUTTON_LEFT], wsMenus[MENU_EXIT][BUTTON_TOP]), imgbtn_home2, imgbtn_home2_size);
+    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_SAVECONFIG][BUTTON_LEFT], wsMenus[MENU_SAVECONFIG][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_SETCONTINUE][BUTTON_LEFT], wsMenus[MENU_SETCONTINUE][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_MSEND][BUTTON_LEFT], wsMenus[MENU_MSEND][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_RTCSEND][BUTTON_LEFT], wsMenus[MENU_RTCSEND][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
 
     //Draw Text on Empty Button
     FONT_Write(FONT_FRAN, TextColor, 0, wsMenus[MENU_SAVECONFIG][BUTTON_LEFT] + 10, wsMenus[MENU_SAVECONFIG][BUTTON_TOP] + 10, "Save Config");
@@ -517,10 +512,10 @@ void wsMenuDraw(void){
     FONT_Write(FONT_FRAN, TextColor, 0, wsMenus[MENU_AFFREQDOWN][BUTTON_LEFT] + 10, wsMenus[MENU_AFFREQDOWN][BUTTON_TOP] + 10, "AF -10Hz");
     FONT_Write(FONT_FRAN, TextColor, 0, wsMenus[MENU_AFFREQUP][BUTTON_LEFT] + 10, wsMenus[MENU_AFFREQUP][BUTTON_TOP] + 10, "AF +10Hz");
 
-    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP1 ][BUTTON_LEFT], wsMenus[MENU_TOP1 ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP2 ][BUTTON_LEFT], wsMenus[MENU_TOP2 ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP3 ][BUTTON_LEFT], wsMenus[MENU_TOP3 ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP4 ][BUTTON_LEFT], wsMenus[MENU_TOP4 ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP1][BUTTON_LEFT], wsMenus[MENU_TOP1][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP2][BUTTON_LEFT], wsMenus[MENU_TOP2][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP3][BUTTON_LEFT], wsMenus[MENU_TOP3][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP4][BUTTON_LEFT], wsMenus[MENU_TOP4][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
 
     FONT_Write(FONT_FRANBIG, (*nowPR == PR_WSPR ? SELECT_PROTOCOL_COLOR : TextColor), 0, wsMenus[MENU_TOP1][BUTTON_LEFT] + 10, wsMenus[MENU_TOP1][BUTTON_TOP] + 0, "WSPR");
     FONT_Write(FONT_FRANBIG, (*nowPR == PR_FT8 ? SELECT_PROTOCOL_COLOR : TextColor), 0, wsMenus[MENU_TOP2][BUTTON_LEFT] + 10, wsMenus[MENU_TOP2][BUTTON_TOP] + 0, "FT8");
@@ -537,14 +532,12 @@ void wsMenuDraw(void){
     //LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP5 ][BUTTON_LEFT], wsMenus[MENU_TOP5 ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
     //LCD_DrawBitmap(LCD_MakePoint(wsMenus[MENU_TOP6 ][BUTTON_LEFT], wsMenus[MENU_TOP6 ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
 
-//#define SAVED_COLOR LCD_BLUE
-//#define WORK_COLOR  LCD_YELLOW
-//#define WORKED_COLOR  LCD_RED
-
+    //#define SAVED_COLOR LCD_BLUE
+    //#define WORK_COLOR  LCD_YELLOW
+    //#define WORKED_COLOR  LCD_RED
 }
 
 LCDPoint pt;
-
 
 void ClearTmpBuffer()
 {
@@ -553,13 +546,13 @@ void ClearTmpBuffer()
     wsKeyboardTmp[20] = 0;
 }
 
-void TmpBuffToBuff(char * targetBuff, int length)
+void TmpBuffToBuff(char *targetBuff, int length)
 {
     for (int i = 0; i < length; i++)
         targetBuff[i] = wsKeyboardTmp[i];
 
     targetBuff[length] = 0;
-    for (int i = length -1; i >= 0; i--)
+    for (int i = length - 1; i >= 0; i--)
     {
         if (targetBuff[i] == ' ')
             targetBuff[i] = 0;
@@ -570,24 +563,23 @@ void TmpBuffToBuff(char * targetBuff, int length)
 
 uint8_t wsUserStop = 0;
 
-#define JT9_DELAY               576          // Delay value for JT9-1
-#define JT65_DELAY              371          // Delay in ms for JT65A
-#define JT4_DELAY               229          // Delay value for JT4A
-#define WSPR_DELAY              683          // Delay value for WSPR
-#define FSQ_2_DELAY             500          // Delay value for 2 baud FSQ
-#define FSQ_3_DELAY             333          // Delay value for 3 baud FSQ
-#define FSQ_4_5_DELAY           222          // Delay value for 4.5 baud FSQ
-#define FSQ_6_DELAY             167          // Delay value for 6 baud FSQ
-#define FT8_DELAY               159          // Delay value for FT8
-#define FT4_DELAY               43           // Delay value for FT4
+#define JT9_DELAY 576     // Delay value for JT9-1
+#define JT65_DELAY 371    // Delay in ms for JT65A
+#define JT4_DELAY 229     // Delay value for JT4A
+#define WSPR_DELAY 683    // Delay value for WSPR
+#define FSQ_2_DELAY 500   // Delay value for 2 baud FSQ
+#define FSQ_3_DELAY 333   // Delay value for 3 baud FSQ
+#define FSQ_4_5_DELAY 222 // Delay value for 4.5 baud FSQ
+#define FSQ_6_DELAY 167   // Delay value for 6 baud FSQ
+#define FT8_DELAY 159     // Delay value for FT8
+#define FT4_DELAY 43      // Delay value for FT4
 
-
-#define JT65_SYMBOL_COUNT                   126
-#define JT9_SYMBOL_COUNT                    85
-#define JT4_SYMBOL_COUNT                    207
-#define WSPR_SYMBOL_COUNT                   162
-#define FT8_SYMBOL_COUNT                    79
-#define FT4_SYMBOL_COUNT                    103
+#define JT65_SYMBOL_COUNT 126
+#define JT9_SYMBOL_COUNT 85
+#define JT4_SYMBOL_COUNT 207
+#define WSPR_SYMBOL_COUNT 162
+#define FT8_SYMBOL_COUNT 79
+#define FT4_SYMBOL_COUNT 103
 
 //Not use , prevent flicking, reduce used stack
 /*
@@ -626,22 +618,21 @@ int DrawSendingRateAndCheckStop(int progressPercent, int showProgress)
 }
 */
 
-
-void CreateSineWave(double freq1, int16_t* buff, int buffLength)
+void CreateSineWave(double freq1, int16_t *buff, int buffLength)
 {
-	int samplesPerSecond = 16000;
-	const double TAU = 2 * M_PI;
-	int16_t volume = 16383;
+    int samplesPerSecond = 16000;
+    const double TAU = 2 * M_PI;
+    int16_t volume = 16383;
 
-	double theta1 = freq1 * TAU / (double)samplesPerSecond;
-	//double theta2 = freq2 * TAU / (double)samplesPerSecond;
-	double amp = volume; // so we simply set amp = volume / 2
+    double theta1 = freq1 * TAU / (double)samplesPerSecond;
+    //double theta2 = freq2 * TAU / (double)samplesPerSecond;
+    double amp = volume; // so we simply set amp = volume / 2
 
-	for (int step = 0; step < buffLength; step++)
-	{
-			short s1 = (short)(amp * (sin(theta1 * (double)step) + 1));
-			buff[step] = (uint16_t)(s1);
-	}
+    for (int step = 0; step < buffLength; step++)
+    {
+        short s1 = (short)(amp * (sin(theta1 * (double)step) + 1));
+        buff[step] = (uint16_t)(s1);
+    }
 }
 
 void SendingStart(void)
@@ -654,7 +645,7 @@ void SendingStart(void)
     uint16_t protocol_DIV = 0;
 
     int progressPercent = 0;
-    uint32_t tickstart  = 0;
+    uint32_t tickstart = 0;
     int nowStep = 0;
 
     //Apply Configuration
@@ -662,7 +653,7 @@ void SendingStart(void)
 HS_CLK2
 HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
     */
-    uint8_t tx_output_Port = ((*wsTXPower & 0x10) == 0x10  ? HS_CLK0 : HS_CLK2);
+    uint8_t tx_output_Port = ((*wsTXPower & 0x10) == 0x10 ? HS_CLK0 : HS_CLK2);
     //uint8_t tx_output_Port = HS_CLK2;
 
     memset(tx_buffer, 0, 255);
@@ -670,70 +661,69 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
     //PTT ON
     SET_PTT(1);
 
-    switch(*nowPR)
+    switch (*nowPR)
     {
-        case PR_WSPR :
-            symbol_count = WSPR_SYMBOL_COUNT; // From the library defines
-            tone_delay = WSPR_DELAY;
-            protocol_BW =   6;      //1.4648 * 4(4FSK) = 6Hz https://en.wikipedia.org/wiki/WSPR_(amateur_radio_software)
-            protocol_DIV = 4;       //4 (FSK)
+    case PR_WSPR:
+        symbol_count = WSPR_SYMBOL_COUNT; // From the library defines
+        tone_delay = WSPR_DELAY;
+        protocol_BW = 6;  //1.4648 * 4(4FSK) = 6Hz https://en.wikipedia.org/wiki/WSPR_(amateur_radio_software)
+        protocol_DIV = 4; //4 (FSK)
 
-            wspr_encode(wsCallSign, wsLocation, wsDBM, tx_buffer);
+        wspr_encode(wsCallSign, wsLocation, wsDBM, tx_buffer);
         break;
 
-        default:
-        case PR_FT8 :
-            symbol_count = FT8_SYMBOL_COUNT; // From the library defines
-            tone_delay = FT8_DELAY;
-            protocol_BW =   50;      //6.25hz * 8FSK = 50hz http://physics.princeton.edu/pulsar/k1jt/ft8.txt
-            protocol_DIV = 8;       //8 (FSK)
+    default:
+    case PR_FT8:
+        symbol_count = FT8_SYMBOL_COUNT; // From the library defines
+        tone_delay = FT8_DELAY;
+        protocol_BW = 50; //6.25hz * 8FSK = 50hz http://physics.princeton.edu/pulsar/k1jt/ft8.txt
+        protocol_DIV = 8; //8 (FSK)
 
-            ft8_encode_msg(wsMessage, tx_buffer);	//Change to ft8_encode -> ft8_encode_msg
+        ft8_encode_msg(wsMessage, tx_buffer); //Change to ft8_encode -> ft8_encode_msg
         break;
 
-        case PR_FT4 :
-            symbol_count = FT4_SYMBOL_COUNT; // From the library defines
-            tone_delay = FT4_DELAY;
-            protocol_BW =   90;     //from WSJT-X 2.1.0 RC & http://physics.princeton.edu/pulsar/k1jt/FT4_Protocol.pdf
-            protocol_DIV = 4;       //4 (FSK) http://physics.princeton.edu/pulsar/k1jt/FT4_Protocol.pdf
+    case PR_FT4:
+        symbol_count = FT4_SYMBOL_COUNT; // From the library defines
+        tone_delay = FT4_DELAY;
+        protocol_BW = 90; //from WSJT-X 2.1.0 RC & http://physics.princeton.edu/pulsar/k1jt/FT4_Protocol.pdf
+        protocol_DIV = 4; //4 (FSK) http://physics.princeton.edu/pulsar/k1jt/FT4_Protocol.pdf
 
-            ft4_encode_msg(wsMessage, tx_buffer);	//Change to ft8_encode -> ft8_encode_msg
+        ft4_encode_msg(wsMessage, tx_buffer); //Change to ft8_encode -> ft8_encode_msg
         break;
 
-        case PR_JT65 :
-            symbol_count = JT65_SYMBOL_COUNT; // From the library defines
-            tone_delay = JT65_DELAY;
-            //protocol_BW =   175;      //2.7hZ * 65 FSK = 175.5 https://www.sigidwiki.com/wiki/JT65
-            //protocol_DIV =  65;       //65 (JT65A)
-            protocol_BW =   189;      //2.7hZ * 65 FSK = 175.5 https://www.sigidwiki.com/wiki/JT65 modified for make divide = 2.7Hz
-            protocol_DIV =  70;       //65 (JT65A)
+    case PR_JT65:
+        symbol_count = JT65_SYMBOL_COUNT; // From the library defines
+        tone_delay = JT65_DELAY;
+        //protocol_BW =   175;      //2.7hZ * 65 FSK = 175.5 https://www.sigidwiki.com/wiki/JT65
+        //protocol_DIV =  65;       //65 (JT65A)
+        protocol_BW = 189; //2.7hZ * 65 FSK = 175.5 https://www.sigidwiki.com/wiki/JT65 modified for make divide = 2.7Hz
+        protocol_DIV = 70; //65 (JT65A)
 
-            jt65_encode(wsMessage, tx_buffer);
+        jt65_encode(wsMessage, tx_buffer);
         break;
 
-        case PR_JT9 :
-            symbol_count = JT9_SYMBOL_COUNT; // From the library defines
-            tone_delay = JT9_DELAY;
-            //protocol_BW =   16;      // 16 BandWidth https://en.wikipedia.org/wiki/WSJT_(amateur_radio_software)#JT9
-            //protocol_DIV =  9;       //9 FSK
-            protocol_BW =   14;      // 16 BandWidth https://en.wikipedia.org/wiki/WSJT_(amateur_radio_software)#JT9
-            protocol_DIV =  8;       //9 FSK
-            jt9_encode(wsMessage, tx_buffer);
+    case PR_JT9:
+        symbol_count = JT9_SYMBOL_COUNT; // From the library defines
+        tone_delay = JT9_DELAY;
+        //protocol_BW =   16;      // 16 BandWidth https://en.wikipedia.org/wiki/WSJT_(amateur_radio_software)#JT9
+        //protocol_DIV =  9;       //9 FSK
+        protocol_BW = 14; // 16 BandWidth https://en.wikipedia.org/wiki/WSJT_(amateur_radio_software)#JT9
+        protocol_DIV = 8; //9 FSK
+        jt9_encode(wsMessage, tx_buffer);
         break;
     }
 
     unsigned long TX_P1, TX_P2, TX_P3;
-	unsigned long TXA_P2;
+    unsigned long TXA_P2;
 
-
-	//=================================================================================
-	// Test SI5351_HS
-	//---------------------------------------------------------------------------------
-	//3Khz(Step 1Hz) Swing Test (Using P1, P2)
-	//Freq : 24100000Hz ~ 24103000Hz
-	unsigned long tmp_P1, tmp_P2, tmp_P3;
-	//Band and Protocol Frequency + Basic AF Frequency + Select Adjust AF Frequency
-	unsigned long freqFrom = WSFreq + 1500 + *wsAUDIOFreq;  //WSPR, FT8, JT65, JT9 ALL USB => Basic Frequency + Audio Frequency
+    //=================================================================================
+    // Test SI5351_HS
+    //---------------------------------------------------------------------------------
+    //3Khz(Step 1Hz) Swing Test (Using P1, P2)
+    //Freq : 24100000Hz ~ 24103000Hz
+    unsigned long tmp_P1, tmp_P2, tmp_P3;
+    //Band and Protocol Frequency + Basic AF Frequency + Select Adjust AF Frequency
+    unsigned long freqFrom = WSFreq + 1500 + *wsAUDIOFreq; //WSPR, FT8, JT65, JT9 ALL USB => Basic Frequency + Audio Frequency
     unsigned int swingStep = 0;
 
     //Prepare for Sending Data
@@ -756,10 +746,10 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
             }
 
             memset(AUDIO_BUFFER_OUT, 0, AUDIO_OUT_SIZE * 2);
-            Audio_Play_Status = AUDIO_TRANSFER_NONE;	//Receive Start
+            Audio_Play_Status = AUDIO_TRANSFER_NONE; //Receive Start
             BSP_AUDIO_OUT_SetAudioFrameSlot(CODEC_AUDIOFRAME_SLOT_02);
 
-			//BSP_AUDIO_OUT_Stop(CODEC_PDWN_SW);
+            //BSP_AUDIO_OUT_Stop(CODEC_PDWN_SW);
         }
         else
         {
@@ -777,7 +767,7 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
         HS_CalcPLLParam(HS_MAX_C_VAL, freqFrom + protocol_BW, &tmp_P1, &tmp_P2, &tmp_P3);
 
         //Swing Count (Increase or Decrease 1Hz)
-        swingStep = (tmp_P2 - TX_P2)  / protocol_DIV;
+        swingStep = (tmp_P2 - TX_P2) / protocol_DIV;
 
         //All clock down
         HS_AllClockDown();
@@ -796,7 +786,6 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
         HS_SetClockEnabled(tx_output_Port, HS_TRUE, HS_TRUE);
 
         HS_SetPower(tx_output_Port, HS_MAToParam(*wsTXPower & 0x0F), HS_TRUE);
-
     }
 
     //Button Text Change
@@ -819,11 +808,10 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
         //LCD_FillRect(LCD_MakePoint(268, INFO_LINE2 + 20), LCD_MakePoint(268 + progressPercent * 2, INFO_LINE2 + 40), LCD_BLUE); //LCD_BLACK);
         //FONT_Write(FONT_FRANBIG, TextColor, 0, 340, INFO_LINE2 + 12, textPercent);
 
-
         //Via Transceiver using Audio Chip
         nowStep = 0;
         //BSP_AUDIO_OUT_SetVolume(100);
-        BSP_AUDIO_OUT_Play((uint16_t*)AUDIO_BUFFER_OUT, AUDIO_OUT_SIZE * 2);    //
+        BSP_AUDIO_OUT_Play((uint16_t *)AUDIO_BUFFER_OUT, AUDIO_OUT_SIZE * 2); //
 
         while (1)
         {
@@ -831,7 +819,7 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
             CreateSineWave(((double)1500 + *wsAUDIOFreq) + (WSPR_TONE_SPACING * tx_buffer[nowStep]), AUDIO_BUFFER_OUT, AUDIO_OUT_SIZE);
             nowStep++;
 
-            while(Audio_Play_Status != AUDIO_TRANSFER_COMPLETE)
+            while (Audio_Play_Status != AUDIO_TRANSFER_COMPLETE)
             {
                 HAL_Delay(1);
                 __NOP();
@@ -845,10 +833,9 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
             //if (DrawSendingRateAndCheckStop(progressPercent, 0) || nowStep >= 163)
             //Not use function
             sprintf(textPercent, "%d%%", progressPercent);
-            LCD_FillRect(LCD_MakePoint(261, INFO_LINE2 + 20), LCD_MakePoint(477, INFO_LINE2 + 40), BACK_COLOR); //LCD_BLACK);
+            LCD_FillRect(LCD_MakePoint(261, INFO_LINE2 + 20), LCD_MakePoint(477, INFO_LINE2 + 40), BACK_COLOR);                     //LCD_BLACK);
             LCD_FillRect(LCD_MakePoint(268, INFO_LINE2 + 20), LCD_MakePoint(268 + progressPercent * 2, INFO_LINE2 + 40), LCD_BLUE); //LCD_BLACK);
             FONT_Write(FONT_FRANBIG, TextColor, 0, 340, INFO_LINE2 + 12, textPercent);
-
 
             if (TOUCH_Poll(&pt))
             {
@@ -859,15 +846,13 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
                 }
             }
 
-
             if (wsUserStop || nowStep >= 163)
             {
                 //Add below lines to Init section
                 BSP_AUDIO_OUT_Stop(CODEC_PDWN_SW);
                 break;
             }
-        }   //end of while
-
+        } //end of while
     }
     else
     {
@@ -876,7 +861,7 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
         LCD_Rectangle(LCD_MakePoint(258, INFO_LINE2 + 1), LCD_MakePoint(478, INFO_LINE2 + 44), LCD_RED);
         FONT_Write(FONT_FRAN, TextColor, 0, 268, INFO_LINE2, "Transmission status");
 
-        for(int i = 0; i < symbol_count; i++)
+        for (int i = 0; i < symbol_count; i++)
         {
             TXA_P2 = TX_P2 + tx_buffer[i] * swingStep;
             HS_SetPLLP1P2(HS_PLLA, TX_P1 + TXA_P2 / TX_P3, TXA_P2 % TX_P3, TX_P3);
@@ -895,7 +880,7 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
             //    break;
             //Not use function
             sprintf(textPercent, "%d%%", progressPercent);
-            LCD_FillRect(LCD_MakePoint(261, INFO_LINE2 + 20), LCD_MakePoint(477, INFO_LINE2 + 40), BACK_COLOR); //LCD_BLACK);
+            LCD_FillRect(LCD_MakePoint(261, INFO_LINE2 + 20), LCD_MakePoint(477, INFO_LINE2 + 40), BACK_COLOR);                     //LCD_BLACK);
             LCD_FillRect(LCD_MakePoint(268, INFO_LINE2 + 20), LCD_MakePoint(268 + progressPercent * 2, INFO_LINE2 + 40), LCD_BLUE); //LCD_BLACK);
             FONT_Write(FONT_FRANBIG, TextColor, 0, 340, INFO_LINE2 + 12, textPercent);
 
@@ -914,22 +899,22 @@ HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)
             //Check DelayTime
             while ((HAL_GetTick() - tickstart) < tone_delay)
             {
-            //__NOP();
+                //__NOP();
             }
-        }   //end of for
+        } //end of for
 
         HS_SetClockEnabled(tx_output_Port, HS_FALSE, HS_TRUE);
     }
 
     //while(TOUCH_IsPressed());
-	//Update Time
-	CheckTime();
+    //Update Time
+    CheckTime();
     SET_PTT(0);
 }
 
 void WeakSignal_Proc(void)
 {
-    int checkCount = 0;     //Check Measure Interval
+    int checkCount = 0; //Check Measure Interval
 
     SetColours();
     BSP_LCD_SelectLayer(0);
@@ -940,19 +925,20 @@ void WeakSignal_Proc(void)
 
     WS_LoadInformation();
 
-    while(TOUCH_IsPressed());
+    while (TOUCH_IsPressed())
+        ;
 
     uint32_t si5351_XTAL_FREQ = (uint32_t)((int)CFG_GetParam(CFG_PARAM_SI5351_XTAL_FREQ) + (int)CFG_GetParam(CFG_PARAM_SI5351_CORR));
     HS_SI5351_Init(si5351_XTAL_FREQ, (CFG_GetParam(CFG_PARAM_SI5351_CAPS) & 3));
 
     JTEncode();
-    wsMenuDraw();           //Draw Menu
-    DrawWSInformation();    //Draw Information
+    wsMenuDraw();        //Draw Menu
+    DrawWSInformation(); //Draw Information
 
     //Init Start Frequency
     //NowMeasureFreq = MeasureStartFreq;
 
-    for(;;)
+    for (;;)
     {
         if (TOUCH_Poll(&pt))
         {
@@ -960,7 +946,8 @@ void WeakSignal_Proc(void)
             if ((pt.y > INFO_TOP && pt.y < INFO_LINE2) || (pt.y > INFO_LINE2 && pt.y < INFO_LINE2 + 35 && pt.x < 125))
             {
                 TRACK_Beep(1);
-                while(TOUCH_IsPressed());
+                while (TOUCH_IsPressed())
+                    ;
 
                 //Check Line 1
                 if (pt.y < INFO_LINE2)
@@ -970,7 +957,7 @@ void WeakSignal_Proc(void)
                         if (pt.x < 255)
                         {
                             ClearTmpBuffer();
-                            if(KeyboardWindow(wsKeyboardTmp, 20, "Call Sign(_=/)"))
+                            if (KeyboardWindow(wsKeyboardTmp, 20, "Call Sign(_=/)"))
                             {
                                 for (int i = 0; i < 20; i++)
                                 {
@@ -981,41 +968,39 @@ void WeakSignal_Proc(void)
                                 TmpBuffToBuff(wsCallSign, 10);
                             }
                         }
-                        else if (pt.x < 397)    //LOCATION
+                        else if (pt.x < 397) //LOCATION
                         {
                             ClearTmpBuffer();
-                            if(KeyboardWindow(wsKeyboardTmp, 20, "Enter Your Location"))
+                            if (KeyboardWindow(wsKeyboardTmp, 20, "Enter Your Location"))
                             {
                                 TmpBuffToBuff(wsLocation, 7);
                             }
                         }
-                        else    //DB
+                        else //DB
                         {
                             ClearTmpBuffer();
-                            if(KeyboardWindow(wsKeyboardTmp, 20, "dBm (only Numeric)"))
+                            if (KeyboardWindow(wsKeyboardTmp, 20, "dBm (only Numeric)"))
                             {
                                 //Check Validataion
                                 TmpBuffToBuff(wsDBMStr, 5);
                                 wsDBM = atoi(wsDBMStr);
                             }
-
                         }
-                    }   //end of WSPR
+                    } //end of WSPR
                     else
-                    {   //FT8, JT65, JT9
+                    { //FT8, JT65, JT9
 
                         ClearTmpBuffer();
-                        if(KeyboardWindow(wsKeyboardTmp , 20, "Message for FT8, JT"))
+                        if (KeyboardWindow(wsKeyboardTmp, 20, "Message for FT8, JT"))
                         {
                             TmpBuffToBuff(wsMessage, 20);
                         }
                     }
-
                 }
                 else
                 {
                     //TX POWER SELECT
-                    if ((*wsTXPower & 0x0F) == 0x02)   //2mA (minimum)
+                    if ((*wsTXPower & 0x0F) == 0x02) //2mA (minimum)
                         *wsTXPower = *wsTXPower == 0x02 ? 0x18 : 0x08;
                     else
                         *wsTXPower -= 2;
@@ -1033,7 +1018,7 @@ void WeakSignal_Proc(void)
                 TRACK_Beep(1);
 
                 //Chbeck AF Frequency Up And Down / for Continues change
-                if (touchIndex == MENU_AFFREQDOWN || touchIndex == MENU_AFFREQUP)  //+- 10Hz
+                if (touchIndex == MENU_AFFREQDOWN || touchIndex == MENU_AFFREQUP) //+- 10Hz
                 {
                     *wsAUDIOFreq += (touchIndex == MENU_AFFREQDOWN ? -10 : 10);
                     UpdateAFFreq();
@@ -1042,11 +1027,12 @@ void WeakSignal_Proc(void)
                 }
                 else
                 {
-                    while(TOUCH_IsPressed());
+                    while (TOUCH_IsPressed())
+                        ;
                 }
             }
 
-            if (touchIndex == MENU_EXIT)    //EXIT
+            if (touchIndex == MENU_EXIT) //EXIT
             {
                 break;
             }
@@ -1068,7 +1054,8 @@ void WeakSignal_Proc(void)
                 NowStatus = WS_ST_NONE;
                 SetWSStatus();
 
-                while(TOUCH_IsPressed());
+                while (TOUCH_IsPressed())
+                    ;
             }
             else if (touchIndex == MENU_RTCSEND)
             {
@@ -1077,7 +1064,7 @@ void WeakSignal_Proc(void)
                 else
                     NowStatus = WS_ST_READY;
             }
-            else if (touchIndex == MENU_BANDDOWN || touchIndex == MENU_BANDUP)  //Prior Band, Next Band
+            else if (touchIndex == MENU_BANDDOWN || touchIndex == MENU_BANDUP) //Prior Band, Next Band
             {
                 if (touchIndex == MENU_BANDDOWN)
                 {
@@ -1095,9 +1082,8 @@ void WeakSignal_Proc(void)
                 }
 
                 SetDefaultFrequency();
-
             }
-            else if (touchIndex >= MENU_TOP1 && touchIndex <= MENU_TOP4)  //WSPR ~ JT9, Protocol Change
+            else if (touchIndex >= MENU_TOP1 && touchIndex <= MENU_TOP4) //WSPR ~ JT9, Protocol Change
             {
                 if (touchIndex == MENU_TOP4)
                 {
@@ -1112,7 +1098,7 @@ void WeakSignal_Proc(void)
                 }
 
                 SetDefaultFrequency();
-            }   //end of else if
+            } //end of else if
 
             DrawWSInformation();
             wsMenuDraw();
@@ -1134,14 +1120,15 @@ void WeakSignal_Proc(void)
 
                 SendingStart();
 
-                NowStatus = isContinuousTX && (! wsUserStop) ? WS_ST_READY : WS_ST_NONE;
+                NowStatus = isContinuousTX && (!wsUserStop) ? WS_ST_READY : WS_ST_NONE;
                 SetWSStatus();
                 wsMenuDraw();
 
-                while(TOUCH_IsPressed());
+                while (TOUCH_IsPressed())
+                    ;
             }
         }
-    }   //end of for
+    } //end of for
 
     //Release Memory
     //free(MeasureIM);
@@ -1150,5 +1137,4 @@ void WeakSignal_Proc(void)
     GEN_SetMeasurementFreq(0);
     DSP_Init();
     return;
-
 }

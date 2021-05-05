@@ -10,13 +10,40 @@
 // ** WK ** // DL8MBY:
 typedef enum
 {
-    BS2, BS4, BS10, BS20, BS40, BS100, BS150, BS200, BS250, BS300, BS400, BS500 ,BS1000, BS2M, BS4M,
-BS10M, BS20M, BS30M, BS40M, BS60M, BS100M, BS200M, BS250M, BS300M, BS350M,
-BS400M, BS450M, BS500M, BS700M, BS1000M
+    BS2,
+    BS4,
+    BS10,
+    BS20,
+    BS40,
+    BS100,
+    BS150,
+    BS200,
+    BS250,
+    BS300,
+    BS400,
+    BS500,
+    BS1000,
+    BS2M,
+    BS4M,
+    BS10M,
+    BS20M,
+    BS30M,
+    BS40M,
+    BS60M,
+    BS100M,
+    BS200M,
+    BS250M,
+    BS300M,
+    BS350M,
+    BS400M,
+    BS450M,
+    BS500M,
+    BS700M,
+    BS1000M
 } BANDSPAN;
 
-extern const char* BSSTR[];
-extern const char* BSSTR_HALF[];
+extern const char *BSSTR[];
+extern const char *BSSTR_HALF[];
 extern const uint32_t BSVALUES[];
 extern uint32_t multi_fr[5];
 extern float freqMHzf;
@@ -37,7 +64,7 @@ void Tune_SWR_Proc(void);
 
 void Quartz_proc(void);
 
-void  setup_GPIO(void);
+void setup_GPIO(void);
 void ShowFr(int digits);
 void SWR_SetFrequency(void);
 int IsFinHamBands(uint32_t f_kHz);

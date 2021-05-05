@@ -5,12 +5,13 @@
 
 //ADF4351 driver API
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-void SI5338A_Init(void);
-void SI5338A_Off(void);
-void SI5338A_SetF0(uint32_t fhz);
-void SI5338A_SetLO(uint32_t fhz);
+    void SI5338A_Init(void);
+    void SI5338A_Off(void);
+    void SI5338A_SetF0(uint32_t fhz);
+    void SI5338A_SetLO(uint32_t fhz);
 
 #ifdef __cplusplus
 }

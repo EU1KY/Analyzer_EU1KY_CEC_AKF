@@ -51,14 +51,14 @@ static void si5351_set_ms(uint32_t a, uint32_t b, uint32_t c, uint8_t rdiv, enum
 static uint8_t si5351_detect_address(void);
 
 //Ext I2C port used for camera is wired to Arduino UNO connector when SB4 and SB1 jumpers are set instead of SB5 and SB3.
-extern void     CAMERA_IO_Init(void);
-extern void     CAMERA_IO_Write(uint8_t addr, uint8_t reg, uint8_t value);
-extern uint8_t  CAMERA_IO_Read(uint8_t addr, uint8_t reg);
-extern void     CAMERA_Delay(uint32_t delay);
-extern void     CAMERA_IO_WriteBulk(uint8_t addr, uint8_t reg, uint8_t* values, uint16_t nvalues);
+extern void CAMERA_IO_Init(void);
+extern void CAMERA_IO_Write(uint8_t addr, uint8_t reg, uint8_t value);
+extern uint8_t CAMERA_IO_Read(uint8_t addr, uint8_t reg);
+extern void CAMERA_Delay(uint32_t delay);
+extern void CAMERA_IO_WriteBulk(uint8_t addr, uint8_t reg, uint8_t *values, uint16_t nvalues);
 extern void Sleep(uint32_t);
 
-uint8_t CLK2_drive = 3;// 8 mA
+uint8_t CLK2_drive = 3; // 8 mA
 
 /******************************/
 /* Suggested public functions */
@@ -74,7 +74,7 @@ void si5351_Init(void)
 {
     CAMERA_IO_Init();
 
-    CLK2_drive = 3;// 8 mA
+    CLK2_drive = 3; // 8 mA
 
     if (0 == CFG_GetParam(CFG_PARAM_SI5351_BUS_BASE_ADDR))
     {
@@ -163,7 +163,6 @@ static void si5351_set_freq(uint32_t freq, enum si5351_clock clk)
     set_multisynth_alt(freq, clk);
 }
 
-
 /*
  * si5351_clock_enable(enum si5351_clock clk, uint8_t enable)
  *
@@ -176,18 +175,18 @@ static void si5351_clock_enable(enum si5351_clock clk, uint8_t enable)
 {
     uint8_t reg_val;
 
-    if(si5351_read(SI5351_OUTPUT_ENABLE_CTRL, &reg_val) != 0)
+    if (si5351_read(SI5351_OUTPUT_ENABLE_CTRL, &reg_val) != 0)
     {
         return;
     }
 
-    if(enable == 1)
+    if (enable == 1)
     {
-        reg_val &= ~(1<<(uint8_t)clk);
+        reg_val &= ~(1 << (uint8_t)clk);
     }
     else
     {
-        reg_val |= (1<<(uint8_t)clk);
+        reg_val |= (1 << (uint8_t)clk);
     }
 
     si5351_write(SI5351_OUTPUT_ENABLE_CTRL, reg_val);
@@ -198,15 +197,15 @@ static void si5351_clock_enable(enum si5351_clock clk, uint8_t enable)
 /*******************************/
 
 static void si5351_set_pll(uint32_t a, uint32_t b, uint32_t c, enum si5351_pll pll)
-{//Set PLL parameters
+{ //Set PLL parameters
     uint8_t params[8];
     uint8_t i = 0;
     uint8_t temp;
     uint32_t p1, p2, p3;
 
-    p3  = c;
-    p2  = (128 * b) % c;
-    p1  = 128 * a;
+    p3 = c;
+    p2 = (128 * b) % c;
+    p1 = 128 * a;
     p1 += (128 * b / c);
     p1 -= 512;
 
@@ -214,7 +213,7 @@ static void si5351_set_pll(uint32_t a, uint32_t b, uint32_t c, enum si5351_pll p
     temp = ((p3 >> 8) & 0xFF);
     params[i++] = temp;
 
-    temp = (uint8_t)(p3  & 0xFF);
+    temp = (uint8_t)(p3 & 0xFF);
     params[i++] = temp;
 
     /* Register 28 */
@@ -225,7 +224,7 @@ static void si5351_set_pll(uint32_t a, uint32_t b, uint32_t c, enum si5351_pll p
     temp = (uint8_t)((p1 >> 8) & 0xFF);
     params[i++] = temp;
 
-    temp = (uint8_t)(p1  & 0xFF);
+    temp = (uint8_t)(p1 & 0xFF);
     params[i++] = temp;
 
     /* Register 31 */
@@ -237,7 +236,7 @@ static void si5351_set_pll(uint32_t a, uint32_t b, uint32_t c, enum si5351_pll p
     temp = (uint8_t)((p2 >> 8) & 0xFF);
     params[i++] = temp;
 
-    temp = (uint8_t)(p2  & 0xFF);
+    temp = (uint8_t)(p2 & 0xFF);
     params[i++] = temp;
 
     if (pll == SI5351_PLLA)
@@ -269,9 +268,9 @@ static void si5351_set_ms(uint32_t a, uint32_t b, uint32_t c, uint8_t rdiv, enum
     }
     else
     {
-        p3  = c;
-        p2  = (128 * b) % c;
-        p1  = 128 * a;
+        p3 = c;
+        p2 = (128 * b) % c;
+        p1 = 128 * a;
         p1 += (128 * b / c);
         p1 -= 512;
     }
@@ -280,7 +279,7 @@ static void si5351_set_ms(uint32_t a, uint32_t b, uint32_t c, uint8_t rdiv, enum
     temp = (uint8_t)((p3 >> 8) & 0xFF);
     params[i++] = temp;
 
-    temp = (uint8_t)(p3  & 0xFF);
+    temp = (uint8_t)(p3 & 0xFF);
     params[i++] = temp;
 
     /* Register 44 (or 52)*/
@@ -294,7 +293,7 @@ static void si5351_set_ms(uint32_t a, uint32_t b, uint32_t c, uint8_t rdiv, enum
     temp = (uint8_t)((p1 >> 8) & 0xFF);
     params[i++] = temp;
 
-    temp = (uint8_t)(p1  & 0xFF);
+    temp = (uint8_t)(p1 & 0xFF);
     params[i++] = temp;
 
     /* Register 47 */
@@ -306,7 +305,7 @@ static void si5351_set_ms(uint32_t a, uint32_t b, uint32_t c, uint8_t rdiv, enum
     temp = (uint8_t)((p2 >> 8) & 0xFF);
     params[i++] = temp;
 
-    temp = (uint8_t)(p2  & 0xFF);
+    temp = (uint8_t)(p2 & 0xFF);
     params[i++] = temp;
 
     /* Write the parameters */
@@ -324,7 +323,6 @@ static void si5351_set_ms(uint32_t a, uint32_t b, uint32_t c, uint8_t rdiv, enum
     }
 }
 
-
 static void set_multisynth_alt(uint32_t freq, enum si5351_clock clk)
 {
     uint32_t a, b, c;
@@ -341,7 +339,7 @@ static void set_multisynth_alt(uint32_t freq, enum si5351_clock clk)
         freq = CFG_GetParam(CFG_PARAM_SI5351_MAX_FREQ);
 
     if (freq >= 112500000ul)
-    {//Use output multisynth constant divider = 4, calculate PLL feedback multisynth to set desired frequency
+    { //Use output multisynth constant divider = 4, calculate PLL feedback multisynth to set desired frequency
         if (freq >= SI5351_MULTISYNTH_DIVBY4_FREQ)
             divms = 4.0;
         else
@@ -358,7 +356,7 @@ static void set_multisynth_alt(uint32_t freq, enum si5351_clock clk)
         fpll = si5351_XTAL_FREQ * ((double)ap + (double)bp / (double)cp);
     }
     else
-    {//Set PLL to maximum frequency, calculate output multisynth divider
+    { //Set PLL to maximum frequency, calculate output multisynth divider
         uint32_t freq_m = freq;
 
         //Handle frequencies below 1 MHz
@@ -399,7 +397,7 @@ static void set_multisynth_alt(uint32_t freq, enum si5351_clock clk)
     else if (divms == 6.0)
         a = 6; //MS divider is integer
     else
-    {//MS divider is fractional
+    { //MS divider is fractional
         a = (uint32_t)floor(divms);
         k = divms - a;
         nom = (uint64_t)(k * 0x6FFFFFFFFFFFFFFFull);
@@ -423,11 +421,11 @@ static void set_multisynth_alt(uint32_t freq, enum si5351_clock clk)
     else if (clk == SI5351_CLK2)
     {
         //modified for Network Analyser feather by KD8CEC
-        si5351_set_clk_control(clk, SI5351_PLLA, (a == 4) || (a == 6), CLK2_drive&3);
+        si5351_set_clk_control(clk, SI5351_PLLA, (a == 4) || (a == 6), CLK2_drive & 3);
         si5351_set_ms(a, b, c, rdiv, clk);
         si5351_set_pll(ap, bp, cp, SI5351_PLLA);
     }
-    #if 0
+#if 0
     {
         //Calculate and print actual frequency
         double fpll_actual;
@@ -441,7 +439,7 @@ static void set_multisynth_alt(uint32_t freq, enum si5351_clock clk)
         if (abs(diff) > 0.5)
             DBGPRINT("CLK%d actual freq: %.1f Hz, desired %u, diff %.1f\n", clk, f_actual, (unsigned int)freq, f_actual - freq);
     }
-    #endif
+#endif
 }
 
 static uint8_t si5351_write_bulk(uint8_t addr, uint8_t bytes, uint8_t *data)
@@ -468,9 +466,9 @@ static void si5351_set_clk_control(enum si5351_clock clk, enum si5351_pll pll, i
     //Name CLK0_PDN MS0_INT MS0_SRC CLK0_INV CLK0_SRC[1:0] CLK0_IDRV[1:0]
     uint8_t reg_val = 0x0C; //Select this multisynth as the source for clk output,
 
-    reg_val |= ((uint8_t)drive) & 3;//Set drive strength
+    reg_val |= ((uint8_t)drive) & 3; //Set drive strength
 
-    if(pll == SI5351_PLLB)
+    if (pll == SI5351_PLLB)
         reg_val |= SI5351_CLK_PLL_SELECT; //Select PLLB as the source for this multisynth, otherwise PLLA will be used
 
     if (isIntegerMode) //Set integer mode for this multisynth
@@ -511,7 +509,7 @@ void si5351_dump_regs(void)
 {
     uint16_t da;
     uint8_t reg_dump[256];
-    uint8_t* ptr = reg_dump;
+    uint8_t *ptr = reg_dump;
     for (da = 0; da < 256; da++)
     {
         si5351_read((uint8_t)da, ptr++);
@@ -520,7 +518,7 @@ void si5351_dump_regs(void)
     f_mkdir("/aa/snapshot");
 
     FRESULT fr = FR_OK;
-    FIL fo = { 0 };
+    FIL fo = {0};
     fr = f_open(&fo, "/aa/snapshot/5351reg.bin", FA_CREATE_ALWAYS | FA_WRITE);
     if (FR_OK != fr)
         CRASH("Failed to open /aa/snapshot/5351reg.bin file");

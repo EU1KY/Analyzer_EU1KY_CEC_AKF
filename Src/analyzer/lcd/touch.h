@@ -12,25 +12,25 @@
 #include "BeepTimer.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void TOUCH_Init(void);
+    void TOUCH_Init(void);
 
-uint8_t TOUCH_Poll(LCDPoint* pCoord);
+    uint8_t TOUCH_Poll(LCDPoint *pCoord);
 
-uint8_t TOUCH_IsPressed(void);
+    uint8_t TOUCH_IsPressed(void);
 
-//KD8CEC
-int GetTouchIndex(LCDPoint pt, const int checkButtons[][4], int checkCount);
+    //KD8CEC
+    int GetTouchIndex(LCDPoint pt, const int checkButtons[][4], int checkCount);
 
-#define BUTTON_LEFT     0
-#define BUTTON_TOP      1
-#define BUTTON_RIGHT    2
-#define BUTTON_BOTTOM   3
+#define BUTTON_LEFT 0
+#define BUTTON_TOP 1
+#define BUTTON_RIGHT 2
+#define BUTTON_BOTTOM 3
 
 #ifdef __cplusplus
 }
 #endif
 #endif //_TOUCH_H_
-

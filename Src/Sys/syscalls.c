@@ -20,12 +20,12 @@ Notes   : SWO Output should work on every Cortex-M. In case of errors
 *
 *       Defines for Cortex-M debug unit
 */
-#define ITM_STIM_U32 (*(volatile unsigned int*)0xE0000000)    // Stimulus Port Register word acces
-#define ITM_STIM_U8  (*(volatile         char*)0xE0000000)    // Stimulus Port Register byte acces
-#define ITM_ENA      (*(volatile unsigned int*)0xE0000E00)    // Control Register
-#define ITM_TCR      (*(volatile unsigned int*)0xE0000E80)    // Trace control register
-#define DHCSR        (*(volatile unsigned int*)0xE000EDF0)    // Debug Halting Control Status Register
-#define DEMCR        (*(volatile unsigned int*)0xE000EDFC)    // Debug Exception Monitor Control Register
+#define ITM_STIM_U32 (*(volatile unsigned int *)0xE0000000) // Stimulus Port Register word acces
+#define ITM_STIM_U8 (*(volatile char *)0xE0000000)          // Stimulus Port Register byte acces
+#define ITM_ENA (*(volatile unsigned int *)0xE0000E00)      // Control Register
+#define ITM_TCR (*(volatile unsigned int *)0xE0000E80)      // Trace control register
+#define DHCSR (*(volatile unsigned int *)0xE000EDF0)        // Debug Halting Control Status Register
+#define DEMCR (*(volatile unsigned int *)0xE000EDFC)        // Debug Exception Monitor Control Register
 
 char *heap_end = NULL;
 
@@ -34,22 +34,19 @@ char *heap_end = NULL;
 * Purpose
 *   Reentrant write function. Outputs the data to Stimulus port 0.
 */
-_ssize_t _write_r (struct _reent *r, int file, const void *ptr, size_t len)
+_ssize_t _write_r(struct _reent *r, int file, const void *ptr, size_t len)
 {
     int i;
     const unsigned char *p;
 
-    p = (const unsigned char*) ptr;
+    p = (const unsigned char *)ptr;
 
     for (i = 0; i < len; i++)
     {
         //
         // Check if SWO is enabled / Debugger is connected
         //
-        if (   (DHCSR & 1) != 1
-            || (DEMCR & (1 << 24)) == 0
-            || (ITM_TCR & (1u << 22)) != 0
-            || (ITM_ENA & 1) == 0)
+        if ((DHCSR & 1) != 1 || (DEMCR & (1 << 24)) == 0 || (ITM_TCR & (1u << 22)) != 0 || (ITM_ENA & 1) == 0)
         {
             return len;
         }
@@ -67,11 +64,11 @@ _ssize_t _write_r (struct _reent *r, int file, const void *ptr, size_t len)
 * Purpose
 *   Allocates memory on the heap.
 */
-void * _sbrk_r(struct _reent *_s_r, ptrdiff_t nbytes)
+void *_sbrk_r(struct _reent *_s_r, ptrdiff_t nbytes)
 {
-    extern char  __heap_start__;
-    extern char  __heap_end__;
-    char* base;
+    extern char __heap_start__;
+    extern char __heap_end__;
+    char *base;
 
     if (heap_end == NULL)
     {
@@ -119,12 +116,14 @@ int isatty(int file)
     return 1;
 }
 
-__attribute__((weak)) void _exit (int a)
+__attribute__((weak)) void _exit(int a)
 {
-    while(1) {};
+    while (1)
+    {
+    };
 }
 
-int _kill (int a, int b)
+int _kill(int a, int b)
 {
     return 0;
 }
@@ -138,6 +137,3 @@ int _isatty(int file)
 {
     return 0;
 }
-
-
-

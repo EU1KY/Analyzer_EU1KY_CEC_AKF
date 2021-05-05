@@ -4,8 +4,8 @@
 /* --- windowing --- */
 __inline double w_hann(const double pos)
 {
-	double x = cos(pos*PI/2.0);
-	return x*x;
+	double x = cos(pos * PI / 2.0);
+	return x * x;
 }
 
 __inline double w_rect(const double pos)
@@ -15,24 +15,24 @@ __inline double w_rect(const double pos)
 
 __inline double w_hamming(const double pos)
 {
-	return 0.54 + 0.46 * cos(PI*pos);
+	return 0.54 + 0.46 * cos(PI * pos);
 }
 
 __inline double w_blackman(const double pos)
 {
-	return 0.42 + 0.5 * cos(PI*pos) + 0.08 * cos(2.0*PI*pos);
+	return 0.42 + 0.5 * cos(PI * pos) + 0.08 * cos(2.0 * PI * pos);
 }
 
 __inline double w_gaussian(const double pos)
 {
 	double a = 4.0;
 	double ax = a * pos;
-	return exp(-0.5 * ax*ax);
+	return exp(-0.5 * ax * ax);
 }
 
 __inline double w_welch(const double pos)
 {
-	return 1.0 - pos*pos;
+	return 1.0 - pos * pos;
 }
 
 __inline double w_bartlett(const double pos)
@@ -47,8 +47,7 @@ __inline double w_bartlett(const double pos)
 		return 0.0;
 }
 
-
-#define WINDOW_FUNC	w_gaussian
+#define WINDOW_FUNC w_gaussian
 /*
 void LoadWindowData()
 {

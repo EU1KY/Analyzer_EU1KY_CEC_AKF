@@ -42,28 +42,28 @@ static void ShowF1(void)
     char str[50];
     sprintf(str, "F: %u kHz        ", (unsigned int)(CFG_GetParam(CFG_PARAM_MEAS_F) / 1000));
     FONT_Write(FONT_FRANBIG, LCD_RED, LCD_BLACK, 0, 2, str);
-    LCD_Rectangle(LCD_MakePoint(400,55), LCD_MakePoint(478,96),Color2);
+    LCD_Rectangle(LCD_MakePoint(400, 55), LCD_MakePoint(478, 96), Color2);
     FONT_Write(FONT_FRANBIG, CurvColor, BackGrColor, 401, 60, " Exit  ");
 }
 
 static void FDecr(uint32_t step1)
 {
     uint32_t MeasurementFreq = CFG_GetParam(CFG_PARAM_MEAS_F);
-    if(MeasurementFreq > step1 && MeasurementFreq % step1 != 0)
+    if (MeasurementFreq > step1 && MeasurementFreq % step1 != 0)
     {
         MeasurementFreq -= (MeasurementFreq % step1);
         CFG_SetParam(CFG_PARAM_MEAS_F, MeasurementFreq);
         fChanged1 = 1;
     }
-    if(MeasurementFreq < BAND_FMIN)
+    if (MeasurementFreq < BAND_FMIN)
     {
         MeasurementFreq = BAND_FMIN;
         CFG_SetParam(CFG_PARAM_MEAS_F, MeasurementFreq);
         fChanged1 = 1;
     }
-    if(MeasurementFreq > BAND_FMIN)
+    if (MeasurementFreq > BAND_FMIN)
     {
-        if(MeasurementFreq > step1 && (MeasurementFreq - step1) >= BAND_FMIN)
+        if (MeasurementFreq > step1 && (MeasurementFreq - step1) >= BAND_FMIN)
         {
             MeasurementFreq = MeasurementFreq - step1;
             CFG_SetParam(CFG_PARAM_MEAS_F, MeasurementFreq);
@@ -75,22 +75,22 @@ static void FDecr(uint32_t step1)
 static void FIncr(uint32_t step1)
 {
     uint32_t MeasurementFreq = CFG_GetParam(CFG_PARAM_MEAS_F);
-    if(MeasurementFreq > step1 && MeasurementFreq % step1 != 0)
+    if (MeasurementFreq > step1 && MeasurementFreq % step1 != 0)
     {
         MeasurementFreq -= (MeasurementFreq % step1);
         CFG_SetParam(CFG_PARAM_MEAS_F, MeasurementFreq);
         fChanged1 = 1;
     }
-    if(MeasurementFreq < BAND_FMIN)
+    if (MeasurementFreq < BAND_FMIN)
     {
         MeasurementFreq = BAND_FMIN;
         CFG_SetParam(CFG_PARAM_MEAS_F, MeasurementFreq);
         fChanged1 = 1;
     }
-    if(MeasurementFreq <  CFG_GetParam(CFG_PARAM_BAND_FMAX))
+    if (MeasurementFreq < CFG_GetParam(CFG_PARAM_BAND_FMAX))
     {
-        if ((MeasurementFreq + step1) >  CFG_GetParam(CFG_PARAM_BAND_FMAX))
-            MeasurementFreq =  CFG_GetParam(CFG_PARAM_BAND_FMAX);
+        if ((MeasurementFreq + step1) > CFG_GetParam(CFG_PARAM_BAND_FMAX))
+            MeasurementFreq = CFG_GetParam(CFG_PARAM_BAND_FMAX);
         else
             MeasurementFreq = MeasurementFreq + step1;
         CFG_SetParam(CFG_PARAM_MEAS_F, MeasurementFreq);
@@ -130,24 +130,23 @@ static void FFTWND_ExitWnd(void)
 
 static void FFTWND_SwitchDispMode(void)
 {
-    while(TOUCH_IsPressed());// wait for release
+    while (TOUCH_IsPressed())
+        ; // wait for release
     oscilloscope = !oscilloscope;
 }
 
 static const struct HitRect hitArr[] =
-{
-    //        x0,   y0, width,  height, callback
-    HITRECT(   390, 55, 90,  40, FFTWND_ExitWnd),
-    HITRECT(   0, 140, 480, 130, FFTWND_SwitchDispMode),
-    HITRECT(   0,   0,  80, 50, FFTWND_FDecr_10k),
-    HITRECT(  80,   0,  80, 50, FFTWND_FDecr_5k),
-    HITRECT( 160,   0,  70, 50, FFTWND_FDecr_1k),
-    HITRECT( 250,   0,  70, 50, FFTWND_FIncr_1k),
-    HITRECT( 320,   0,  80, 50, FFTWND_FIncr_5k),
-    HITRECT( 400,   0,  80, 50, FFTWND_FIncr_10k),
-    HITEND
-};
-
+    {
+        //        x0,   y0, width,  height, callback
+        HITRECT(390, 55, 90, 40, FFTWND_ExitWnd),
+        HITRECT(0, 140, 480, 130, FFTWND_SwitchDispMode),
+        HITRECT(0, 0, 80, 50, FFTWND_FDecr_10k),
+        HITRECT(80, 0, 80, 50, FFTWND_FDecr_5k),
+        HITRECT(160, 0, 70, 50, FFTWND_FDecr_1k),
+        HITRECT(250, 0, 70, 50, FFTWND_FIncr_1k),
+        HITRECT(320, 0, 80, 50, FFTWND_FIncr_5k),
+        HITRECT(400, 0, 80, 50, FFTWND_FIncr_10k),
+        HITEND};
 
 static void do_fft_audiobuf(int ch)
 {
@@ -155,20 +154,20 @@ static void do_fft_audiobuf(int ch)
     int i;
     arm_rfft_fast_instance_f32 S;
 
-    int16_t* pBuf = &audioBuf[NDUMMY + (ch != 0)];
-    for(i = 0; i < NSAMPLES; i++)
+    int16_t *pBuf = &audioBuf[NDUMMY + (ch != 0)];
+    for (i = 0; i < NSAMPLES; i++)
     {
-        rfft_input[i] = (float)*pBuf * windowfunc[i];// Blackman Window
+        rfft_input[i] = (float)*pBuf * windowfunc[i]; // Blackman Window
         pBuf += 2;
     }
 
     arm_rfft_fast_init_f32(&S, NSAMPLES);
     arm_rfft_fast_f32(&S, rfft_input, rfft_output, 0);
 
-    for (i = 0; i < NSAMPLES/2; i++)
+    for (i = 0; i < NSAMPLES / 2; i++)
     {
         float complex binf = prfft[i];
-        rfft_mags[i] = cabsf(binf) / (NSAMPLES/2);
+        rfft_mags[i] = cabsf(binf) / (NSAMPLES / 2);
     }
 }
 
@@ -182,7 +181,7 @@ void FFTWND_Proc(void)
     oscilloscope = 0;
 
     //append by KD8CEC
-    rfft_mags = (float *)malloc(sizeof(float) * NSAMPLES/2);
+    rfft_mags = (float *)malloc(sizeof(float) * NSAMPLES / 2);
 
     //BSP_LCD_SelectLayer(0);
     //LCD_FillAll(LCD_BLACK);
@@ -199,7 +198,7 @@ void FFTWND_Proc(void)
         si5351_dump_regs();
 #endif
 
-    while(TOUCH_IsPressed())
+    while (TOUCH_IsPressed())
     {
         Sleep(10);
     }
@@ -209,12 +208,12 @@ void FFTWND_Proc(void)
     uint16_t y;
     for (y = 0; y < 2; y++)
     {
-        LCD_Line(LCD_MakePoint(0,y), LCD_MakePoint(79,y), LCD_RGB(15,15,63));
-        LCD_Line(LCD_MakePoint(80,y), LCD_MakePoint(159,y), LCD_RGB(31,31,127));
-        LCD_Line(LCD_MakePoint(160,y), LCD_MakePoint(229,y),  LCD_RGB(64,64,255));
-        LCD_Line(LCD_MakePoint(250,y), LCD_MakePoint(319,y), LCD_RGB(64,64,255));
-        LCD_Line(LCD_MakePoint(320,y), LCD_MakePoint(399,y), LCD_RGB(31,31,127));
-        LCD_Line(LCD_MakePoint(400,y), LCD_MakePoint(479,y), LCD_RGB(15,15,63));
+        LCD_Line(LCD_MakePoint(0, y), LCD_MakePoint(79, y), LCD_RGB(15, 15, 63));
+        LCD_Line(LCD_MakePoint(80, y), LCD_MakePoint(159, y), LCD_RGB(31, 31, 127));
+        LCD_Line(LCD_MakePoint(160, y), LCD_MakePoint(229, y), LCD_RGB(64, 64, 255));
+        LCD_Line(LCD_MakePoint(250, y), LCD_MakePoint(319, y), LCD_RGB(64, 64, 255));
+        LCD_Line(LCD_MakePoint(320, y), LCD_MakePoint(399, y), LCD_RGB(31, 31, 127));
+        LCD_Line(LCD_MakePoint(400, y), LCD_MakePoint(479, y), LCD_RGB(15, 15, 63));
     }
     ShowF1();
     //activeLayer = BSP_LCD_GetActiveLayer();
@@ -231,11 +230,11 @@ void FFTWND_Proc(void)
                 continue;
             }
             Sleep(50);
-         //   while(TOUCH_IsPressed());  WK
+            //   while(TOUCH_IsPressed());  WK
             if (rqExit)
             {
                 GEN_SetMeasurementFreq(0);
-                free(rfft_mags);    //append by KD8CEC
+                free(rfft_mags); //append by KD8CEC
                 return;
             }
             continue;
@@ -248,10 +247,10 @@ void FFTWND_Proc(void)
                 CFG_Flush();
                 fChanged1 = 0;
 
-            //activeLayer = BSP_LCD_GetActiveLayer();
-            //BSP_LCD_SelectLayer(!activeLayer);
+                //activeLayer = BSP_LCD_GetActiveLayer();
+                //BSP_LCD_SelectLayer(!activeLayer);
 
-               // ShowF1();
+                // ShowF1();
             }
         }
 
@@ -263,12 +262,12 @@ void FFTWND_Proc(void)
         {
             uint16_t lasty_left = 210;
             uint16_t lasty_right = 210;
-            int16_t* pData;
+            int16_t *pData;
             int16_t minMag = 32767;
             int16_t maxMag = -32767;
             int32_t magnitude = 0;
             //BSP_LCD_SelectLayer(!activeLayer);// WK
-            LCD_FillRect(LCD_MakePoint(0, 140), LCD_MakePoint(LCD_GetWidth()-1, LCD_GetHeight()-1), 0xFF000020);
+            LCD_FillRect(LCD_MakePoint(0, 140), LCD_MakePoint(LCD_GetWidth() - 1, LCD_GetHeight() - 1), 0xFF000020);
             FONT_ClearLine(FONT_FRANBIG, LCD_BLACK, 100);
 
             //Calc magnitude for one channel only
@@ -286,61 +285,60 @@ void FFTWND_Proc(void)
             FONT_Printf(0, 64, "Sampling %d ms, Magnitude: %d", tmstart, magnitude);
 
             pData = &audioBuf[NDUMMY];
-            for (i = 0; i < NSAMPLES; i ++)
+            for (i = 0; i < NSAMPLES; i++)
             {
                 if (i == 0)
                 {
-                    lasty_left = 210 - (int)(*pData++ * windowfunc[i*step]) / 500;
-                    if (lasty_left > LCD_GetHeight()-1)
-                        lasty_left = LCD_GetHeight()-1;
+                    lasty_left = 210 - (int)(*pData++ * windowfunc[i * step]) / 500;
+                    if (lasty_left > LCD_GetHeight() - 1)
+                        lasty_left = LCD_GetHeight() - 1;
                     if (lasty_left < 0)
                         lasty_left = 0;
                     LCD_SetPixel(LCD_MakePoint(i, lasty_left), LCD_COLOR_GREEN);
-                    lasty_right = 210 - (int)(*pData++ * windowfunc[i*step]) / 500;
-                    if (lasty_right > LCD_GetHeight()-1)
-                        lasty_right = LCD_GetHeight()-1;
+                    lasty_right = 210 - (int)(*pData++ * windowfunc[i * step]) / 500;
+                    if (lasty_right > LCD_GetHeight() - 1)
+                        lasty_right = LCD_GetHeight() - 1;
                     if (lasty_right < 140)
                         lasty_right = 140;
                     LCD_SetPixel(LCD_MakePoint(i, lasty_right), LCD_COLOR_RED);
                 }
                 else
                 {
-                    uint16_t y_left = 210 - (int)(*pData++ * windowfunc[i*step]) / 200; //500;
-                    uint16_t y_right = 210 - (int)(*pData++ * windowfunc[i*step]) / 200; //500;
-                    if (y_left > LCD_GetHeight()-1)
-                        y_left = LCD_GetHeight()-1;
+                    uint16_t y_left = 210 - (int)(*pData++ * windowfunc[i * step]) / 200;  //500;
+                    uint16_t y_right = 210 - (int)(*pData++ * windowfunc[i * step]) / 200; //500;
+                    if (y_left > LCD_GetHeight() - 1)
+                        y_left = LCD_GetHeight() - 1;
                     if (y_left < 140)
                         y_left = 140;
-                    if (y_right > LCD_GetHeight()-1)
-                        y_right = LCD_GetHeight()-1;
+                    if (y_right > LCD_GetHeight() - 1)
+                        y_right = LCD_GetHeight() - 1;
                     if (y_right < 140)
                         y_right = 140;
-                    LCD_Line(LCD_MakePoint(i-1, lasty_left), LCD_MakePoint(i, y_left), LCD_RED);
-                    LCD_Line(LCD_MakePoint(i-1, lasty_right), LCD_MakePoint(i, y_right), LCD_GREEN);
+                    LCD_Line(LCD_MakePoint(i - 1, lasty_left), LCD_MakePoint(i, y_left), LCD_RED);
+                    LCD_Line(LCD_MakePoint(i - 1, lasty_right), LCD_MakePoint(i, y_right), LCD_GREEN);
                     lasty_left = y_left;
                     lasty_right = y_right;
                 }
                 pData += (step * 2 - 2);
-                if (i >= LCD_GetWidth()-1)
+                if (i >= LCD_GetWidth() - 1)
                     break;
             }
-             //BSP_LCD_SelectLayer(!activeLayer);// WK
+            //BSP_LCD_SelectLayer(!activeLayer);// WK
         }
         else //Spectrum
         {
 
-       //     BSP_LCD_SelectLayer(!activeLayer);// WK
+            //     BSP_LCD_SelectLayer(!activeLayer);// WK
 
             //Draw spectrum
-            LCD_FillRect(LCD_MakePoint(0, 140), LCD_MakePoint(LCD_GetWidth()-1, LCD_GetHeight()-1), 0xFF000020);
-
+            LCD_FillRect(LCD_MakePoint(0, 140), LCD_MakePoint(LCD_GetWidth() - 1, LCD_GetHeight() - 1), 0xFF000020);
 
             //Draw horizontal grid lines
-            for (i = LCD_GetHeight()-1; i > 140; i-=10)
+            for (i = LCD_GetHeight() - 1; i > 140; i -= 10)
             {
-                LCD_Line(LCD_MakePoint(0, i), LCD_MakePoint(LCD_GetWidth()-1, i), 0xFF303070);
+                LCD_Line(LCD_MakePoint(0, i), LCD_MakePoint(LCD_GetWidth() - 1, i), 0xFF303070);
             }
-            LCD_Line(LCD_MakePoint(240, 140), LCD_MakePoint(240, LCD_GetHeight()-1), 0xFF303070);
+            LCD_Line(LCD_MakePoint(240, 140), LCD_MakePoint(240, LCD_GetHeight() - 1), 0xFF303070);
 
             for (int ch = 0; ch < 2; ch++)
             {
@@ -349,7 +347,7 @@ void FFTWND_Proc(void)
                 //Calculate max magnitude bin
                 float maxmag = 0.;
                 int idxmax = -1;
-                for (i = 5; i < NSAMPLES/2 - 5; i++)
+                for (i = 5; i < NSAMPLES / 2 - 5; i++)
                 {
                     if (rfft_mags[i] > maxmag)
                     {
@@ -367,24 +365,23 @@ void FFTWND_Proc(void)
                 //Draw spectrum
                 for (int x = 0; x < 240; x++)
                 {
-                    if (x >= NSAMPLES/2)
+                    if (x >= NSAMPLES / 2)
                         break;
-                    int y = (int)(LCD_GetHeight()- 1 - 20 * log10f(rfft_mags[x]));
-                    if (y <= LCD_GetHeight()-1)
+                    int y = (int)(LCD_GetHeight() - 1 - 20 * log10f(rfft_mags[x]));
+                    if (y <= LCD_GetHeight() - 1)
                     {
                         uint32_t clr = ch ? LCD_GREEN : LCD_RED;
-                        LCD_Line(LCD_MakePoint(x + ch*240, LCD_GetHeight()-1), LCD_MakePoint(x + ch*240, y), clr);
+                        LCD_Line(LCD_MakePoint(x + ch * 240, LCD_GetHeight() - 1), LCD_MakePoint(x + ch * 240, y), clr);
                     }
-                    if (x >= LCD_GetWidth()-1)
+                    if (x >= LCD_GetWidth() - 1)
                         break;
                 }
-
 
                 float binwidth = ((float)(FSAMPLE)) / (NSAMPLES);
                 if (0 == ch)
                 {
-                   // FONT_ClearLine(FONT_FRANBIG, LCD_BLACK, 64);
-                    LCD_FillRect(LCD_MakePoint(0, 64), LCD_MakePoint(399,80),LCD_BLACK);
+                    // FONT_ClearLine(FONT_FRANBIG, LCD_BLACK, 64);
+                    LCD_FillRect(LCD_MakePoint(0, 64), LCD_MakePoint(399, 80), LCD_BLACK);
                     FONT_SetAttributes(FONT_FRANBIG, LCD_RED, LCD_BLACK);
                     FONT_Printf(0, 64, "Mag %.0f @ bin %d (%.0f) Hz  ", maxmag, idxmax, binwidth * idxmax);
                 }
@@ -394,15 +391,13 @@ void FFTWND_Proc(void)
                     FONT_SetAttributes(FONT_FRANBIG, LCD_GREEN, LCD_BLACK);
                     FONT_Printf(0, 100, "Mag %.0f @ bin %d (%.0f) Hz", maxmag, idxmax, binwidth * idxmax);
                 }
-
             }
             // BSP_LCD_SelectLayer(!activeLayer);// WK
-             //LCD_ShowActiveLayerOnly();
-
+            //LCD_ShowActiveLayerOnly();
         }
         //LCD_ShowActiveLayerOnly();
         Sleep(100);
-    }   //end of while
+    } //end of while
 
-    free(rfft_mags);    //append by KD8CEC, for exit function by break
+    free(rfft_mags); //append by KD8CEC, for exit function by break
 }

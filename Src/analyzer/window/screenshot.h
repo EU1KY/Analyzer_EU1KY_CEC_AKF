@@ -10,8 +10,8 @@
 
 #define SCREENSHOT_FILE_SIZE 391734
 
-void SCREENSHOT_Show(const char* fname);
-char* SCREENSHOT_SelectFileName(void);
+void SCREENSHOT_Show(const char *fname);
+char *SCREENSHOT_SelectFileName(void);
 int16_t SCREENSHOT_SelectFileNames(int k);
 void SCREENSHOT_DeleteOldest(void);
 void SCREENSHOT_Save(const char *fname);

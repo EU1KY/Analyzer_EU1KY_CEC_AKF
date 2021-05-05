@@ -27,14 +27,15 @@ typedef enum
 } FIFO_STATUS;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-void FIFO_Init(FIFO_Descr *pFifo);
-FIFO_STATUS FIFO_Put(FIFO_Descr *pFifo, uint8_t ch);
-FIFO_STATUS FIFO_Get(FIFO_Descr *pFifo, uint8_t *ch);
-int FIFO_IsEmpty(FIFO_Descr *pFifo);
-int FIFO_IsFull(FIFO_Descr *pFifo);
+    void FIFO_Init(FIFO_Descr *pFifo);
+    FIFO_STATUS FIFO_Put(FIFO_Descr *pFifo, uint8_t ch);
+    FIFO_STATUS FIFO_Get(FIFO_Descr *pFifo, uint8_t *ch);
+    int FIFO_IsEmpty(FIFO_Descr *pFifo);
+    int FIFO_IsFull(FIFO_Descr *pFifo);
 
 #ifdef __cplusplus
 }

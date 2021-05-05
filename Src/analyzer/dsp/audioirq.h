@@ -12,8 +12,8 @@
 #include <complex.h>
 #include "stm32746g_discovery_audio.h"
 
-#define AUDIO_TRANSFER_NONE     0
-#define AUDIO_TRANSFER_HALF     1
+#define AUDIO_TRANSFER_NONE 0
+#define AUDIO_TRANSFER_HALF 1
 #define AUDIO_TRANSFER_COMPLETE 2
 
 extern uint8_t Audio_Status;

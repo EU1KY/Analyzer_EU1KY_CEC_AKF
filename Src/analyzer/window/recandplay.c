@@ -56,19 +56,17 @@
 //#define SLIDEBAR_COLOR LCD_RGB(128, 142, 182)
 #define SLIDEBAR_COLOR LCD_RGB(119, 128, 153)
 
-
 #include "audioirq.h"
 
 #define AUDIO_REC_BUFF_SIZE 1024
 //int16_t *AUDIO_BUFFER_INOUT = AUDIO_BUFFER_RAM;
-uint16_t __attribute__((section (".user_sdram"))) AUDIO_BUFFER_INOUT[AUDIO_REC_BUFF_SIZE];
+uint16_t __attribute__((section(".user_sdram"))) AUDIO_BUFFER_INOUT[AUDIO_REC_BUFF_SIZE];
 
 extern void Sleep(uint32_t ms);
 extern void TRACK_Beep(int duration);
 
 static const char *g_recplay_dir = "/aa/recplay";
 static LCDPoint pt;
-
 
 /*
 static char g_ws_data[59] = {0};
@@ -87,24 +85,24 @@ int16_t *wsAUDIOFreq  = (int16_t *)&g_ws_data[57];
 char wsKeyboardTmp[21];
 */
 
-#define AUDIO_ST_NONE        0    //Not Status
-#define AUDIO_ST_READY       1    //
-#define AUDIO_ST_PLAY        2    //
-#define AUDIO_ST_REC         3    //
+#define AUDIO_ST_NONE 0  //Not Status
+#define AUDIO_ST_READY 1 //
+#define AUDIO_ST_PLAY 2  //
+#define AUDIO_ST_REC 3   //
 
 uint32_t sndFileSizes[14] = {0};
 int lastUpdateDisplayTime = 0;
 
 static uint8_t g_rec_data[12] = {0};
 
-uint8_t *isRepeatPlay        = &g_rec_data[1];
-uint8_t *selectedSlotIndex   = &g_rec_data[2];
-uint8_t *RecPlayStatus       = &g_rec_data[3];
-uint8_t *RecVol              = &g_rec_data[4];
-uint8_t *PlayVol             = &g_rec_data[5];
-uint8_t *pttControl          = &g_rec_data[6];
-uint8_t *rptDelayTime        = &g_rec_data[7];
-uint8_t *playUserStop        = &g_rec_data[8];
+uint8_t *isRepeatPlay = &g_rec_data[1];
+uint8_t *selectedSlotIndex = &g_rec_data[2];
+uint8_t *RecPlayStatus = &g_rec_data[3];
+uint8_t *RecVol = &g_rec_data[4];
+uint8_t *PlayVol = &g_rec_data[5];
+uint8_t *pttControl = &g_rec_data[6];
+uint8_t *rptDelayTime = &g_rec_data[7];
+uint8_t *playUserStop = &g_rec_data[8];
 
 /*
 uint8_t (*isRepeatPlay) = 0;
@@ -117,8 +115,6 @@ uint8_t (*rptDelayTime) = 76;  //100msec
 uint8_t (*playUserStop) = 0;
 */
 
-
-
 #include "ff.h"
 //static const char *g_rec_fpath = "/aa/wsignal.bin";
 static const char *g_rec_fpath = "/aa/recplay.bin";
@@ -126,7 +122,7 @@ static const char *g_rec_fpath = "/aa/recplay.bin";
 void REC_StoredInformatoin(void)
 {
     FRESULT res;
-    FIL fo = { 0 };
+    FIL fo = {0};
     res = f_open(&fo, g_rec_fpath, FA_OPEN_ALWAYS | FA_WRITE);
     if (FR_OK == res)
     {
@@ -141,7 +137,7 @@ void REC_StoredInformatoin(void)
 void REC_LoadInformation(void)
 {
     FRESULT res;
-    FIL fo = { 0 };
+    FIL fo = {0};
 
     FILINFO finfo;
     res = f_stat(g_rec_fpath, &finfo);
@@ -155,7 +151,6 @@ void REC_LoadInformation(void)
         UINT br;
         f_read(&fo, g_rec_data, sizeof(g_rec_data), &br);
         f_close(&fo);
-
 
         if (*RecVol > 100)
             *RecVol = 100;
@@ -171,22 +166,21 @@ void REC_LoadInformation(void)
     }
     else
     {
-        (*isRepeatPlay)      = 0;
+        (*isRepeatPlay) = 0;
         (*selectedSlotIndex) = 1;
         (*RecPlayStatus) = AUDIO_ST_NONE;
-        (*RecVol)           = 100;
-        (*PlayVol)          = 100;
-        (*pttControl)       = 0;   //
-        (*rptDelayTime)     = 50;  //50 * 200msec = 10sec
-        (*playUserStop)     = 0;
+        (*RecVol) = 100;
+        (*PlayVol) = 100;
+        (*pttControl) = 0;    //
+        (*rptDelayTime) = 50; //50 * 200msec = 10sec
+        (*playUserStop) = 0;
     }
-
 }
 
 //==============================================================================
 //DISPLAY Protocol Information
 //------------------------------------------------------------------------------
-#define INFO_TOP   130
+#define INFO_TOP 130
 #define INFO_LINE2 183
 
 //#define TITLE_COLOR LCD_RGB(0, 63, 119)
@@ -331,90 +325,88 @@ static void DrawWSInformation(void)
 }
 */
 
-
 //Draw ImageButton
 //BOTTOM
-#define MENU_EXIT         0
-#define MENU_SAVECONFIG   1
-#define MENU_SETPTT  2
-#define MENU_PLAY         3  //Probe Select Down
-#define MENU_RECORD       4  //Probe Select Up
+#define MENU_EXIT 0
+#define MENU_SAVECONFIG 1
+#define MENU_SETPTT 2
+#define MENU_PLAY 3   //Probe Select Down
+#define MENU_RECORD 4 //Probe Select Up
 
 //RIGHT
-#define MENU_BANDDOWN     5  //Prior Band
-#define MENU_BANDUP       6  //Next Band
-#define MENU_AFFREQDOWN   7  //-10Hz
-#define MENU_AFFREQUP     8  //+10Hz
+#define MENU_BANDDOWN 5   //Prior Band
+#define MENU_BANDUP 6     //Next Band
+#define MENU_AFFREQDOWN 7 //-10Hz
+#define MENU_AFFREQUP 8   //+10Hz
 
 //FREQ SELECT MENU
-#define MENU_SLOT1         9
-#define MENU_SLOT2        10
-#define MENU_SLOT3        11
-#define MENU_SLOT4        12
+#define MENU_SLOT1 9
+#define MENU_SLOT2 10
+#define MENU_SLOT3 11
+#define MENU_SLOT4 12
 
-#define MENU_SLOT5        13
-#define MENU_SLOT6        14
-#define MENU_SLOT7        15
-#define MENU_SLOT8        16
-#define MENU_SLOT9        17
-#define MENU_SLOT10       18
-#define MENU_SLOT11       19
-#define MENU_SLOT12       20
-#define MENU_SLOT13       21
-#define MENU_SLOT14       22
+#define MENU_SLOT5 13
+#define MENU_SLOT6 14
+#define MENU_SLOT7 15
+#define MENU_SLOT8 16
+#define MENU_SLOT9 17
+#define MENU_SLOT10 18
+#define MENU_SLOT11 19
+#define MENU_SLOT12 20
+#define MENU_SLOT13 21
+#define MENU_SLOT14 22
 
-#define recMenus_Length   23
+#define recMenus_Length 23
 
 #define WSPR_AUDIO_VOLUME 70
 
-
 const int recMenus[recMenus_Length][4] = {
-#define FREQ_MENU_TOP  95
-#define TOP_MENU_TOP    0
-#define FREQ_INFO_TOP  80
+#define FREQ_MENU_TOP 95
+#define TOP_MENU_TOP 0
+#define FREQ_INFO_TOP 80
 
-//BOTTOM MENU (5)
-{0,   237,     0 + 80,    280},    //Exit
-{80,  237,    80 + 100,   280},    //Menu1
-{180, 237,   180 + 100,   280},    //Menu2
-{280, 237,   280 + 100,   280},    //Menu3
-{380, 237,   380 + 100,   280},    //Menu4
+    //BOTTOM MENU (5)
+    {0, 237, 0 + 80, 280},      //Exit
+    {80, 237, 80 + 100, 280},   //Menu1
+    {180, 237, 180 + 100, 280}, //Menu2
+    {280, 237, 280 + 100, 280}, //Menu3
+    {380, 237, 380 + 100, 280}, //Menu4
 
-//FREQ MENU (4)
-{ 80, FREQ_MENU_TOP, 80, FREQ_MENU_TOP + 37},    //FREQ2 //Before Band
-{180, FREQ_MENU_TOP, 180, FREQ_MENU_TOP + 37},    //FREQ3 //Next Band
-{280, FREQ_MENU_TOP, 280, FREQ_MENU_TOP + 37},    //FREQ4 //-10Hz
-{380, FREQ_MENU_TOP, 380, FREQ_MENU_TOP + 37},    //FREQ5 //+10Hz
+    //FREQ MENU (4)
+    {80, FREQ_MENU_TOP, 80, FREQ_MENU_TOP + 37},   //FREQ2 //Before Band
+    {180, FREQ_MENU_TOP, 180, FREQ_MENU_TOP + 37}, //FREQ3 //Next Band
+    {280, FREQ_MENU_TOP, 280, FREQ_MENU_TOP + 37}, //FREQ4 //-10Hz
+    {380, FREQ_MENU_TOP, 380, FREQ_MENU_TOP + 37}, //FREQ5 //+10Hz
 
 //TOP MENU PROTOCOL (5)
 #define SHIFT_BOTTOM_SLOT 3
-{280,  0 + SHIFT_BOTTOM_SLOT, 380,  33 + SHIFT_BOTTOM_SLOT},    //Slot1
-{379,  0 + SHIFT_BOTTOM_SLOT, 480,  33 + SHIFT_BOTTOM_SLOT},    //Slot2
+    {280, 0 + SHIFT_BOTTOM_SLOT, 380, 33 + SHIFT_BOTTOM_SLOT}, //Slot1
+    {379, 0 + SHIFT_BOTTOM_SLOT, 480, 33 + SHIFT_BOTTOM_SLOT}, //Slot2
 
-{280, 33 + SHIFT_BOTTOM_SLOT, 380, 65 + SHIFT_BOTTOM_SLOT},    //Slot3
-{379, 33 + SHIFT_BOTTOM_SLOT, 480, 65 + SHIFT_BOTTOM_SLOT},    //Slot4
+    {280, 33 + SHIFT_BOTTOM_SLOT, 380, 65 + SHIFT_BOTTOM_SLOT}, //Slot3
+    {379, 33 + SHIFT_BOTTOM_SLOT, 480, 65 + SHIFT_BOTTOM_SLOT}, //Slot4
 
-{280, 66 + SHIFT_BOTTOM_SLOT, 380, 97 + SHIFT_BOTTOM_SLOT},    //Slot5
-{379, 66 + SHIFT_BOTTOM_SLOT, 480, 97 + SHIFT_BOTTOM_SLOT},    //Slot6
+    {280, 66 + SHIFT_BOTTOM_SLOT, 380, 97 + SHIFT_BOTTOM_SLOT}, //Slot5
+    {379, 66 + SHIFT_BOTTOM_SLOT, 480, 97 + SHIFT_BOTTOM_SLOT}, //Slot6
 
-{280, 97 + SHIFT_BOTTOM_SLOT,  380, 128 + SHIFT_BOTTOM_SLOT},    //Slot7
-{379, 97 + SHIFT_BOTTOM_SLOT,  480, 128 + SHIFT_BOTTOM_SLOT},    //Slot8
+    {280, 97 + SHIFT_BOTTOM_SLOT, 380, 128 + SHIFT_BOTTOM_SLOT}, //Slot7
+    {379, 97 + SHIFT_BOTTOM_SLOT, 480, 128 + SHIFT_BOTTOM_SLOT}, //Slot8
 
-{280, 128 + SHIFT_BOTTOM_SLOT,  380, 159 + SHIFT_BOTTOM_SLOT},    //Slot9
-{379, 128 + SHIFT_BOTTOM_SLOT,  480, 159 + SHIFT_BOTTOM_SLOT},    //Slot10
+    {280, 128 + SHIFT_BOTTOM_SLOT, 380, 159 + SHIFT_BOTTOM_SLOT}, //Slot9
+    {379, 128 + SHIFT_BOTTOM_SLOT, 480, 159 + SHIFT_BOTTOM_SLOT}, //Slot10
 
-{280, 159 + SHIFT_BOTTOM_SLOT,  380, 190 + SHIFT_BOTTOM_SLOT},    //Slot11
-{379, 159 + SHIFT_BOTTOM_SLOT,  480, 190 + SHIFT_BOTTOM_SLOT},    //Slot12
+    {280, 159 + SHIFT_BOTTOM_SLOT, 380, 190 + SHIFT_BOTTOM_SLOT}, //Slot11
+    {379, 159 + SHIFT_BOTTOM_SLOT, 480, 190 + SHIFT_BOTTOM_SLOT}, //Slot12
 
-{280, 190 + SHIFT_BOTTOM_SLOT,  380, 221 + SHIFT_BOTTOM_SLOT},    //Slot11
-{379, 190 + SHIFT_BOTTOM_SLOT,  480, 221 + SHIFT_BOTTOM_SLOT},    //Slot12
+    {280, 190 + SHIFT_BOTTOM_SLOT, 380, 221 + SHIFT_BOTTOM_SLOT}, //Slot11
+    {379, 190 + SHIFT_BOTTOM_SLOT, 480, 221 + SHIFT_BOTTOM_SLOT}, //Slot12
 };
 
 void GetTimeStrFromFilePos(uint32_t totalTimeMSec, char *str)
 {
     int amiliSec = totalTimeMSec % 10;
     totalTimeMSec = totalTimeMSec / 10;
-    int aSec = totalTimeMSec % 60 ;
+    int aSec = totalTimeMSec % 60;
     int aMin = totalTimeMSec / 60;
     sprintf(str, "%1d:%02d.%d", aMin, aSec, amiliSec);
 }
@@ -426,17 +418,18 @@ void GetTimeStrByFileIndex(int fileIndex, char *str)
     GetTimeStrFromFilePos((int)((float)sndFileSizes[fileIndex - 1] / 2048 / 3.125), str);
 }
 
-void recMenuDraw(void){
+void recMenuDraw(void)
+{
     char strBuff[64];
     char timeBuff[40];
     //uint32_t LCSaveColor = TextColor;
 
     //Bottom Menu
-    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_EXIT  ][BUTTON_LEFT], recMenus[MENU_EXIT  ][BUTTON_TOP]), imgbtn_home2, imgbtn_home2_size);
-    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_SAVECONFIG  ][BUTTON_LEFT], recMenus[MENU_SAVECONFIG  ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_SETPTT  ][BUTTON_LEFT], recMenus[MENU_SETPTT  ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_PLAY  ][BUTTON_LEFT], recMenus[MENU_PLAY  ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
-    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_RECORD    ][BUTTON_LEFT], recMenus[MENU_RECORD    ][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_EXIT][BUTTON_LEFT], recMenus[MENU_EXIT][BUTTON_TOP]), imgbtn_home2, imgbtn_home2_size);
+    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_SAVECONFIG][BUTTON_LEFT], recMenus[MENU_SAVECONFIG][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_SETPTT][BUTTON_LEFT], recMenus[MENU_SETPTT][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_PLAY][BUTTON_LEFT], recMenus[MENU_PLAY][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
+    LCD_DrawBitmap(LCD_MakePoint(recMenus[MENU_RECORD][BUTTON_LEFT], recMenus[MENU_RECORD][BUTTON_TOP]), imgbtn_empty2, imgbtn_empty2_size);
 
     //Draw Text on Empty Button
     FONT_Write(FONT_FRAN, TextColor, 0, recMenus[MENU_SAVECONFIG][BUTTON_LEFT] + 10, recMenus[MENU_SAVECONFIG][BUTTON_TOP] + 10, "Save Config");
@@ -457,7 +450,7 @@ void recMenuDraw(void){
         FONT_Write(FONT_FRANBIG, (*RecPlayStatus) == AUDIO_ST_PLAY ? LCD_BLUE : LCD_RED, 0, recMenus[MENU_RECORD][BUTTON_LEFT] + 10, recMenus[MENU_RECORD][BUTTON_TOP] + 1, "STOP");
     }
 
-    for (int i = MENU_SLOT1; i <= MENU_SLOT14; i++ )
+    for (int i = MENU_SLOT1; i <= MENU_SLOT14; i++)
     {
         int fileIndex = i - MENU_SLOT1 + 1;
         if (sndFileSizes[fileIndex - 1] != 0)
@@ -476,14 +469,14 @@ void recMenuDraw(void){
         FONT_Write(FONT_FRAN, TextColor, 0, recMenus[i][BUTTON_LEFT] + 20, recMenus[i][BUTTON_TOP] + 10, strBuff);
 
         LCD_FillRect(LCD_MakePoint(recMenus[i][BUTTON_LEFT] + 5, recMenus[i][BUTTON_TOP] + 8),
-            LCD_MakePoint(recMenus[i][BUTTON_LEFT] + 15, recMenus[i][BUTTON_TOP] + 27), ((*selectedSlotIndex) == fileIndex) ? LCD_RED : LCD_RGB(50, 50, 50));
+                     LCD_MakePoint(recMenus[i][BUTTON_LEFT] + 15, recMenus[i][BUTTON_TOP] + 27), ((*selectedSlotIndex) == fileIndex) ? LCD_RED : LCD_RGB(50, 50, 50));
     }
 
     LCD_Line(LCD_MakePoint(275, 2), LCD_MakePoint(275, 225), LCD_BLACK);
     LCD_Line(LCD_MakePoint(275, 2), LCD_MakePoint(479, 2), LCD_BLACK);
     LCD_Line(LCD_MakePoint(275, 230), LCD_MakePoint(479, 230), LCD_WHITE);
 
-/*
+    /*
     FONT_Write(FONT_FRANBIG, (*nowPR == PR_WSPR ? SELECT_PROTOCOL_COLOR : TextColor), 0, recMenus[MENU_SLOT1][BUTTON_LEFT] + 10, recMenus[MENU_SLOT1][BUTTON_TOP] + 0, "WSPR");
     FONT_Write(FONT_FRANBIG, (*nowPR == PR_FT8 ? SELECT_PROTOCOL_COLOR : TextColor), 0, recMenus[MENU_SLOT2][BUTTON_LEFT] + 10, recMenus[MENU_SLOT2][BUTTON_TOP] + 0, "FT8");
     FONT_Write(FONT_FRANBIG, (*nowPR == PR_JT65 ? SELECT_PROTOCOL_COLOR : TextColor), 0, recMenus[MENU_SLOT3][BUTTON_LEFT] + 10, recMenus[MENU_SLOT3][BUTTON_TOP] + 0, "JT65");
@@ -496,11 +489,11 @@ static void DrawStatusInfo(int justTimeUpdate, int totalTimeMSec)
 {
     char str[10] = "";
 
-    #define BACK_TIME_COLOR LCD_RGB(4, 26, 37)
-    #define STATUS_COLOR_DISABLE LCD_RGB(57, 70, 76)
-    //#define STATUS_COLOR_PLAY LCD_RGB(121, 129, 255)
-    #define STATUS_COLOR_PLAY LCD_RGB(200, 250, 40)
-    #define STATUS_COLOR_REC LCD_RGB(255, 100, 100)
+#define BACK_TIME_COLOR LCD_RGB(4, 26, 37)
+#define STATUS_COLOR_DISABLE LCD_RGB(57, 70, 76)
+//#define STATUS_COLOR_PLAY LCD_RGB(121, 129, 255)
+#define STATUS_COLOR_PLAY LCD_RGB(200, 250, 40)
+#define STATUS_COLOR_REC LCD_RGB(255, 100, 100)
 
     //Convert freame Count to 100Milisecond
     totalTimeMSec = (int)((float)totalTimeMSec / 3.125);
@@ -510,16 +503,16 @@ static void DrawStatusInfo(int justTimeUpdate, int totalTimeMSec)
         if (lastUpdateDisplayTime == totalTimeMSec)
             return;
 
-        LCD_FillRect(LCD_MakePoint(4, 37),LCD_MakePoint(270, 91), BACK_TIME_COLOR);
+        LCD_FillRect(LCD_MakePoint(4, 37), LCD_MakePoint(270, 91), BACK_TIME_COLOR);
     }
     else
     {
         //Clear Frequency Window
-        LCD_FillRect(LCD_MakePoint(2, 3),LCD_MakePoint(272, 91), BACK_TIME_COLOR);
+        LCD_FillRect(LCD_MakePoint(2, 3), LCD_MakePoint(272, 91), BACK_TIME_COLOR);
         LCD_HLine(LCD_MakePoint(1, 2), 272, LCD_BLACK);
-        LCD_VLine(LCD_MakePoint(1, 2),  90, LCD_BLACK);
+        LCD_VLine(LCD_MakePoint(1, 2), 90, LCD_BLACK);
         LCD_HLine(LCD_MakePoint(1, 92), 272, LCD_WHITE);
-        LCD_VLine(LCD_MakePoint(272, 2),  90, LCD_WHITE);
+        LCD_VLine(LCD_MakePoint(272, 2), 90, LCD_WHITE);
         //(*RecPlayStatus) = AUDIO_ST_REC;
         FONT_Write(FONT_FRAN, (*RecPlayStatus) == AUDIO_ST_PLAY ? STATUS_COLOR_PLAY : STATUS_COLOR_DISABLE, BACK_TIME_COLOR, 5, 3, "PLAY");
         FONT_Write(FONT_FRAN, (*RecPlayStatus) == AUDIO_ST_REC ? STATUS_COLOR_REC : STATUS_COLOR_DISABLE, BACK_TIME_COLOR, 50, 3, "REC");
@@ -530,7 +523,7 @@ static void DrawStatusInfo(int justTimeUpdate, int totalTimeMSec)
         sprintf(str, "%3d%%", (*RecVol));
         FONT_Write(FONT_FRAN, (*RecPlayStatus) == AUDIO_ST_REC ? STATUS_COLOR_REC : STATUS_COLOR_DISABLE, BACK_TIME_COLOR, 43, 17, str);
 
-        if (sndFileSizes[(*selectedSlotIndex) -1] == 0)
+        if (sndFileSizes[(*selectedSlotIndex) - 1] == 0)
         {
             FONT_Write(FONT_FRAN, LCD_WHITE, BACK_TIME_COLOR, 100, 3, "Empty");
         }
@@ -539,7 +532,7 @@ static void DrawStatusInfo(int justTimeUpdate, int totalTimeMSec)
             GetTimeStrByFileIndex((*selectedSlotIndex), str);
             FONT_Write(FONT_FRAN, LCD_WHITE, BACK_TIME_COLOR, 100, 3, str);
 
-            sprintf(str, "%luKb", sndFileSizes[(*selectedSlotIndex) -1] / 1000);
+            sprintf(str, "%luKb", sndFileSizes[(*selectedSlotIndex) - 1] / 1000);
             FONT_Write(FONT_FRAN, STATUS_COLOR_DISABLE, BACK_TIME_COLOR, 100, 17, str);
         }
 
@@ -573,12 +566,12 @@ void DrawRepeatDelay(void)
 {
     char str[50];
     //Draw Rectangle
-    LCD_FillRect(LCD_MakePoint(1, 190),LCD_MakePoint(272, 230), BACK_SLIDE_COLOR);
+    LCD_FillRect(LCD_MakePoint(1, 190), LCD_MakePoint(272, 230), BACK_SLIDE_COLOR);
 
     LCD_HLine(LCD_MakePoint(1, 190), 272, LCD_BLACK);
-    LCD_VLine(LCD_MakePoint(1, 190),  40, LCD_BLACK);
+    LCD_VLine(LCD_MakePoint(1, 190), 40, LCD_BLACK);
     LCD_HLine(LCD_MakePoint(1, 230), 272, LCD_WHITE);
-    LCD_VLine(LCD_MakePoint(272, 190),  40, LCD_WHITE);
+    LCD_VLine(LCD_MakePoint(272, 190), 40, LCD_WHITE);
 
     //Is Repeat
     FONT_Write(FONT_FRAN, LCD_WHITE, 0, 3, 190, "Repeat");
@@ -596,12 +589,12 @@ void DrawVolume(void)
 {
     char str[50];
     //Draw Rectangle
-    LCD_FillRect(LCD_MakePoint(1, 145),LCD_MakePoint(272, 185), BACK_SLIDE_COLOR);
+    LCD_FillRect(LCD_MakePoint(1, 145), LCD_MakePoint(272, 185), BACK_SLIDE_COLOR);
 
     LCD_HLine(LCD_MakePoint(1, 145), 272, LCD_BLACK);
-    LCD_VLine(LCD_MakePoint(1, 145),  40, LCD_BLACK);
+    LCD_VLine(LCD_MakePoint(1, 145), 40, LCD_BLACK);
     LCD_HLine(LCD_MakePoint(1, 230), 272, LCD_WHITE);
-    LCD_VLine(LCD_MakePoint(272, 145),  40, LCD_WHITE);
+    LCD_VLine(LCD_MakePoint(272, 145), 40, LCD_WHITE);
 
     //Is Repeat
     sprintf(str, "Record Vol: %d%%", (*RecVol));
@@ -622,14 +615,15 @@ int CheckTouchOnOption(void)
 
     //while(TOUCH_IsPressed());
 
-    if (pt.y > 190 && pt.y < 270 )  //Repeat Option
+    if (pt.y > 190 && pt.y < 270) //Repeat Option
     {
         if (pt.x < 30)
         {
             TRACK_Beep(1);
-            while(TOUCH_IsPressed());
+            while (TOUCH_IsPressed())
+                ;
 
-            (*isRepeatPlay) =  ! (*isRepeatPlay);
+            (*isRepeatPlay) = !(*isRepeatPlay);
         }
         else if (pt.x > 40)
         {
@@ -646,17 +640,17 @@ int CheckTouchOnOption(void)
 
         DrawRepeatDelay();
     }
-    else if (pt.y > 150 && pt.y < 179 )  //Volume Control
+    else if (pt.y > 150 && pt.y < 179) //Volume Control
     {
-        if (pt.x < 3)           //Limit Record Volume
+        if (pt.x < 3) //Limit Record Volume
         {
             (*RecVol) = 0;
         }
-        else if (pt.x > 240)    //Limit Play Voloume
+        else if (pt.x > 240) //Limit Play Voloume
         {
             (*PlayVol) = 100;
         }
-        else if (pt.x < 110)    //Rec Volume Control
+        else if (pt.x < 110) //Rec Volume Control
         {
             (*RecVol) = pt.x - 3;
             if ((*RecVol) > 100)
@@ -698,7 +692,6 @@ int DrawRateAndCheckStop(int progressPercent, uint32_t progressColor, int playin
     return 0;
 }
 
-
 uint32_t GetFileSize(int fileIndex)
 {
     FRESULT res;
@@ -726,15 +719,14 @@ void UpdateFileSizes(int fileIndex)
     {
         for (int i = 1; i <= 14; i++)
         {
-            sndFileSizes[i -1] = GetFileSize(i);
+            sndFileSizes[i - 1] = GetFileSize(i);
         }
     }
     else
     {
-        sndFileSizes[fileIndex -1] = GetFileSize(fileIndex);
+        sndFileSizes[fileIndex - 1] = GetFileSize(fileIndex);
     }
 }
-
 
 void StartRecord(void)
 {
@@ -775,7 +767,7 @@ void StartRecord(void)
     int recordPosition = 0;
     while (1)
     {
-        while(Audio_Status != AUDIO_TRANSFER_HALF)
+        while (Audio_Status != AUDIO_TRANSFER_HALF)
         {
             HAL_Delay(1);
             //__NOP();
@@ -788,7 +780,7 @@ void StartRecord(void)
         if (FR_OK != res || bw != sizeof(REC_BUFF))
             break;
 
-        while(Audio_Status != AUDIO_TRANSFER_COMPLETE)
+        while (Audio_Status != AUDIO_TRANSFER_COMPLETE)
         {
             HAL_Delay(1);
             //__NOP();
@@ -810,14 +802,14 @@ void StartRecord(void)
             BSP_AUDIO_IN_Stop(CODEC_PDWN_SW);
             break;
         }
-    }   //end of while
+    } //end of while
 
     f_close(&fp);
 
     //Update File Size
     UpdateFileSizes((*selectedSlotIndex));
 
-    recMenuDraw();           //Draw Menu
+    recMenuDraw(); //Draw Menu
     DrawStatusInfo(0, 0);
     //DrawRepeatDelay();
     //DrawVolume();
@@ -858,8 +850,8 @@ void StartPlay(void)
 
     //int playCount = 0;
 
-    UINT br =  0;
-    Audio_Play_Status = AUDIO_TRANSFER_NONE;	//Receive Start
+    UINT br = 0;
+    Audio_Play_Status = AUDIO_TRANSFER_NONE; //Receive Start
     int playTimeCnt = 0;
 
     //Start Play
@@ -877,7 +869,7 @@ void StartPlay(void)
     //0 ~ 512 Set
     memcpy(&AUDIO_BUFFER_INOUT[0], PLAY_BUFF, 512 * 2);
     BSP_AUDIO_OUT_SetVolume((*PlayVol));
-    BSP_AUDIO_OUT_Play(AUDIO_BUFFER_INOUT, 512 * 2 * 2);    //
+    BSP_AUDIO_OUT_Play(AUDIO_BUFFER_INOUT, 512 * 2 * 2); //
     //Play : 0 ~ 512
 
     int nowPostionCount = 1;
@@ -895,14 +887,13 @@ void StartPlay(void)
         memcpy(&AUDIO_BUFFER_INOUT[512], PLAY_BUFF, 512 * 2);
 
         //complete : play 0~512
-        while(Audio_Play_Status != AUDIO_TRANSFER_HALF)
+        while (Audio_Play_Status != AUDIO_TRANSFER_HALF)
         {
             //__NOP();
             HAL_Delay(1);
         }
 
         Audio_Play_Status = AUDIO_TRANSFER_NONE;
-
 
         //FileRead
         res = f_read(&fp, PLAY_BUFF, sizeof(PLAY_BUFF), &br);
@@ -917,7 +908,7 @@ void StartPlay(void)
         memcpy(&AUDIO_BUFFER_INOUT[0], PLAY_BUFF, 512 * 2);
 
         //complete : 512 ~ 1024
-        while(Audio_Play_Status != AUDIO_TRANSFER_COMPLETE)
+        while (Audio_Play_Status != AUDIO_TRANSFER_COMPLETE)
         {
             //__NOP();
             HAL_Delay(1);
@@ -928,7 +919,7 @@ void StartPlay(void)
         //int progressPercent = 50;
         nowPostionCount++;
 
-        if (DrawRateAndCheckStop(nowPostionCount * 100  / readSendCount * 2, LCD_BLUE, ++playTimeCnt) )
+        if (DrawRateAndCheckStop(nowPostionCount * 100 / readSendCount * 2, LCD_BLUE, ++playTimeCnt))
         {
             //Add below lines to Init section
             //BSP_AUDIO_OUT_Stop(CODEC_PDWN_SW);
@@ -939,13 +930,12 @@ void StartPlay(void)
             break;
         }
 
-    }   //end of while
+    } //end of while
 
     f_close(&fp);
     BSP_AUDIO_IN_Stop(CODEC_PDWN_SW);
     //File Save
 }
-
 
 void RecPlayAudio_Proc(void)
 {
@@ -959,21 +949,21 @@ void RecPlayAudio_Proc(void)
     LCD_ShowActiveLayerOnly();
 
     REC_LoadInformation();
-    while(TOUCH_IsPressed());
-
+    while (TOUCH_IsPressed())
+        ;
 
     UpdateFileSizes(0);
-    recMenuDraw();           //Draw Menu
+    recMenuDraw(); //Draw Menu
     DrawStatusInfo(0, 0);
     DrawRepeatDelay();
     DrawVolume();
 
-    #define VERSION_FONT_COLOR LCD_RGB(59, 87, 100)
+#define VERSION_FONT_COLOR LCD_RGB(59, 87, 100)
 
     FONT_Write(FONT_FRAN, VERSION_FONT_COLOR, 0, 40, 98, "Voice Keyer & Recorder for SSB,FM,AM");
     FONT_Write(FONT_FRAN, VERSION_FONT_COLOR, 0, 100, 115, "Version 0.5 + By KD8CEC");
 
-    for(;;)
+    for (;;)
     {
         if (TOUCH_Poll(&pt))
         {
@@ -990,9 +980,10 @@ void RecPlayAudio_Proc(void)
             {
                 TRACK_Beep(1);
 
-                while(TOUCH_IsPressed());
+                while (TOUCH_IsPressed())
+                    ;
 
-                if (touchIndex == MENU_EXIT)    //EXIT
+                if (touchIndex == MENU_EXIT) //EXIT
                 {
                     break;
                 }
@@ -1002,7 +993,7 @@ void RecPlayAudio_Proc(void)
                 }
                 else if (touchIndex == MENU_SETPTT)
                 {
-                    (*pttControl) = ! (*pttControl);
+                    (*pttControl) = !(*pttControl);
                 }
                 else if (touchIndex == MENU_PLAY)
                 {
@@ -1011,7 +1002,7 @@ void RecPlayAudio_Proc(void)
                     (*RecPlayStatus) = AUDIO_ST_PLAY;
                     recMenuDraw();
 
-                    while((*playUserStop) == 0)
+                    while ((*playUserStop) == 0)
                     {
                         if ((*pttControl))
                             SET_PTT(1);
@@ -1026,7 +1017,7 @@ void RecPlayAudio_Proc(void)
                         (*RecPlayStatus) = AUDIO_ST_READY;
                         DrawStatusInfo(0, 0);
 
-                        if ((! (*isRepeatPlay)) || (*playUserStop))
+                        if ((!(*isRepeatPlay)) || (*playUserStop))
                             break;
 
                         //Delay RepeatTime
@@ -1038,14 +1029,14 @@ void RecPlayAudio_Proc(void)
                                 break;
                             }
                         }
-
                     }
 
                     (*RecPlayStatus) = AUDIO_ST_NONE;
                     DrawStatusInfo(0, 0);
                     recMenuDraw();
 
-                    while(TOUCH_IsPressed());
+                    while (TOUCH_IsPressed())
+                        ;
                 }
                 else if (touchIndex == MENU_RECORD)
                 {
@@ -1057,9 +1048,10 @@ void RecPlayAudio_Proc(void)
                     DrawStatusInfo(0, 0);
                     recMenuDraw();
 
-                    while(TOUCH_IsPressed());
+                    while (TOUCH_IsPressed())
+                        ;
                 }
-                else if (touchIndex >= MENU_SLOT1 && touchIndex <= MENU_SLOT14)  //TOUCH SLOT NUMBER
+                else if (touchIndex >= MENU_SLOT1 && touchIndex <= MENU_SLOT14) //TOUCH SLOT NUMBER
                 {
                     (*selectedSlotIndex) = touchIndex - MENU_SLOT1 + 1;
                     DrawStatusInfo(0, 0);
@@ -1072,11 +1064,10 @@ void RecPlayAudio_Proc(void)
 
         Sleep(2);
 
-    }   //end of for
+    } //end of for
 
     SET_PTT(0);
     GEN_SetMeasurementFreq(0);
     DSP_Init();
     return;
-
 }

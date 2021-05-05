@@ -46,11 +46,11 @@
 #include "config.h"
 
 //Ext I2C port used for camera is wired to Arduino UNO connector when SB4 and SB1 jumpers are set instead of SB5 and SB3.
-extern void     CAMERA_IO_Init(void);
-extern void     CAMERA_IO_Write(uint8_t addr, uint8_t reg, uint8_t value);
-extern uint8_t  CAMERA_IO_Read(uint8_t addr, uint8_t reg);
-extern void     CAMERA_Delay(uint32_t delay);
-extern void     CAMERA_IO_WriteBulk(uint8_t addr, uint8_t reg, uint8_t* values, uint16_t nvalues);
+extern void CAMERA_IO_Init(void);
+extern void CAMERA_IO_Write(uint8_t addr, uint8_t reg, uint8_t value);
+extern uint8_t CAMERA_IO_Read(uint8_t addr, uint8_t reg);
+extern void CAMERA_Delay(uint32_t delay);
+extern void CAMERA_IO_WriteBulk(uint8_t addr, uint8_t reg, uint8_t *values, uint16_t nvalues);
 extern void Sleep(uint32_t);
 
 //=================================================
@@ -70,7 +70,7 @@ uint8_t SI5351_HS_Write(uint8_t addr, uint8_t data)
 uint8_t SI5351_HS_WriteN(uint8_t addr, uint8_t bytes, uint8_t *data)
 {
 	//CAMERA_IO_WriteN(0xC0, addr, data, bytes);
-    CAMERA_IO_WriteBulk(CFG_GetParam(CFG_PARAM_SI5351_BUS_BASE_ADDR), addr, data, (uint16_t)bytes);
+	CAMERA_IO_WriteBulk(CFG_GetParam(CFG_PARAM_SI5351_BUS_BASE_ADDR), addr, data, (uint16_t)bytes);
 
 	return 0;
 }
@@ -87,9 +87,9 @@ uint8_t SI5351_HS_Read(uint8_t addr, uint8_t *data)
 //--------------------------------------------------
 //D7 D6 D5 D4 D3 D2 D1 D0
 //CLK7_OEB CLK6_OEB CLK5_OEB CLK4_OEB CLK3_OEB CLK2_OEB CLK1_OEB CLK0_OEB
-uint8_t reg_ClkEnabled = 0xFF;        // Registor 3 (0:Enabled, 1:Disabled)
+uint8_t reg_ClkEnabled = 0xFF; // Registor 3 (0:Enabled, 1:Disabled)
 uint8_t reg_ClkControl[7] = {CLK_CONTROL_DEFAULT_VALUE, CLK_CONTROL_DEFAULT_VALUE, CLK_CONTROL_DEFAULT_VALUE, CLK_CONTROL_DEFAULT_VALUE,
-														 CLK_CONTROL_DEFAULT_VALUE, CLK_CONTROL_DEFAULT_VALUE, CLK_CONTROL_DEFAULT_VALUE};
+							 CLK_CONTROL_DEFAULT_VALUE, CLK_CONTROL_DEFAULT_VALUE, CLK_CONTROL_DEFAULT_VALUE};
 
 //for I2C Send buffer
 uint8_t PllAClockValues[8] = {0};
@@ -102,12 +102,12 @@ unsigned long _hs_xtal_freq = 27000000;
 
 void HS_SI5351_Init(unsigned hs_xtal_freq, uint8_t hs_xtal_pf)
 {
-	_hs_xtal_freq= hs_xtal_freq;
+	_hs_xtal_freq = hs_xtal_freq;
 	//HS_XTAL_PF = hs_xtal_pf;	//not need stored
 
-  SI5351_HS_Write(149, 0);                     // SpreadSpectrum off
-  SI5351_HS_Write(3, reg_ClkEnabled);          // Disable all CLK output drivers
-  SI5351_HS_Write(183, hs_xtal_pf << 6);  // Set 25mhz crystal load capacitance
+	SI5351_HS_Write(149, 0);			   // SpreadSpectrum off
+	SI5351_HS_Write(3, reg_ClkEnabled);	   // Disable all CLK output drivers
+	SI5351_HS_Write(183, hs_xtal_pf << 6); // Set 25mhz crystal load capacitance
 }
 
 //=================================================
@@ -132,7 +132,7 @@ void HS_AllClockDown()
 	for (int i = 0; i < 7; i++)
 	{
 		reg_ClkControl[i] |= (HS_CLK_DOWN << 7);
-		SI5351_HS_Write(16 + i, reg_ClkControl[i]);             	// Disable output during the following register settings
+		SI5351_HS_Write(16 + i, reg_ClkControl[i]); // Disable output during the following register settings
 	}
 }
 void HS_AllClockUp()
@@ -140,16 +140,15 @@ void HS_AllClockUp()
 	for (int i = 0; i < 7; i++)
 	{
 		reg_ClkControl[i] &= ~(HS_CLK_DOWN << 7);
-		SI5351_HS_Write(16 + i, reg_ClkControl[i]);             	// Disable output during the following register settings
+		SI5351_HS_Write(16 + i, reg_ClkControl[i]); // Disable output during the following register settings
 	}
 }
-
 
 void HS_SetClockEnabled(uint8_t clkNum, uint8_t isEnabled, uint8_t isApply)
 {
 	//AN619 (Ref Manual). Page 19
-//CLK7_OEB CLK6_OEB CLK5_OEB CLK4_OEB CLK3_OEB CLK2_OEB CLK1_OEB CLK0_OEB
-//uint8_t reg_ClkEnabled = 0xFF;        // Registor 3 (0:Enabled, 1:Disabled)
+	//CLK7_OEB CLK6_OEB CLK5_OEB CLK4_OEB CLK3_OEB CLK2_OEB CLK1_OEB CLK0_OEB
+	//uint8_t reg_ClkEnabled = 0xFF;        // Registor 3 (0:Enabled, 1:Disabled)
 
 	if (isEnabled)
 		reg_ClkEnabled &= ~(1 << clkNum);
@@ -162,14 +161,14 @@ void HS_SetClockEnabled(uint8_t clkNum, uint8_t isEnabled, uint8_t isApply)
 	}
 }
 
-void HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply)// txPower in (0..3)
+void HS_SetPower(uint8_t clkNum, uint8_t txPower, uint8_t isApply) // txPower in (0..3)
 {
 	reg_ClkControl[clkNum] &= ~(3);
 	reg_ClkControl[clkNum] |= (txPower);
 
 	if (isApply)
 	{
-uint8_t status = si5351_read_device_reg(16 + clkNum)|(txPower);
+		uint8_t status = si5351_read_device_reg(16 + clkNum) | (txPower);
 		SI5351_HS_Write(16 + clkNum, status);
 	}
 }
@@ -182,17 +181,17 @@ uint8_t status = si5351_read_device_reg(16 + clkNum)|(txPower);
 */
 uint8_t HS_MAToParam(uint8_t txPowerMa)
 {
-    if (txPowerMa == 2)
-        return HS_2MA;
-    else if (txPowerMa == 4)
-        return HS_4MA;
-    else if (txPowerMa == 6)
-        return HS_6MA;
-    else
-        return HS_8MA;
+	if (txPowerMa == 2)
+		return HS_2MA;
+	else if (txPowerMa == 4)
+		return HS_4MA;
+	else if (txPowerMa == 6)
+		return HS_6MA;
+	else
+		return HS_8MA;
 }
 
-void HS_SetPLL(uint8_t clkNum, uint8_t usePLLIndex, uint8_t isApply)	///PLLA : 0, PLLB: 1
+void HS_SetPLL(uint8_t clkNum, uint8_t usePLLIndex, uint8_t isApply) ///PLLA : 0, PLLB: 1
 {
 	if (usePLLIndex == 0)
 		reg_ClkControl[clkNum] &= ~(1 << 5);
@@ -205,89 +204,124 @@ void HS_SetPLL(uint8_t clkNum, uint8_t usePLLIndex, uint8_t isApply)	///PLLA : 0
 	}
 }
 
-
 //=================================================
 //PLL Configuration (PLLA, PLLB)
 //-------------------------------------------------
 //refernce source code is OE1SEG,
 //Get Parameter for PLL by Frequency
-void HS_CalcPLLParam(unsigned long cPartValue,unsigned long targetFrequency, unsigned long *rst_P1, unsigned long *rst_P2, unsigned long *rst_P3)
+void HS_CalcPLLParam(unsigned long cPartValue, unsigned long targetFrequency, unsigned long *rst_P1, unsigned long *rst_P2, unsigned long *rst_P3)
 {
-  unsigned long TX_fvco;                       // VCO frequency (600-900 MHz) of PLL
-  unsigned long TX_outdivider;                 // Output divider in range [4,6,8-900], even numbers preferred
-  byte TX_R = 1;                               // Additional Output Divider in range [1,2,4,...128]
-  byte TX_a;                                   // "a" part of Feedback-Multiplier from XTAL to PLL in range [15,90]
-  unsigned long TX_b;                          // "b" part of Feedback-Multiplier from XTAL to PLL
-  float TX_f;                                  // floating variable, needed in calculation
-  //unsigned long MS0_P1;                        // Si5351a Output Divider register MS0_P1, P2 and P3 are hardcoded below
+	unsigned long TX_fvco;		 // VCO frequency (600-900 MHz) of PLL
+	unsigned long TX_outdivider; // Output divider in range [4,6,8-900], even numbers preferred
+	byte TX_R = 1;				 // Additional Output Divider in range [1,2,4,...128]
+	byte TX_a;					 // "a" part of Feedback-Multiplier from XTAL to PLL in range [15,90]
+	unsigned long TX_b;			 // "b" part of Feedback-Multiplier from XTAL to PLL
+	float TX_f;					 // floating variable, needed in calculation
+	//unsigned long MS0_P1;                        // Si5351a Output Divider register MS0_P1, P2 and P3 are hardcoded below
 
-  TX_outdivider = 900000000 / targetFrequency;    // With 900 MHz beeing the maximum internal PLL-Frequency
+	TX_outdivider = 900000000 / targetFrequency; // With 900 MHz beeing the maximum internal PLL-Frequency
 
-  while (TX_outdivider > 900){                    // If output divider out of range (>900) use additional Output divider
-    TX_R = TX_R * 2;
-    TX_outdivider = TX_outdivider / 2;
-  }
-  if (TX_outdivider % 2) TX_outdivider--;         // finds the even divider which delivers the intended Frequency
+	while (TX_outdivider > 900)
+	{ // If output divider out of range (>900) use additional Output divider
+		TX_R = TX_R * 2;
+		TX_outdivider = TX_outdivider / 2;
+	}
+	if (TX_outdivider % 2)
+		TX_outdivider--; // finds the even divider which delivers the intended Frequency
 
-  TX_fvco = TX_outdivider * TX_R * targetFrequency;  // Calculate the PLL-Frequency (given the even divider)
+	TX_fvco = TX_outdivider * TX_R * targetFrequency; // Calculate the PLL-Frequency (given the even divider)
 
-  switch (TX_R){                          // Convert the Output Divider to the bit-setting required in register 44
-    case 1: TX_R = 0; break;              // Bits [6:4] = 000
-    case 2: TX_R = 16; break;             // Bits [6:4] = 001
-    case 4: TX_R = 32; break;             // Bits [6:4] = 010
-    case 8: TX_R = 48; break;             // Bits [6:4] = 011
-    case 16: TX_R = 64; break;            // Bits [6:4] = 100
-    case 32: TX_R = 80; break;            // Bits [6:4] = 101
-    case 64: TX_R = 96; break;            // Bits [6:4] = 110
-    case 128: TX_R = 112; break;          // Bits [6:4] = 111
-  }
+	switch (TX_R)
+	{ // Convert the Output Divider to the bit-setting required in register 44
+	case 1:
+		TX_R = 0;
+		break; // Bits [6:4] = 000
+	case 2:
+		TX_R = 16;
+		break; // Bits [6:4] = 001
+	case 4:
+		TX_R = 32;
+		break; // Bits [6:4] = 010
+	case 8:
+		TX_R = 48;
+		break; // Bits [6:4] = 011
+	case 16:
+		TX_R = 64;
+		break; // Bits [6:4] = 100
+	case 32:
+		TX_R = 80;
+		break; // Bits [6:4] = 101
+	case 64:
+		TX_R = 96;
+		break; // Bits [6:4] = 110
+	case 128:
+		TX_R = 112;
+		break; // Bits [6:4] = 111
+	}
 
-  TX_a = TX_fvco / _hs_xtal_freq;		  				// Multiplier to get from Quartz-Oscillator Freq. to PLL-Freq.
-  TX_f = TX_fvco - TX_a * _hs_xtal_freq;       // Multiplier = a+b/c
-  TX_f = TX_f * cPartValue;               // this is just "int" and "float" mathematics
-  TX_f = TX_f / _hs_xtal_freq;
-  TX_b = TX_f;
+	TX_a = TX_fvco / _hs_xtal_freq;		   // Multiplier to get from Quartz-Oscillator Freq. to PLL-Freq.
+	TX_f = TX_fvco - TX_a * _hs_xtal_freq; // Multiplier = a+b/c
+	TX_f = TX_f * cPartValue;			   // this is just "int" and "float" mathematics
+	TX_f = TX_f / _hs_xtal_freq;
+	TX_b = TX_f;
 
-  //MS0_P1 = 128 * TX_outdivider - 512;     // Calculation of Output Divider registers MS0_P1 to MS0_P3
-                                          // MS0_P2 = 0 and MS0_P3 = 1; these values are hardcoded, see below
+	//MS0_P1 = 128 * TX_outdivider - 512;     // Calculation of Output Divider registers MS0_P1 to MS0_P3
+	// MS0_P2 = 0 and MS0_P3 = 1; these values are hardcoded, see below
 
-  TX_f = 128 * TX_b / cPartValue;         // Calculation of Feedback Multisynth registers MSNB_P1 to MSNB_P3
-  *rst_P1 = 128 * TX_a + TX_f - 512;
-  *rst_P2 = TX_f;
-  *rst_P2 = 128 * TX_b - (*rst_P2) * cPartValue;
-  *rst_P3 = cPartValue;
+	TX_f = 128 * TX_b / cPartValue; // Calculation of Feedback Multisynth registers MSNB_P1 to MSNB_P3
+	*rst_P1 = 128 * TX_a + TX_f - 512;
+	*rst_P2 = TX_f;
+	*rst_P2 = 128 * TX_b - (*rst_P2) * cPartValue;
+	*rst_P3 = cPartValue;
 }
 
 //Same source as above CalPLLParam.
 void HS_BindCLKToPLL(uint8_t clkNum, uint8_t usePLL, unsigned long targetFrequency)
 {
-  unsigned long outdivider;
-  byte TX_R = 1;
-  unsigned long MS0_P1;
+	unsigned long outdivider;
+	byte TX_R = 1;
+	unsigned long MS0_P1;
 
-  outdivider = 900000000 / targetFrequency;
+	outdivider = 900000000 / targetFrequency;
 
-  while (outdivider > 900)
+	while (outdivider > 900)
 	{
-    TX_R = TX_R * 2;
-    outdivider = outdivider / 2;
-  }
-  if (outdivider % 2) outdivider--;
+		TX_R = TX_R * 2;
+		outdivider = outdivider / 2;
+	}
+	if (outdivider % 2)
+		outdivider--;
 
+	switch (TX_R)
+	{ // Convert the Output Divider to the bit-setting required in register 44
+	case 1:
+		TX_R = 0;
+		break; // Bits [6:4] = 000
+	case 2:
+		TX_R = 16;
+		break; // Bits [6:4] = 001
+	case 4:
+		TX_R = 32;
+		break; // Bits [6:4] = 010
+	case 8:
+		TX_R = 48;
+		break; // Bits [6:4] = 011
+	case 16:
+		TX_R = 64;
+		break; // Bits [6:4] = 100
+	case 32:
+		TX_R = 80;
+		break; // Bits [6:4] = 101
+	case 64:
+		TX_R = 96;
+		break; // Bits [6:4] = 110
+	case 128:
+		TX_R = 112;
+		break; // Bits [6:4] = 111
+	}
 
-  switch (TX_R){                          // Convert the Output Divider to the bit-setting required in register 44
-    case 1: TX_R = 0; break;              // Bits [6:4] = 000
-    case 2: TX_R = 16; break;             // Bits [6:4] = 001
-    case 4: TX_R = 32; break;             // Bits [6:4] = 010
-    case 8: TX_R = 48; break;             // Bits [6:4] = 011
-    case 16: TX_R = 64; break;            // Bits [6:4] = 100
-    case 32: TX_R = 80; break;            // Bits [6:4] = 101
-    case 64: TX_R = 96; break;            // Bits [6:4] = 110
-    case 128: TX_R = 112; break;          // Bits [6:4] = 111
-  }
-
-  MS0_P1 = 128 * outdivider - 512;     // Calculation of Output Divider registers MS0_P1 to MS0_P3
-                                          // MS0_P2 = 0 and MS0_P3 = 1; these values are hardcoded, see below
+	MS0_P1 = 128 * outdivider - 512; // Calculation of Output Divider registers MS0_P1 to MS0_P3
+									 // MS0_P2 = 0 and MS0_P3 = 1; these values are hardcoded, see below
 	//Set PLLA
 	HS_SetPLL(clkNum, usePLL, HS_FALSE);
 
@@ -317,39 +351,39 @@ void HS_BindCLKToPLL(uint8_t clkNum, uint8_t usePLL, unsigned long targetFrequen
 //Get Parameter for PLL by Frequency
 void HS_ApplyPLLParam(uint8_t usePLL, unsigned long MSN_P1, unsigned long MSN_P2, unsigned long MSN_P3)
 {
-	PllAClockValues[0] = (MSN_P3 & 65280) >> 8;   // Bits [15:8] of MSNA_P3 in register 26
-	PllAClockValues[1] = MSN_P3 & 255;            // Bits [7:0]  of MSNA_P3 in register 27
-	PllAClockValues[2] = (MSN_P1 & 196608) >> 16; // Bits [17:16] of MSNA_P1 in bits [1:0] of register 28
-	PllAClockValues[3] = (MSN_P1 & 65280) >> 8;   // Bits [15:8]  of MSNA_P1 in register 29
-	PllAClockValues[4] = MSN_P1 & 255;            // Bits [7:0]  of MSNA_P1 in register 30
+	PllAClockValues[0] = (MSN_P3 & 65280) >> 8;									// Bits [15:8] of MSNA_P3 in register 26
+	PllAClockValues[1] = MSN_P3 & 255;											// Bits [7:0]  of MSNA_P3 in register 27
+	PllAClockValues[2] = (MSN_P1 & 196608) >> 16;								// Bits [17:16] of MSNA_P1 in bits [1:0] of register 28
+	PllAClockValues[3] = (MSN_P1 & 65280) >> 8;									// Bits [15:8]  of MSNA_P1 in register 29
+	PllAClockValues[4] = MSN_P1 & 255;											// Bits [7:0]  of MSNA_P1 in register 30
 	PllAClockValues[5] = ((MSN_P3 & 983040) >> 12) | ((MSN_P2 & 983040) >> 16); // Parts of MSNA_P3 und MSNA_P1
-	PllAClockValues[6] = (MSN_P2 & 65280) >> 8;   // Bits [15:8]  of MSNA_P2 in register 32
-	PllAClockValues[7] = MSN_P2 & 255;            // Bits [7:0]  of MSNA_P2 in register 33
+	PllAClockValues[6] = (MSN_P2 & 65280) >> 8;									// Bits [15:8]  of MSNA_P2 in register 32
+	PllAClockValues[7] = MSN_P2 & 255;											// Bits [7:0]  of MSNA_P2 in register 33
 
 	SI5351_HS_WriteN(usePLL == HS_PLLA ? 26 : 34, 8, PllAClockValues);
 
-	SI5351_HS_Write(177, 32);                      // This resets PLL A
+	SI5351_HS_Write(177, 32); // This resets PLL A
 }
 
 //High Speed Controlled by P2, Small Range (size of P3) because using just P2
-void HS_SetPLLP2(uint8_t usePLL, unsigned long P2, unsigned long P3)	//Shift PLLA Frequency by P2
+void HS_SetPLLP2(uint8_t usePLL, unsigned long P2, unsigned long P3) //Shift PLLA Frequency by P2
 {
 	PllAClockValues[0] = ((P3 & 983040) >> 12) | ((P2 & 983040) >> 16); //P3 is zero, P2 MSB 3bit
-	PllAClockValues[1] = (P2 & 65280) >> 8;   													//P2[15:8]
-	PllAClockValues[2] = P2 & 255;            													//P2[7:0]
+	PllAClockValues[1] = (P2 & 65280) >> 8;								//P2[15:8]
+	PllAClockValues[2] = P2 & 255;										//P2[7:0]
 
 	SI5351_HS_WriteN(usePLL == HS_PLLA ? 31 : 39, 3, PllAClockValues);
 }
 
 //Full Range Controlled (speed = HS_SetPLLP2 * 1.8) using P1, P2
-void HS_SetPLLP1P2(uint8_t usePLL, unsigned long P1, unsigned long P2, unsigned long P3)	//Shift PLLA Frequency by P2
+void HS_SetPLLP1P2(uint8_t usePLL, unsigned long P1, unsigned long P2, unsigned long P3) //Shift PLLA Frequency by P2
 {
-	PllAClockValues[0] = (P1 & 196608) >> 16; // Bits [17:16] of MSNA_P1 in bits [1:0] of register 28
-	PllAClockValues[1] = (P1 & 65280) >> 8;   // Bits [15:8]  of MSNA_P1 in register 29
-	PllAClockValues[2] = P1 & 255;            // Bits [7:0]  of MSNA_P1 in register 30
+	PllAClockValues[0] = (P1 & 196608) >> 16;							// Bits [17:16] of MSNA_P1 in bits [1:0] of register 28
+	PllAClockValues[1] = (P1 & 65280) >> 8;								// Bits [15:8]  of MSNA_P1 in register 29
+	PllAClockValues[2] = P1 & 255;										// Bits [7:0]  of MSNA_P1 in register 30
 	PllAClockValues[3] = ((P3 & 983040) >> 12) | ((P2 & 983040) >> 16); // Parts of MSNA_P3 und MSNA_P1
-	PllAClockValues[4] = (P2 & 65280) >> 8;   // Bits [15:8]  of MSNA_P2 in register 32
-	PllAClockValues[5] = P2 & 255;            // Bits [7:0]  of MSNA_P2 in register 33
+	PllAClockValues[4] = (P2 & 65280) >> 8;								// Bits [15:8]  of MSNA_P2 in register 32
+	PllAClockValues[5] = P2 & 255;										// Bits [7:0]  of MSNA_P2 in register 33
 
 	SI5351_HS_WriteN(usePLL == HS_PLLA ? 28 : 36, 6, PllAClockValues);
 }

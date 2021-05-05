@@ -8,13 +8,12 @@
 #ifndef _MAINWND_H_
 #define _MAINWND_H_
 
-
 #include <ctype.h>
 #include "main.h"
 
 void MainWnd(void);
-extern uint16_t  FileNo;
-extern volatile int   Page;
+extern uint16_t FileNo;
+extern volatile int Page;
 extern uint32_t date, time;
 extern uint32_t RTCpresent;
 extern volatile int NoDate;

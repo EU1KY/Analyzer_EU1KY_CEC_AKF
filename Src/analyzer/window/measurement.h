@@ -10,7 +10,7 @@
 extern uint32_t Timer5Value;
 extern uint16_t TimeFlag;
 void Single_Frequency_Proc(void);
- void FIncr(uint32_t step);
- void FDecr(uint32_t step);
+void FIncr(uint32_t step);
+void FDecr(uint32_t step);
 
 #endif

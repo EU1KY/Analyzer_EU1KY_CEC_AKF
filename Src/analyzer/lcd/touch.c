@@ -16,7 +16,7 @@ static uint32_t wakeup_touch(void)
     if (LCD_IsOff())
     {
         BSP_LCD_DisplayOn();
-        TS_StateTypeDef ts = { 0 };
+        TS_StateTypeDef ts = {0};
         do
         {
             BSP_TS_GetState(&ts);
@@ -26,20 +26,22 @@ static uint32_t wakeup_touch(void)
     return 0;
 }
 
-uint8_t TOUCH_Poll(LCDPoint* pCoord)
+uint8_t TOUCH_Poll(LCDPoint *pCoord)
 {
-    TS_StateTypeDef ts = { 0 };
+    TS_StateTypeDef ts = {0};
     BSP_TS_GetState(&ts);
     if (ts.touchDetected)
     {
         if (wakeup_touch())
             return 0;
 
-        if(LCD_Get_Orientation()==1){
-            pCoord->x = 479-ts.touchX[0];
-            pCoord->y = 271-ts.touchY[0];
+        if (LCD_Get_Orientation() == 1)
+        {
+            pCoord->x = 479 - ts.touchX[0];
+            pCoord->y = 271 - ts.touchY[0];
         }
-        else{
+        else
+        {
             pCoord->x = ts.touchX[0];
             pCoord->y = ts.touchY[0];
         }
@@ -49,7 +51,7 @@ uint8_t TOUCH_Poll(LCDPoint* pCoord)
 
 uint8_t TOUCH_IsPressed(void)
 {
-    TS_StateTypeDef ts = { 0 };
+    TS_StateTypeDef ts = {0};
     BSP_TS_GetState(&ts);
     if (ts.touchDetected)
     {
@@ -62,8 +64,8 @@ uint8_t TOUCH_IsPressed(void)
 //KD8CEC
 int GetTouchIndex(LCDPoint pt1, const int checkButtons[][4], int checkCount)
 {
-   // #define TOUCH_TOP_MARGIN 5
-    #define TOUCH_TOP_MARGIN 0
+    // #define TOUCH_TOP_MARGIN 5
+#define TOUCH_TOP_MARGIN 0
 
     for (int i = 0; i < checkCount; i++)
     {
@@ -76,7 +78,6 @@ int GetTouchIndex(LCDPoint pt1, const int checkButtons[][4], int checkCount)
     }
     return -1;
 }
-
 
 int GetTouchIndex1(LCDPoint pt1, const int checkButtons[][4], int checkCount)
 {
@@ -91,4 +92,3 @@ int GetTouchIndex1(LCDPoint pt1, const int checkButtons[][4], int checkCount)
     }
     return -1;
 }
-

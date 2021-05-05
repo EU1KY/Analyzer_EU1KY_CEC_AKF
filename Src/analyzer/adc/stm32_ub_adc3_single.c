@@ -32,7 +32,7 @@ ADC3s_t ADC3s[] = {
     // NAME   ,PORT , PIN      , Kanal       , Mittelwerte
     {ADC_PA0, GPIOA, GPIO_PIN_0, ADC_CHANNEL_0, MW_323}, // ADC an PA0 = ADC123_IN0
     {ADC_PF8, GPIOF, GPIO_PIN_8, ADC_CHANNEL_6, MW_256}, // ADC an PF8 = ADC3_IN6
-    {ADC_PF9, GPIOF, GPIO_PIN_9, ADC_CHANNEL_7, MW_256} // ADC an PF7 = ADC3_IN5
+    {ADC_PF9, GPIOF, GPIO_PIN_9, ADC_CHANNEL_7, MW_256}  // ADC an PF7 = ADC3_IN5
 };
 static int ADC3s_ANZ = sizeof(ADC3s) / sizeof(ADC3s[0]); // Anzahl der Eintraege
 
@@ -42,7 +42,8 @@ ADC_ChannelConfTypeDef sConfig;
 //--------------------------------------------------------------
 // init vom ADC im Single-Conversion-Mode
 //--------------------------------------------------------------
-void UB_ADC3_SINGLE_Init(void) {
+void UB_ADC3_SINGLE_Init(void)
+{
   P_ADC3s_InitIO();
   P_ADC3s_InitADC();
 }
@@ -50,9 +51,10 @@ void UB_ADC3_SINGLE_Init(void) {
 //--------------------------------------------------------------
 // starten einer Messung
 // und auslesen des Messwertes
-#define HAL_ADC_STATE_REG_EOC           ((uint32_t)0x00000200U)
+#define HAL_ADC_STATE_REG_EOC ((uint32_t)0x00000200U)
 //--------------------------------------------------------------
-uint16_t UB_ADC3_SINGLE_Read(ADC3s_NAME_t adc_name) {
+uint16_t UB_ADC3_SINGLE_Read(ADC3s_NAME_t adc_name)
+{
   uint16_t messwert = 0;
   uint8_t retv;
   ADC_ChannelConfTypeDef sConfig;
@@ -77,7 +79,8 @@ uint16_t UB_ADC3_SINGLE_Read(ADC3s_NAME_t adc_name) {
   return (messwert);
 }
 
-uint16_t UB_ADC3_SINGLE_Start(ADC3s_NAME_t adc_name) {
+uint16_t UB_ADC3_SINGLE_Start(ADC3s_NAME_t adc_name)
+{
 
   // Messkanal einrichten
   sConfig.Channel = ADC3s[adc_name].ADC_CH;
@@ -92,7 +95,8 @@ uint16_t UB_ADC3_SINGLE_Start(ADC3s_NAME_t adc_name) {
   return 0;
 }
 
-int16_t UB_ADC3_SINGLE_Poll(ADC3s_NAME_t adc_name) {
+int16_t UB_ADC3_SINGLE_Poll(ADC3s_NAME_t adc_name)
+{
   HAL_ADC_PollForConversion(&Adc3Handle, 10);
   if (HAL_IS_BIT_CLR(HAL_ADC_GetState(&Adc3Handle), HAL_ADC_STATE_REG_EOC))
     return -1;
@@ -103,11 +107,12 @@ int16_t UB_ADC3_SINGLE_Poll(ADC3s_NAME_t adc_name) {
 // starten von n-Messungen
 // und auslesen vom Mittelwert
 //--------------------------------------------------------------
-uint16_t UB_ADC3_SINGLE_Read_MW(ADC3s_NAME_t adc_name) {
+uint16_t UB_ADC3_SINGLE_Read_MW(ADC3s_NAME_t adc_name)
+{
   uint32_t mittelwert = 0;
   uint16_t messwert, n;
   uint16_t anz_mw = 1, anz_bit = 0;
-/*
+  /*
   if (ADC3s[adc_name].ADC_MW == MW_NONE) {
     anz_mw = 1;
     anz_bit = 0;
@@ -134,12 +139,14 @@ uint16_t UB_ADC3_SINGLE_Read_MW(ADC3s_NAME_t adc_name) {
     anz_bit = 7;
   } else
 */
-  if (ADC3s[adc_name].ADC_MW == MW_256) {
+  if (ADC3s[adc_name].ADC_MW == MW_256)
+  {
     anz_mw = 256;
     anz_bit = 8;
   }
 
-  for (n = 0; n < anz_mw; n++) {
+  for (n = 0; n < anz_mw; n++)
+  {
     messwert = UB_ADC3_SINGLE_Read(adc_name);
     mittelwert += messwert;
   }
@@ -153,11 +160,13 @@ uint16_t UB_ADC3_SINGLE_Read_MW(ADC3s_NAME_t adc_name) {
 // interne Funktion
 // Init aller IO-Pins
 //--------------------------------------------------------------
-void P_ADC3s_InitIO(void) {
+void P_ADC3s_InitIO(void)
+{
   GPIO_InitTypeDef GPIO_InitStruct;
   ADC3s_NAME_t adc_name;
 
-  for (adc_name = 0; adc_name < ADC3s_ANZ; adc_name++) {
+  for (adc_name = 0; adc_name < ADC3s_ANZ; adc_name++)
+  {
     // Clock Enable
     UB_System_ClockEnable(ADC3s[adc_name].ADC_PORT);
 
@@ -174,7 +183,8 @@ void P_ADC3s_InitIO(void) {
 // interne Funktion
 // Init von ADC
 //--------------------------------------------------------------
-void P_ADC3s_InitADC(void) {
+void P_ADC3s_InitADC(void)
+{
   // Clock Enable
   __HAL_RCC_ADC3_CLK_ENABLE();
 
