@@ -686,10 +686,7 @@ void Single_Frequency_Proc(void)
                 MeasurementModeDraw(rmid);
                 if (MeasMagDif < 10.5f)
                 {
-                    uint32_t activeLayer = BSP_LCD_GetActiveLayer();
-                    BSP_LCD_SelectLayer(!activeLayer);
                     DrawSmallSmith(380, 180, 80, rx);
-                    LCD_ShowActiveLayerOnly();
                     MeasurementModeGraph(rx);
                 }
                 else

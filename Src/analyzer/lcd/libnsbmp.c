@@ -362,14 +362,13 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
      * can be found at
      * http://msdn.microsoft.com/en-us/library/ms532301(VS.85).aspx
      */
-    header_size = read_uint32(data, 0);// war 0
-
+    header_size = read_uint32(data, 0);
     if(bmp->buffer_size < (14 + header_size))
     {
         return BMP_INSUFFICIENT_DATA;
     }
- //   if(header_size == 12)
- //   {
+    if(header_size == 12)
+    {
         /* the following header is for os/2 and windows 2.x and consists of:
          *
          *  +0  UINT32  size of this header (in bytes)
@@ -378,7 +377,7 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
          *  +8  UINT16  number of colour planes (always 1)
          *  +10 UINT16  number of bits per pixel
          */
-   /*     width = read_int16(data, 4);
+        width = read_int16(data, 4);
         height = read_int16(data, 6);
         if((width <= 0) || (height == 0))
         {
@@ -389,13 +388,12 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
             bmp->reversed = true;
             height = -height;
         }
-
-        // ICOs only support 256*256 resolutions
-        // In the case of the ICO header, the height is actually the added
-        // height of XOR-Bitmap and AND-Bitmap (double the visible height)
-        // Technically we could remove this check and ICOs with bitmaps
-        // of any size could be processed; this is to conform to the spec.
-
+        /* ICOs only support 256*256 resolutions
+         * In the case of the ICO header, the height is actually the added
+         * height of XOR-Bitmap and AND-Bitmap (double the visible height)
+         * Technically we could remove this check and ICOs with bitmaps
+         * of any size could be processed; this is to conform to the spec.
+         */
         if(bmp->ico)
         {
             if((width > 256) || (height > 512))
@@ -413,17 +411,17 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
             bmp->width = width;
             bmp->height = height;
         }
-        if(read_uint16(data, 12) != 1)//8
+        if(read_uint16(data, 8) != 1)
         {
             return BMP_DATA_ERROR;
         }
-        bmp->bpp = read_uint16(data, 14);
-        
-        // The bpp value should be in the range 1-32, but the only
-        // values considered legal are:
-        // RGB ENCODING: 1, 4, 8, 16, 24 and 32
-    */
-      if((bmp->bpp != 1) && (bmp->bpp != 4) &&
+        bmp->bpp = read_uint16(data, 10);
+        /**
+         * The bpp value should be in the range 1-32, but the only
+         * values considered legal are:
+         * RGB ENCODING: 1, 4, 8, 16, 24 and 32
+         */
+        if((bmp->bpp != 1) && (bmp->bpp != 4) &&
                 (bmp->bpp != 8) &&
                 (bmp->bpp != 16) &&
                 (bmp->bpp != 24) &&
@@ -433,27 +431,13 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
         }
         bmp->colours = (1 << bmp->bpp);
         palette_size = 3;
-
-    if(header_size < 40) {
-
-            //testMon((char*) &data[0]);
-            //testMon((char*) &bmp);
-
-            header_size = 40;// ** WK **
-            width = 480;
-            height = 272;
     }
-
-    //else if(header_size < 40)
-   /* {
-        header_size = read_uint32(data, 0);
-        test32(header_size);
-
-
+    else if(header_size < 40)
+    {
         return BMP_DATA_ERROR;
     }
-    else*/
-
+    else
+    {
         /* the following header is for windows 3.x and onwards. it is a
          * minimum of 40 bytes and (as of Windows 95) a maximum of 108 bytes.
          *
@@ -486,16 +470,12 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
          *  +100    UINT32  gamma green coordinate scale value
          *  +104    UINT32  gamma blue coordinate scale value
          */
-        else{
-            width = read_int32(data, 4);
-            height = read_int32(data, 8);
-        }
-
+        width = read_int32(data, 4);
+        height = read_int32(data, 8);
         if((width <= 0) || (height == 0))
         {
             return BMP_DATA_ERROR;
         }
-
         if(height < 0)
         {
             bmp->reversed = true;
@@ -524,17 +504,15 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
             bmp->width = width;
             bmp->height = height;
         }
-      if(read_uint16(data, 12) != 1)
+        if(read_uint16(data, 12) != 1)
         {
             return BMP_DATA_ERROR;
         }
-
         bmp->bpp = read_uint16(data, 14);
         if(bmp->bpp == 0)
         {
-            bmp->bpp = 24;// war 8 ** WK 24?
+            bmp->bpp = 8;
         }
-
         bmp->encoding = read_uint32(data, 16);
         /**
          * The bpp value should be in the range 1-32, but the only
@@ -546,14 +524,13 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
          */
         switch(bmp->encoding)
         {
-        case BMP_ENCODING_RGB:// value: 0
+        case BMP_ENCODING_RGB:
             if((bmp->bpp != 1) && (bmp->bpp != 4) &&
                     (bmp->bpp != 8) &&
                     (bmp->bpp != 16) &&
                     (bmp->bpp != 24) &&
                     (bmp->bpp != 32))
             {
-
                 return BMP_DATA_ERROR;
             }
             break;
@@ -584,7 +561,7 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
          * Here we aquire the masks and determine the required bit shift to
          * align them in our 24-bit color 8-bit alpha format.
          */
-        if(bmp->encoding == BMP_ENCODING_BITFIELDS)// value: 3
+        if(bmp->encoding == BMP_ENCODING_BITFIELDS)
         {
             if(header_size == 40)
             {
@@ -633,7 +610,7 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
             bmp->colours = (1 << bmp->bpp);
         }
         palette_size = 4;
- //   }
+    }
     data += header_size;
 
     /* if there's no alpha mask, flag the bmp opaque */
@@ -701,7 +678,6 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
     }
     return BMP_OK;
 }
-
 
 /**
  * Finds the closest BMP within an ICO collection
