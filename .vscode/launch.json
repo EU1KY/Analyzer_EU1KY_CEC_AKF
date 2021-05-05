@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        // Using Native Debug extension to connect to EBLink
+        // In Windows: set env var HOME = %USERPROFILE% in order to make arm-none-eabi-gdb happy with caching
+        {
+            "name": "EBLink attach Release",
+            "type": "gdb",
+            "request": "attach",
+            "cwd": "${workspaceFolder}",
+            "executable": "./bin/Release/F7Discovery.elf",
+            "remote": true,
+            "target": "localhost:2331",
+            "gdbpath": "arm-none-eabi-gdb.exe",
+            "autorun": [
+                "load ./bin/Release/F7Discovery.elf",
+                "break main",
+                "monitor reset"
+            ]
+        }
+    ]
+}

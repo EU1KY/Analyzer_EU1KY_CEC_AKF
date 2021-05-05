@@ -1,0 +1,33 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"main.h": "c",
+			"stdlib.h": "c"
+		},
+		"actionButtons": {
+			"defaultColor": "#ff0034", // Can also use string color names.
+			"loadNpmCommands":false, // Disables automatic generation of actions for npm commands.
+			"reloadButton":"♻️", // Custom reload button text or icon (default ↻). null value enables automatic reload on configuration change
+			"commands": [
+				{
+					"name": "clean",
+					"color": "yellow",
+					"singleInstance": true,
+					"command": "make clean" // This is executed in the terminal.
+				},
+				{
+					//"cwd": "/home/custom_folder", 	// Terminal initial folder ${workspaceFolder} and os user home as defaults
+					"name": "make",
+					"color": "white",
+					"singleInstance": true,
+					"command": "make -j4" // This is executed in the terminal.
+				}
+			]
+		}
+	}
+}
