@@ -28,19 +28,19 @@
 extern void Sleep(uint32_t);
 static uint32_t rqExit = 0;
 static TEXTBOX_CTX_t menuBT_ctx;
-static const char *BT_AT_TEST = "AT";
-static const char *BT_AT_VERSION = "AT+VERSION";
-static const char *BT_AT_NAME = "AT+NAME";
-static const char *BT_AT_PIN = "AT+PIN";
+static const char *BT_AT_TEST __attribute__((unused)) = "AT";
+static const char *BT_AT_VERSION __attribute__((unused)) = "AT+VERSION";
+static const char *BT_AT_NAME __attribute__((unused)) = "AT+NAME";
+static const char *BT_AT_PIN __attribute__((unused)) = "AT+PIN";
 // Baudraten
-static const char *BT_BAUD_1200 = "AT+BAUD1";
-static const char *BT_BAUD_2400 = "AT+BAUD2";
-static const char *BT_BAUD_4800 = "AT+BAUD3";
-static const char *BT_BAUD_9600 = "AT+BAUD4";
-static const char *BT_BAUD_19200 = "AT+BAUD5";
-static const char *BT_BAUD_38400 = "AT+BAUD6";
-static const char *BT_BAUD_57600 = "AT+BAUD7";
-static const char *BT_BAUD_115200 = "AT+BAUD8";
+static const char *BT_BAUD_1200 __attribute__((unused)) = "AT+BAUD1";
+static const char *BT_BAUD_2400 __attribute__((unused)) = "AT+BAUD2";
+static const char *BT_BAUD_4800 __attribute__((unused)) = "AT+BAUD3";
+static const char *BT_BAUD_9600 __attribute__((unused)) = "AT+BAUD4";
+static const char *BT_BAUD_19200 __attribute__((unused)) = "AT+BAUD5";
+static const char *BT_BAUD_38400 __attribute__((unused)) = "AT+BAUD6";
+static const char *BT_BAUD_57600 __attribute__((unused)) = "AT+BAUD7";
+static const char *BT_BAUD_115200 __attribute__((unused)) = "AT+BAUD8";
 
 #define BTB_SIZE 64
 static char btstr[BTB_SIZE + 1];
@@ -55,6 +55,8 @@ uint32_t BT_PIN = (uint32_t)&g_bt_data[22]; //0
 #include "crash.h"
 static const char *g_bt_fpath = "/aa/bt.bin";
 static char *NewSSID;
+
+static char *_del_command(char *str) __attribute__((unused));
 
 static void _hit_BTexit(void)
 {
@@ -155,7 +157,7 @@ void BT_LoadInformation(void)
 void BT_init(void)
 {
     uint32_t comport = CFG_GetParam(CFG_PARAM_COM_PORT);
-    uint32_t comspeed = CFG_GetParam(CFG_PARAM_COM_SPEED);
+    //uint32_t comspeed = CFG_GetParam(CFG_PARAM_COM_SPEED);
     if (COM1 == comport)
         CFG_SetParam(CFG_PARAM_COM_PORT, COM2);
     else
@@ -165,9 +167,9 @@ void BT_init(void)
     else
         return;
 
-    CFG_Flush;
-    BT_StoredInformation;
-    AAUART_Init;
+    CFG_Flush();
+    BT_StoredInformation();
+    AAUART_Init();
 }
 extern uint32_t NumKeypad(uint32_t initial, uint32_t min_value, uint32_t max_value, const char *header_text);
 
@@ -184,11 +186,10 @@ void BT_ChangePW(void)
 
 void BT_ChangeSID(void)
 {
-    uint32_t changepw;
     while (TOUCH_IsPressed())
         ; // wait for release
     LCD_FillAll(LCD_BLACK);
-    changepw = KeyboardWindow(NewSSID, 20, "Change SSID");
+    KeyboardWindow(NewSSID, 20, "Change SSID");
     rqExit = 1;
 }
 
@@ -203,15 +204,15 @@ static char *BT_Command(const char *str)
 
 void ShowBluetooth(void)
 {
-    char str1[30];
+    char str1[128];
     BT_SSID = BT_Command("AT+NAME?");
     BT_PIN = 9999;
     sprintf(str1, "SSID : %s", BT_SSID);
     FONT_Write(FONT_FRANBIG, TextColor, BackGrColor, 34, 10, str1);
 
-    sprintf(str1, "PW   : %4d ", BT_PIN);
+    sprintf(str1, "PW   : %4ld ", BT_PIN);
     FONT_Write(FONT_FRANBIG, TextColor, BackGrColor, 34, 40, str1); //60
-    sprintf(str1, "Baud : %d ", CFG_GetParam(CFG_PARAM_BT_SPEED));
+    sprintf(str1, "Baud : %ld ", CFG_GetParam(CFG_PARAM_BT_SPEED));
     FONT_Write(FONT_FRANBIG, TextColor, BackGrColor, 34, 75, str1);
 
     /*if  (Volt_max_Display==0) LCD_Rectangle(LCD_MakePoint(COL2,210),LCD_MakePoint(COL2+240,210+34),LCD_RED);

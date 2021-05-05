@@ -144,6 +144,7 @@ SRC :=   Src/analyzer/config/config.c \
         Src/analyzer/uartcomm/fifo.c \
         Src/analyzer/uartcomm/minivnaemul.c \
         Src/analyzer/uartcomm/aa600emul.c \
+        Src/analyzer/uartcomm/bt.c \
         Src/analyzer/window/fftwnd.c \
         Src/analyzer/window/generator.c \
         Src/analyzer/window/keyboard.c \
