@@ -36,8 +36,8 @@ typedef union
     };
 } S_OSLDATA;
 
-OSL_ERRCORR *osl_txCorr;
-float *WORK_Ptr;
+extern OSL_ERRCORR *osl_txCorr;
+extern float *WORK_Ptr;
 
 float complex OSL_GFromZ(float complex Z, float Rbase);
 float complex OSL_ZFromG(float complex Z, float Rbase);

@@ -14,7 +14,7 @@ static uint32_t resetRequired = 0;
 uint8_t ColourSelection;
 bool FatLines;
 int BeepOn1;
-uint32_t rqExit;
+static uint32_t rqExit;
 uint32_t BackGrColor;
 uint32_t CurvColor;
 uint32_t TextColor;

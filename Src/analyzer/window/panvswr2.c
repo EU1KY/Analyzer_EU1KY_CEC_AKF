@@ -276,7 +276,7 @@ uint8_t memMode = 0; //0 :Load Mode, 1 :Store Mode    //Memory Status
 uint32_t last_TuneFreq = 0;
 uint32_t AutoCursor;
 
-bool rqExitSWR, rqExitSWR1;
+static bool rqExitSWR, rqExitSWR1;
 
 void SWR_Exit(void)
 {

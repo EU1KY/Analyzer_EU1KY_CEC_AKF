@@ -26,7 +26,7 @@
 extern void Sleep(uint32_t nms);
 
 static uint32_t oscilloscope = 0;
-uint32_t rqExit = 0;
+static uint32_t rqExit = 0;
 static uint32_t fChanged1 = 0;
 //static float rfft_mags[NSAMPLES/2];   //by KD8CEC for reduce memory useage rate
 static float *rfft_mags;

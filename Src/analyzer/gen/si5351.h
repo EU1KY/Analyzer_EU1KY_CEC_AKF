@@ -258,7 +258,7 @@ extern "C"
 
     /* Suggested public function prototypes */
 
-    uint8_t CLK2_drive; // default 3 => 8 mA
+    extern uint8_t CLK2_drive; // default 3 => 8 mA
     uint8_t si5351_read_device_reg(uint8_t reg);
 
     void si5351_Init(void);
