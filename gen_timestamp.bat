@@ -1,5 +1,5 @@
 @echo off
-echo #ifndef BUILD_TIMESTAMP > Src/Inc/build_timestamp.h
+echo #ifndef BUILD_TIMESTAMP_US > Src/Inc/build_timestamp.h
 
 git status > NUL
 if ERRORLEVEL 1 goto GITERR
