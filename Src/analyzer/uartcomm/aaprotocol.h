@@ -17,6 +17,7 @@ extern "C"
     void PROTOCOL_Reset(void);
     void PROTOCOL_Handler(void);
     void PROTOCOL_Handler_VNA(void);
+    void PROTOCOL_Handler_NanoVNA(void);
 #ifdef __cplusplus
 }
 #endif

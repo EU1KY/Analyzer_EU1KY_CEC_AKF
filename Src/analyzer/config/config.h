@@ -54,6 +54,13 @@ typedef enum
 
 typedef enum
 {
+    CFG_PROTO_AA600 = 0,
+    CFG_PROTO_LINSMITH = 1,
+    CFG_PROTO_NANOVNA = 2
+} CFG_SEREMUL_TYPE_t;
+
+typedef enum
+{
     CFG_PARAM_VERSION,              //4 characters of version string
     CFG_PARAM_PAN_F1,               //Initial frequency for panoramic window
     CFG_PARAM_PAN_SPAN,             //Span for panoramic window

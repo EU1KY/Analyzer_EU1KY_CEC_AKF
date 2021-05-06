@@ -390,6 +390,12 @@
 		<Unit filename="Src\analyzer\uartcomm\minivnaemul.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="Src\analyzer\uartcomm\shell.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Src\analyzer\uartcomm\nanovna.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="Src\analyzer\window\audiodsp.c">
 			<Option compilerVar="CC" />
 		</Unit>

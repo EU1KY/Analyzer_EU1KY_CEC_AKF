@@ -26,6 +26,7 @@
 #include "stm32f7xx_hal_adc.h"
 
 #include "gpio_control.h"
+#include "shell.h"
 
 static void SystemClock_Config(void);
 static void CPU_CACHE_Enable(void);
@@ -40,6 +41,11 @@ uint8_t NotSleepMode = 0;
 
 void Sleep(uint32_t nms)
 {
+    if (CFG_PROTO_NANOVNA == CFG_GetParam(CFG_PARAM_SEREMUL))
+    { // NanoVNA protocol runs in any window
+        shell_rx_proc();
+    }
+
     uint32_t ts = CFG_GetParam(CFG_PARAM_LOWPWR_TIME);
     if (ts != 0)
     {
@@ -72,6 +78,10 @@ void Sleep(uint32_t nms)
     while (main_sleep_timer)
     {
         __WFI();
+        if (CFG_PROTO_NANOVNA == CFG_GetParam(CFG_PARAM_SEREMUL))
+        { // NanoVNA protocol runs in any window
+            shell_rx_proc();
+        }
     }
 }
 
@@ -98,6 +108,7 @@ int main(void)
     CPU_CACHE_Enable();
     HAL_Init();
     SystemClock_Config();
+    setvbuf(stdout, NULL, _IONBF, 0); // disable buffering on stdout
     BSP_LED_Init(LED1);
     LCD_Init();
 
@@ -132,6 +143,8 @@ int main(void)
     Sleep(50);
     getTime(&time, &second, &AMPM, 0);
     getDate(&date);
+
+    shell_init("ch"); // Initialize shell with ChibiOS-like command prompt (for NanoVNA protocol)
 
 #ifndef _DEBUG_UART
     if (ShowLogo() == -1)                                               // no logo.bmp or logo.png file found:

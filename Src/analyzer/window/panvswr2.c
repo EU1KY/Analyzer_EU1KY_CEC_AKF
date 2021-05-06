@@ -1881,7 +1881,7 @@ static void save_snapshot(void)
         }
         else // CFG_S1P_TYPE_Z_RI
         {
-            sprintf(wbuf, "%.6f %.2f %.2f\r\n", fmhz, crealf(values[i]), cimagf(values[i]));
+            sprintf(wbuf, "%.6f %.6f %.6f\r\n", fmhz, crealf(values[i]) / 50.f, cimagf(values[i]) / 50.f);
         }
         fr = f_write(&fo, wbuf, strlen(wbuf), &bw);
         if (FR_OK != fr)

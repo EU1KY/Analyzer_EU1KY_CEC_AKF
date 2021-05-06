@@ -339,9 +339,9 @@ static const CFG_CHANGEABLE_PARAM_DESCR_t cfg_ch_descr_table[] =
             .id = CFG_PARAM_SEREMUL, // added by VE7IT
             .idstring = "SERIAL_EMULATION",
             .type = CFG_PARAM_T_U32,
-            .nvalues = 2,
-            .values = CFG_IARR(0, 1),
-            .strvalues = CFG_SARR("AA600", "N2PK Linsmith"),
+            .nvalues = 3,
+            .values = CFG_IARR(CFG_PROTO_AA600, CFG_PROTO_LINSMITH, CFG_PROTO_NANOVNA),
+            .strvalues = CFG_SARR("AA600", "N2PK Linsmith", "NanoVNA"),
             .dstring = "Serial remote protocol emulation",
         },
         {.id = CFG_PARAM_BT_SPEED,

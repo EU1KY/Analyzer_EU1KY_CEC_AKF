@@ -145,6 +145,8 @@ SRC :=   Src/analyzer/config/config.c \
         Src/analyzer/uartcomm/minivnaemul.c \
         Src/analyzer/uartcomm/aa600emul.c \
         Src/analyzer/uartcomm/bt.c \
+        Src/analyzer/uartcomm/shell.c \
+        Src/analyzer/uartcomm/nanovna.c \
         Src/analyzer/window/fftwnd.c \
         Src/analyzer/window/generator.c \
         Src/analyzer/window/keyboard.c \
@@ -279,7 +281,7 @@ DEPS = $(OBJS:.o=.d)
 
 .PHONY: all
 
-all: 
+all:
 	@$(MAKE) -s gen
 	@$(MAKE) -s bin/Release/F7Discovery.elf
 

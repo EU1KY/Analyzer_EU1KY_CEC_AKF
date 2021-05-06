@@ -15,6 +15,7 @@ Notes   : SWO Output should work on every Cortex-M. In case of errors
 #include <stdio.h>
 #include <reent.h>
 #include <sys/stat.h>
+#include "aauart.h"
 
 /*********************************************************************
 *
@@ -36,6 +37,8 @@ char *heap_end = NULL;
 */
 _ssize_t _write_r(struct _reent *r, int file, const void *ptr, size_t len)
 {
+    AAUART_PutBytes((uint8_t*)ptr, (uint32_t)len);
+    /*
     int i;
     const unsigned char *p;
 
@@ -56,6 +59,7 @@ _ssize_t _write_r(struct _reent *r, int file, const void *ptr, size_t len)
         }
         ITM_STIM_U8 = *p++;
     }
+    */
     return len;
 }
 

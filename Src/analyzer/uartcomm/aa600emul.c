@@ -18,6 +18,7 @@
 #include "ctype.h"
 #include "stdlib.h"
 #include "gen.h"
+#include "shell.h"
 
 //==========================================================================================
 // Serial remote control protocol state machine implementation (emulates RigExpert AA-170)
@@ -253,17 +254,25 @@ void PROTOCOL_Handler_AA600(void)
     AAUART_PutString(ERR);
 }
 
+void PROTOCOL_Handler_NanoVNA(void)
+{
+    shell_rx_proc(); //NanoVNA protocol is implemented as a set of commands executed in a ChibiOS-like shell
+}
+
 void PROTOCOL_Handler(void)
 {
     switch (CFG_GetParam(CFG_PARAM_SEREMUL))
     {
-    case 0:
+    case CFG_PROTO_AA600:
         PROTOCOL_Handler_AA600();
         break;
-    case 1:
+    case CFG_PROTO_LINSMITH:
         PROTOCOL_Handler_LINSMITH();
         break;
+    case CFG_PROTO_NANOVNA:
+        PROTOCOL_Handler_NanoVNA();
+        break;
     default:
-        CFG_SetParam(CFG_PARAM_SEREMUL, 0); // next call will default to something valid
+        CFG_SetParam(CFG_PARAM_SEREMUL, CFG_PROTO_AA600); // next call will default to something valid
     }
 }

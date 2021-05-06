@@ -7,7 +7,8 @@
 	"settings": {
 		"files.associations": {
 			"main.h": "c",
-			"stdlib.h": "c"
+			"stdlib.h": "c",
+			"cstdlib": "c"
 		},
 		"actionButtons": {
 			"defaultColor": "#ff0034", // Can also use string color names.
