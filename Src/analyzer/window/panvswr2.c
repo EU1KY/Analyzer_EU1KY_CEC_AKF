@@ -1844,11 +1844,17 @@ static void save_snapshot(void)
                       "# MHz S RI R 50\r\n"
                       "! Format: Frequency S-real S-imaginary (normalized to 50 Ohm)\r\n");
     }
-    else // CFG_S1P_TYPE_S_MA
+    else if (CFG_S1P_TYPE_S_MA == CFG_GetParam(CFG_PARAM_S1P_TYPE))
     {
         sprintf(wbuf, "! Touchstone file by EU1KY antenna analyzer\r\n"
                       "# MHz S MA R 50\r\n"
                       "! Format: Frequency S-magnitude S-angle (normalized to 50 Ohm, angle in degrees)\r\n");
+    }
+    else // CFG_S1P_TYPE_Z_RI
+    {
+        sprintf(wbuf, "! Touchstone file by EU1KY antenna analyzer\r\n"
+                      "# MHz Z RI R 50\r\n"
+                      "! Format: Frequency Z-real Z-imaginary\r\n");
     }
     fr = f_write(&fo, wbuf, strlen(wbuf), &bw);
     if (FR_OK != fr)
@@ -1868,10 +1874,14 @@ static void save_snapshot(void)
         {
             sprintf(wbuf, "%.6f %.6f %.6f\r\n", fmhz, crealf(g), cimagf(g));
         }
-        else // CFG_S1P_TYPE_S_MA
+        else if (CFG_S1P_TYPE_S_MA == CFG_GetParam(CFG_PARAM_S1P_TYPE))
         {
             g = OSL_GtoMA(g); //Convert G to magnitude and angle in degrees
             sprintf(wbuf, "%.6f %.6f %.6f\r\n", fmhz, crealf(g), cimagf(g));
+        }
+        else // CFG_S1P_TYPE_Z_RI
+        {
+            sprintf(wbuf, "%.6f %.2f %.2f\r\n", fmhz, crealf(values[i]), cimagf(values[i]));
         }
         fr = f_write(&fo, wbuf, strlen(wbuf), &bw);
         if (FR_OK != fr)

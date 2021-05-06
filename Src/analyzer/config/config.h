@@ -48,7 +48,8 @@ typedef enum
 typedef enum
 {
     CFG_S1P_TYPE_S_MA = 0,
-    CFG_S1P_TYPE_S_RI = 1
+    CFG_S1P_TYPE_S_RI = 1,
+    CFG_S1P_TYPE_Z_RI = 2,
 } CFG_S1P_TYPE_t;
 
 typedef enum
