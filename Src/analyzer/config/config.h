@@ -18,7 +18,7 @@ int DBG_Printf(const char *fmt, ...);
 
 #include "LCD.h"
 #define AAVERSION "3.0d"      //Must be 4 characters
-#define AAVERSION_CECV "1.03" //Must be 4 characters
+#define AAVERSION_CECV "1.04" //Must be 4 characters
 
 /*bool DatumDDMMYYYY = true; */
 
