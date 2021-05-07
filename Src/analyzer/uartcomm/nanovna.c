@@ -372,3 +372,12 @@ static bool _nanovna_cmd_frequencies(uint32_t argc, char* const argv[])
     return false;
 }
 SHELL_CMD(frequencies, "list frequencies", _nanovna_cmd_frequencies);
+
+// frequencies
+static bool _nanovna_cmd_version(uint32_t argc, char* const argv[])
+{
+    (void)argc; (void)argv;
+    printf("0.1.0-1-1-00000000\r\n"); //version determines NanoVNA Saver features used.
+    return false;
+}
+SHELL_CMD(version, "", _nanovna_cmd_version);
