@@ -2202,9 +2202,10 @@ static void SD_DMA_RxCplt(DMA_HandleTypeDef *hdma)
   hsd->DmaTransferCplt = 1;
   
   /* Wait until SD transfer is complete */
-  while(hsd->SdTransferCplt == 0)
-  {
-  }
+// Can deadlock here for unknown reason, though the interrupt priorities seem to be assigned correctly. // EU1KY 
+//  while(hsd->SdTransferCplt == 0)
+//  {
+//  }
   
   /* Disable the DMA channel */
   HAL_DMA_Abort(hdma);
@@ -2241,9 +2242,10 @@ static void SD_DMA_TxCplt(DMA_HandleTypeDef *hdma)
   hsd->DmaTransferCplt = 1;
   
   /* Wait until SD transfer is complete */
-  while(hsd->SdTransferCplt == 0)
-  {
-  }
+// Can deadlock here for unknown reason, though the interrupt priorities seem to be assigned correctly. // EU1KY 
+//  while(hsd->SdTransferCplt == 0)
+//  {
+//  }
  
   /* Disable the DMA channel */
   HAL_DMA_Abort(hdma);
