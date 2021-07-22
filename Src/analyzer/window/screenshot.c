@@ -595,7 +595,7 @@ void SCREENSHOT_ShowPicture(uint16_t Pointer1)
     //LCD_FillRect(LCD_MakePoint(0, 267),LCD_MakePoint(479, 271), LCD_COLOR_BLACK);
     while (!TOUCH_IsPressed())
         Sleep(50);
-    LCD_FillAll(LCD_BLACK);
+    LCD_FillAll(BackGrColor);
     //  while (TOUCH_IsPressed())
     Sleep(50);
 }
@@ -623,5 +623,5 @@ void SCREENSHOT_DeleteFile(uint16_t Pointer1)
             f_unlink(path);
         }
     }
-    LCD_FillRect(LCD_MakePoint(200, 0), LCD_MakePoint(479, 30), LCD_COLOR_BLACK);
+    LCD_FillRect(LCD_MakePoint(200, 0), LCD_MakePoint(479, 30), BackGrColor);
 }
