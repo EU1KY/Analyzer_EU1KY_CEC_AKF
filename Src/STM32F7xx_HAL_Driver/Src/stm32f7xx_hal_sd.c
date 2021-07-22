@@ -2264,6 +2264,7 @@ static void SD_DMA_TxError(DMA_HandleTypeDef *hdma)
   
   /* Transfer complete user callback */
   HAL_SD_DMA_TxErrorCallback(hsd->hdmatx);
+  hsd->SdTransferCplt = 1; // to prevent hanging in SD_DMA_TxCplt()
 }
 
 /**

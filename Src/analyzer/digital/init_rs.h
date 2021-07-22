@@ -24,7 +24,7 @@ if (nroots < 0 || nroots >= (1 << symsize))
 if (pad < 0 || pad >= ((1 << symsize) - 1 - nroots))
   goto done; /* Too much padding */
 
-rs = (struct rs *)calloc(1, sizeof(struct rs));
+rs = (struct rs *)SDRH_calloc(1, sizeof(struct rs));
 if (rs == NULL)
   goto done;
 
@@ -32,18 +32,18 @@ rs->mm = symsize;
 rs->nn = (1 << symsize) - 1;
 rs->pad = pad;
 
-rs->alpha_to = (data_t *)malloc(sizeof(data_t) * (rs->nn + 1));
+rs->alpha_to = (data_t *)SDRH_malloc(sizeof(data_t) * (rs->nn + 1));
 if (rs->alpha_to == NULL)
 {
-  free(rs);
+  SDRH_free(rs);
   rs = NULL;
   goto done;
 }
-rs->index_of = (data_t *)malloc(sizeof(data_t) * (rs->nn + 1));
+rs->index_of = (data_t *)SDRH_malloc(sizeof(data_t) * (rs->nn + 1));
 if (rs->index_of == NULL)
 {
-  free(rs->alpha_to);
-  free(rs);
+  SDRH_free(rs->alpha_to);
+  SDRH_free(rs);
   rs = NULL;
   goto done;
 }
@@ -64,20 +64,20 @@ for (i = 0; i < rs->nn; i++)
 if (sr != 1)
 {
   /* field generator polynomial is not primitive! */
-  free(rs->alpha_to);
-  free(rs->index_of);
-  free(rs);
+  SDRH_free(rs->alpha_to);
+  SDRH_free(rs->index_of);
+  SDRH_free(rs);
   rs = NULL;
   goto done;
 }
 
 /* Form RS code generator polynomial from its roots */
-rs->genpoly = (data_t *)malloc(sizeof(data_t) * (nroots + 1));
+rs->genpoly = (data_t *)SDRH_malloc(sizeof(data_t) * (nroots + 1));
 if (rs->genpoly == NULL)
 {
-  free(rs->alpha_to);
-  free(rs->index_of);
-  free(rs);
+  SDRH_free(rs->alpha_to);
+  SDRH_free(rs->index_of);
+  SDRH_free(rs);
   rs = NULL;
   goto done;
 }

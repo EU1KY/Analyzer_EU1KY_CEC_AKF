@@ -31,6 +31,7 @@
 #include "textbox.h"
 #include "spectr.h"
 #include "fftwnd.h"
+#include "sdram_heap.h"
 
 extern int16_t audioBuf[(NSAMPLES + NDUMMY) * 2];
 extern void GEN_SetLOFreq(uint32_t frqu1);
@@ -1091,7 +1092,7 @@ void SPECTR_FindFreq(void)
     AreaSelected = 1;
 
     //append by KD8CEC
-    rfft_mags = (float *)malloc(sizeof(float) * NSAMPLES / 2);
+    rfft_mags = (float *)SDRH_malloc(sizeof(float) * NSAMPLES / 2);
 
     upper = 3900000ul;
     lower = 3500000ul;
@@ -1138,7 +1139,7 @@ Repaint:
                 ;
 
             //append by KD8CEC
-            free(rfft_mags);
+            SDRH_free(rfft_mags);
             return;
         }
         if (sRepaint == 1)

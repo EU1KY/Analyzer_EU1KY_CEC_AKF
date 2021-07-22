@@ -16,6 +16,7 @@
 #include <stdint.h>
 
 #include <libnsbmp.h>
+#include "sdram_heap.h"
 
 //#include "utils/log.h"
 
@@ -640,7 +641,7 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
         }
 
         /* create the colour table */
-        bmp->colour_table = (uint32_t *)malloc(bmp->colours * 4);
+        bmp->colour_table = (uint32_t *)SDRH_malloc(bmp->colours * 4);
         if(!bmp->colour_table)
         {
             return BMP_INSUFFICIENT_MEMORY;
@@ -664,7 +665,7 @@ static bmp_result bmp_analyse_header(bmp_image *bmp, uint8_t *data)
     {
         if(bmp->colour_table)
         {
-            free(bmp->colour_table);
+            SDRH_free(bmp->colour_table);
         }
         bmp->colour_table = NULL;
         return BMP_INSUFFICIENT_MEMORY;
@@ -1475,7 +1476,7 @@ void bmp_finalise(bmp_image *bmp)
     bmp->bitmap = NULL;
     if(bmp->colour_table)
     {
-        free(bmp->colour_table);
+        SDRH_free(bmp->colour_table);
     }
     bmp->colour_table = NULL;
 }
@@ -1498,6 +1499,6 @@ void ico_finalise(ico_collection *ico)
     {
         image = ico->first;
         ico->first = image->next;
-        free(image);
+        SDRH_free(image);
     }
 }

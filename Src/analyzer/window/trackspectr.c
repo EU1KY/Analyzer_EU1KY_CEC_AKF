@@ -48,6 +48,7 @@
 #include "bitmaps/bitmaps.h"
 #include "si5351.h"
 #include "si5351_hs.h"
+#include "sdram_heap.h"
 
 #define X0 51
 #define Y0 18
@@ -1126,7 +1127,7 @@ void Track_Proc(void) // ==================== S21 screen =======================
     redrawRequired = exitScan = 0;
     IsInverted = false;
     //allocate memory
-    valuesmI = (float *)malloc(sizeof(float) * (WWIDTH + 20));
+    valuesmI = (float *)SDRH_malloc(sizeof(float) * (WWIDTH + 20));
     //valuesdBI = (float *)malloc(sizeof(float) * (WWIDTH + 20));
     activeLayerS21 = 1;
     BSP_LCD_SelectLayer(activeLayerS21);
@@ -1248,6 +1249,6 @@ void Track_Proc(void) // ==================== S21 screen =======================
     }                   //end of for(;;)
     GEN_SetClk2Freq(0); // CLK2 off
     //Release Memory
-    free(valuesmI);
+    SDRH_free(valuesmI);
     isMeasured = 0;
 }

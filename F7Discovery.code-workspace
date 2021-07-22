@@ -8,7 +8,10 @@
 		"files.associations": {
 			"main.h": "c",
 			"stdlib.h": "c",
-			"cstdlib": "c"
+			"cstdlib": "c",
+			"*.tcc": "c",
+			"memory": "c",
+			"sdram_heap.h": "c"
 		},
 		"actionButtons": {
 			"defaultColor": "#ff0034", // Can also use string color names.

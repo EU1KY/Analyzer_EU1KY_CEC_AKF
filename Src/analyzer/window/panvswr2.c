@@ -34,6 +34,7 @@
 #include "generator.h"
 #include "BeepTimer.h"
 #include "bitmaps/bitmaps.h"
+#include "sdram_heap.h"
 
 #define X0 51
 #define Y0 18
@@ -2720,7 +2721,7 @@ void Scan(void) // Scan  or  Frequency        Button6
         if (0 == autofast)
         {
             //LCD_ShowActiveLayerOnly();
-            FONT_Write(FONT_FRANBIG, LCD_RED, LCD_BLACK, 180, 100, "  Scanning...  ");
+            FONT_Write(FONT_FRANBIG, LCD_RED, BackGrColor, 180, 100, "  Scanning...  ");
             ScanRX(0);
         }
         else
@@ -3078,9 +3079,9 @@ void PANVSWR2_Proc(void) // ****************************************************
     isM2Loaded = 0;
     isM3Loaded = 0;
 
-    SavedValues1 = (float complex *)malloc(sizeof(float complex) * (WWIDTH + 1));
-    SavedValues2 = (float complex *)malloc(sizeof(float complex) * (WWIDTH + 1));
-    SavedValues3 = (float complex *)malloc(sizeof(float complex) * (WWIDTH + 1));
+    SavedValues1 = (float complex *)SDRH_malloc(sizeof(float complex) * (WWIDTH + 1));
+    SavedValues2 = (float complex *)SDRH_malloc(sizeof(float complex) * (WWIDTH + 1));
+    SavedValues3 = (float complex *)SDRH_malloc(sizeof(float complex) * (WWIDTH + 1));
 
     //Check Exists Stored File and Load Stored RXP
     if (LoadRXP(1, SavedValues1) == 0)
@@ -3230,9 +3231,9 @@ void PANVSWR2_Proc(void) // ****************************************************
         LCD_ShowActiveLayerOnly();
     }
     Sleep(100);
-    free(SavedValues3);
-    free(SavedValues2);
-    free(SavedValues1);
+    SDRH_free(SavedValues3);
+    SDRH_free(SavedValues2);
+    SDRH_free(SavedValues1);
 }
 
 TEXTBOX_CTX_t Quartz_ctx;

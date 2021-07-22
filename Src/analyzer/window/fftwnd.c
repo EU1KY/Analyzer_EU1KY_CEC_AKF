@@ -20,6 +20,7 @@
 #include "ff.h"
 #include "config.h"
 #include "si5351.h"
+#include "sdram_heap.h"
 
 #define step 1
 
@@ -181,7 +182,7 @@ void FFTWND_Proc(void)
     oscilloscope = 0;
 
     //append by KD8CEC
-    rfft_mags = (float *)malloc(sizeof(float) * NSAMPLES / 2);
+    rfft_mags = (float *)SDRH_malloc(sizeof(float) * NSAMPLES / 2);
 
     //BSP_LCD_SelectLayer(0);
     //LCD_FillAll(LCD_BLACK);
@@ -234,7 +235,7 @@ void FFTWND_Proc(void)
             if (rqExit)
             {
                 GEN_SetMeasurementFreq(0);
-                free(rfft_mags); //append by KD8CEC
+                SDRH_free(rfft_mags); //append by KD8CEC
                 return;
             }
             continue;
@@ -399,5 +400,5 @@ void FFTWND_Proc(void)
         Sleep(100);
     } //end of while
 
-    free(rfft_mags); //append by KD8CEC, for exit function by break
+    SDRH_free(rfft_mags); //append by KD8CEC, for exit function by break
 }

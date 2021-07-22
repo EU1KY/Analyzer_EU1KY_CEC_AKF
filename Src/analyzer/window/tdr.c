@@ -22,6 +22,7 @@
 #include "screenshot.h"
 #include "tdr.h"
 #include "hit.h"
+#include "sdram_heap.h"
 
 extern void Sleep(uint32_t);
 
@@ -574,10 +575,10 @@ void TDR_Proc(void)
     SetColours();
 
     //Prepare Memory
-    time_domain = (float *)malloc(sizeof(float) * NUMTDRSAMPLES * 2);
-    step_response = (float *)malloc(sizeof(float) * NUMTDRSAMPLES * 2);
-    Ztv = (float *)malloc(sizeof(float) * NUMTDRSAMPLES * 2);
-    freq_domain = (float complex *)malloc(sizeof(float complex) * NUMTDRSAMPLES);
+    time_domain = (float *)SDRH_malloc(sizeof(float) * NUMTDRSAMPLES * 2);
+    step_response = (float *)SDRH_malloc(sizeof(float) * NUMTDRSAMPLES * 2);
+    Ztv = (float *)SDRH_malloc(sizeof(float) * NUMTDRSAMPLES * 2);
+    freq_domain = (float complex *)SDRH_malloc(sizeof(float complex) * NUMTDRSAMPLES);
 
     TDR_cursorChangeCount = 0;
     BSP_LCD_SelectLayer(1);
@@ -623,10 +624,10 @@ void TDR_Proc(void)
                 // while(TOUCH_IsPressed());
 
                 //Release memory
-                free(time_domain);
-                free(step_response);
-                free(Ztv);
-                free(freq_domain);
+                SDRH_free(time_domain);
+                SDRH_free(step_response);
+                SDRH_free(Ztv);
+                SDRH_free(freq_domain);
 
                 return;
             }

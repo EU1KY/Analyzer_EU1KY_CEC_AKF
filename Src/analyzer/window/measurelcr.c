@@ -40,6 +40,7 @@
 #include "measurement.h"
 #include "panfreq.h"
 #include "bitmaps/bitmaps.h"
+#include "sdram_heap.h"
 
 #define BACK_COLOR LCD_RGB(10, 52, 74)
 #define SELECT_FREQ_COLOR LCD_RGB(255, 127, 39)
@@ -461,8 +462,8 @@ void Measure_LCR_Proc(void)
     int NowMesaureIndex = 0;
     uint32_t NowMeasureFreq = MeasureStartFreq;
 
-    MeasureIM = (float *)malloc(sizeof(float) * 55); //Max 10Mhz per 1 Step
-    MeasureFreq = (uint32_t *)malloc(sizeof(uint32_t) * 55);
+    MeasureIM = (float *)SDRH_malloc(sizeof(float) * 55); //Max 10Mhz per 1 Step
+    MeasureFreq = (uint32_t *)SDRH_malloc(sizeof(uint32_t) * 55);
 
     //Check Range
     if (CFG_GetParam(CFG_PARAM_LC_INDEX) < 0 || CFG_GetParam(CFG_PARAM_LC_INDEX) > 6)
@@ -816,8 +817,8 @@ void Measure_LCR_Proc(void)
     } //end of for
 
     //Release Memory
-    free(MeasureIM);
-    free(MeasureFreq);
+    SDRH_free(MeasureIM);
+    SDRH_free(MeasureFreq);
 
     //Sleep(100);
     GEN_SetMeasurementFreq(0);

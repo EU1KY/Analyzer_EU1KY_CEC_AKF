@@ -56,20 +56,9 @@ uint32_t BT_PIN = (uint32_t)&g_bt_data[22]; //0
 static const char *g_bt_fpath = "/aa/bt.bin";
 static char *NewSSID;
 
-static char *_del_command(char *str) __attribute__((unused));
-
 static void _hit_BTexit(void)
 {
     rqExit = 1;
-}
-
-static char *_del_command(char *str)
-{
-    char *end;
-    if (str[0] == '+')
-    {
-    }
-    return end;
 }
 
 static char *_trim(char *str)

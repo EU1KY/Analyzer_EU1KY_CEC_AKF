@@ -10,15 +10,16 @@
 #include <stdlib.h>
 #include "JTEncode.h"
 #include "rs_common.h"
+#include "sdram_heap.h"
 
 void free_rs_int(void *p)
 {
   struct rs *rs = (struct rs *)p;
 
-  free(rs->alpha_to);
-  free(rs->index_of);
-  free(rs->genpoly);
-  free(rs);
+  SDRH_free(rs->alpha_to);
+  SDRH_free(rs->index_of);
+  SDRH_free(rs->genpoly);
+  SDRH_free(rs);
 }
 
 void *init_rs_int(int symsize, int gfpoly, int fcr, int prim,
@@ -52,18 +53,18 @@ void *init_rs_int(int symsize, int gfpoly, int fcr, int prim,
   rs->nn = (1 << symsize) - 1;
   rs->pad = pad;
 
-  rs->alpha_to = (data_t *)malloc(sizeof(data_t) * (rs->nn + 1));
+  rs->alpha_to = (data_t *)SDRH_malloc(sizeof(data_t) * (rs->nn + 1));
   if (rs->alpha_to == NULL)
   {
-    free(rs);
+    SDRH_free(rs);
     rs = ((struct rs *)0);
     goto done;
   }
-  rs->index_of = (data_t *)malloc(sizeof(data_t) * (rs->nn + 1));
+  rs->index_of = (data_t *)SDRH_malloc(sizeof(data_t) * (rs->nn + 1));
   if (rs->index_of == NULL)
   {
-    free(rs->alpha_to);
-    free(rs);
+    SDRH_free(rs->alpha_to);
+    SDRH_free(rs);
     rs = ((struct rs *)0);
     goto done;
   }
@@ -84,20 +85,20 @@ void *init_rs_int(int symsize, int gfpoly, int fcr, int prim,
   if (sr != 1)
   {
     /* field generator polynomial is not primitive! */
-    free(rs->alpha_to);
-    free(rs->index_of);
-    free(rs);
+    SDRH_free(rs->alpha_to);
+    SDRH_free(rs->index_of);
+    SDRH_free(rs);
     rs = ((struct rs *)0);
     goto done;
   }
 
   /* Form RS code generator polynomial from its roots */
-  rs->genpoly = (data_t *)malloc(sizeof(data_t) * (nroots + 1));
+  rs->genpoly = (data_t *)SDRH_malloc(sizeof(data_t) * (nroots + 1));
   if (rs->genpoly == NULL)
   {
-    free(rs->alpha_to);
-    free(rs->index_of);
-    free(rs);
+    SDRH_free(rs->alpha_to);
+    SDRH_free(rs->index_of);
+    SDRH_free(rs);
     rs = ((struct rs *)0);
     goto done;
   }

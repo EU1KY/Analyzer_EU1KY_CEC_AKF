@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "sdram_heap.h"
+#include "crash.h"
 
 #define SDRH_BLKSIZE 128
 #define SDRH_HEAPSIZE 0x200000 // Must be agreed with linker scrpt's _SDRAM_HEAP_SIZE, and must be multiple of SDRH_BLKSIZE !!!
@@ -105,7 +106,10 @@ void *SDRH_malloc(size_t nbytes)
     uint32_t start_block = _find_area(nblocks);
 
     if (start_block >= SDRH_NBLOCKS)
+    {
+        CRASHF("SDRH_malloc: cannot allocate %u bytes", nbytes);
         return 0;
+    }
     void *addr = SDRH_ADDR(start_block);
     while (nblocks)
     {
@@ -117,7 +121,13 @@ void *SDRH_malloc(size_t nbytes)
 void SDRH_free(void *ptr)
 {
     if (!_isValidPtr(ptr))
+    {
+        if (0 != ptr)
+        {
+            CRASHF("SDRH_free invalid pointer 0x%08lX", (uint32_t)ptr);
+        }
         return;
+    }
     SDRH_Init();
     uint32_t block = (ptr - SDRH_START) / SDRH_BLKSIZE;
     uint32_t nblocks = SDRH_descr[block];
